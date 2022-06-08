@@ -105,7 +105,7 @@ namespace Terminal_XP.Frames
                 {
                     _mutex?.WaitOne();
                 
-                    Dispatcher.Invoke(DispatcherPriority.Background,
+                    Dispatcher.BeginInvoke(DispatcherPriority.Background,
                     new Action(() =>
                     {
                         if (Output.Text.Length > 0 && Output.Text[Output.Text.Length - 1].ToString() == ConfigManager.Config.SpecialSymbol)

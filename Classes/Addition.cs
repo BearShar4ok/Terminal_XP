@@ -32,7 +32,7 @@ namespace Terminal_XP.Classes
                 {
                     mutex?.WaitOne();
                     
-                    dispatcher.Invoke(DispatcherPriority.Background,
+                    dispatcher.BeginInvoke(DispatcherPriority.Background,
                     new Action(() =>
                     {
                         if (element.Text.Length > 0 && element.Text[element.Text.Length - 1].ToString() == ConfigManager.Config.SpecialSymbol)
