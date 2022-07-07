@@ -27,10 +27,10 @@ namespace Terminal_XP
         public MainWindow()
         {
             InitializeComponent();
-            Background = new ImageBrush(new BitmapImage(new Uri("Assets/Themes/Fallout/Background3.png", UriKind.Relative)));
+            Background = new ImageBrush(new BitmapImage(new Uri("Assets/Themes/Fallout/Background.png", UriKind.Relative)));
 
             qwe.NavigationService.Navigate(new Uri("Pages/LoadingPage.xaml", UriKind.Relative));
-            //Closing += (object sender, CancelEventArgs e) => DevicesManager.StopLisining();
+            Closing += (object sender, CancelEventArgs e) => DevicesManager.StopLisining();
         }
     }
 }

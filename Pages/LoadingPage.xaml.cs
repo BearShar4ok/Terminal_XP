@@ -24,13 +24,20 @@ namespace Terminal.Pages
     public partial class LoadingPage : Page
     {
         private string directory = "";
+        private bool isFlashCard = true;
+        private int deepOfPath = 0;
+
+        //📂🖹🖻🖺🖾 🖼
+        private string passFoler = @"G:\Coding\MyProjects\Terminal_XP\Terminal_XP\Assets\Themes\Fallout\folder.png";
+        private string passImage =  @"G:\Coding\MyProjects\Terminal_XP\Terminal_XP\Assets\Themes\Fallout\image.png";
+        private string passText = @"G:\Coding\MyProjects\Terminal_XP\Terminal_XP\Assets\Themes\Fallout\text.png";
         public LoadingPage()
         {
             InitializeComponent();
             // G:/Coding/MyProjects/Terminal/Resources
             // ../../../Resources
             DevicesManager.AddDisk += Add;
-            DevicesManager.RemoveDisk += rem;
+            DevicesManager.RemoveDisk += Rem;
 
             //LoadingPage l = new LoadingPage();
 
@@ -50,12 +57,12 @@ namespace Terminal.Pages
 
             Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() => lstB.Items.Add(new ListBoxItem()
             {
-                Tag = "📂",
+                Tag = new PropertyPath(passFoler),
                 Content = text,
-                Style = (Style)Resources["123"],
+                Style = (Style)Resources["ImageText"],
             })));
         }
-        private void rem(string text)
+        private void Rem(string text)
         {
             System.Diagnostics.Debug.WriteLine("remove: " + text);
             Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() => lstB.Items.Remove(text)));
@@ -64,9 +71,46 @@ namespace Terminal.Pages
         private void lstB_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             //MessageBox.Show(lstB.SelectedItem.ToString());
+            
             string path = (string)(((ListBoxItem)(lstB.SelectedItem)).Content);
-            directory += path + "\\";
-            OpenFolder();
+           
+
+            if (deepOfPath==0)
+            {
+                directory = path;
+                string[] allFiles;
+                try
+                {
+                    allFiles = Directory.GetFiles(directory);
+                    for (int i = 0; i < allFiles.Length; i++)
+                    {
+                        allFiles[i] = allFiles[i].Split(new string[] { "\\" }, StringSplitOptions.RemoveEmptyEntries)[1];
+                    }    
+                    
+                    if (allFiles.Contains("file.txt"))
+                    {
+                        StreamReader s = new StreamReader(directory + "file.txt");
+                        directory = s.ReadLine();
+                        deepOfPath++;
+                        OpenFolder();
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                }
+            }
+            else if (deepOfPath >=1)
+            {
+                directory += "\\" + path;
+                deepOfPath++;
+                OpenFolder();
+            }
+            
 
             //MessageBox.Show(directory);
         }
@@ -92,21 +136,24 @@ namespace Terminal.Pages
                 ListBoxItem lstBI = new ListBoxItem()
                 {
                     Content = text,
-                    Style = (Style)Resources["123"],
+                    Style = (Style)Resources["ImageText"],
                 };
+                Image im = new Image();
+                
                 switch (format)
                 {
                     case "txt":
-                        lstBI.Tag = "🖹";
+                        im.Source = new BitmapImage(new Uri(passText, UriKind.Relative));
+                        lstBI.Tag = passText;
                         break;
                     case "png":
-                        lstBI.Tag = "🖼";
+                        lstBI.Tag = new Uri(passImage);
                         break;
                     case "jpg":
-                        lstBI.Tag = "🖼";
+                        lstBI.Tag = new Uri(passImage);
                         break;
                     case "bmp":
-                        lstBI.Tag = "🖼";
+                        lstBI.Tag = new Uri(passImage);
                         break;
                     default:
                         break;
@@ -132,9 +179,9 @@ namespace Terminal.Pages
                 }
                 ListBoxItem lstBI = new ListBoxItem()
                 {
-                    Tag = "📂",
+                    Tag = new PropertyPath( passFoler),
                     Content = text,
-                    Style = (Style)Resources["123"],
+                    Style = (Style)Resources["ImageText"],
                 };
 
                 lstB.Items.Add(lstBI);
@@ -151,7 +198,14 @@ namespace Terminal.Pages
                 case Key.Escape:
                     //lstB_MouseDoubleClick(null, null); //       e/adsadad/asdsadas/
                     //directory.Split("/")
-                    MessageBox.Show(directory);
+                    //MessageBox.Show(directory);
+                    deepOfPath--;
+                    if (deepOfPath==0)
+                    {
+                        DevicesManager.ClearAllDisks();
+                        lstB.Items.Clear();
+                        return;
+                    }
                     directory = directory.Remove(directory.LastIndexOf("\\"));
                     directory = directory.Remove(directory.LastIndexOf("\\"));
                     directory += "\\";

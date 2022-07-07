@@ -11,52 +11,64 @@ namespace Terminal.Classes
     {
         public static event Action<string> AddDisk;
         public static event Action<string> RemoveDisk;
+        public static Action ClearAllDisks;
 
-        private static List<string> _disks = new List<string>();
+        private static List<string> disks = new List<string>();
 
-        private static bool _isActive;
+        private static bool isActive;
 
         private const int Delay = 1000;
-        private static Thread _thread;
+        private static Thread thread;
 
         public static void StartLisining()
         {
-            _isActive = true;
-            _thread = new Thread(Update);
-            _thread.Start();
+            isActive = true;
+            ClearAllDisks += DisksClear;
+            thread = new Thread(Update);
+            thread.Start();
         }
 
         public static void StopLisining()
         {
-            _isActive = false;
+            isActive = false;
+        }
+        private static void DisksClear()
+        {
+            disks.Clear();
         }
 
         private static void Update()
         {
             try
             {
-                while (_isActive)
+                while (isActive)
                 {
                     var drives = DriveInfo.GetDrives();
-                    var disks = new List<string>();
+                    var tempDisks = new List<string>();
 
                     foreach (var disk in drives)
                     {
-                        disks.Add(disk.Name);
+                        tempDisks.Add(disk.Name);
 
-                        if (!_disks.Contains(disk.Name))
+                        if (!disks.Contains(disk.Name))
                         {
-                            AddDisk?.Invoke(disk.Name);
-                            _disks.Add(disk.Name);
+                            if (AddDisk != null)
+                            {
+                                AddDisk.Invoke(disk.Name);
+                            }
+                            disks.Add(disk.Name);
                         }
                     }
 
-                    for (int i = 0; i < _disks.Count; i++)
+                    for (int i = 0; i < disks.Count; i++)
                     {
-                        if (!disks.Contains(_disks[i]))
+                        if (!tempDisks.Contains(disks[i]))
                         {
-                            RemoveDisk?.Invoke(_disks[i]);
-                            _disks.RemoveAt(i);
+                            if (RemoveDisk!=null)
+                            {
+                                RemoveDisk.Invoke(disks[i]);
+                            }
+                            disks.RemoveAt(i);
                             i--;
                         }
                     }
