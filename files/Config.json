@@ -6,5 +6,6 @@
     "UsingDelayFastOutput": true,
     "DelayFastOutput": 1,
     "DelayUpdateCarriage": 500,
-    "SpecialSymbol": "❚"
+    "SpecialSymbol": "❚",
+    "DefaultVolume": 0.30
 }

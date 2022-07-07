@@ -13,6 +13,7 @@ namespace Terminal_XP
     public partial class MainWindow : Window
     {
         private string _theme;
+        private bool _stop = true;
         
         public MainWindow()
         {
@@ -27,8 +28,9 @@ namespace Terminal_XP
                 LoadParams();
 
                 // Frame.NavigationService.Navigate(new TextViewPage(Addition.Local + "/Test.txt", _theme));
-                var image = Path.GetFullPath(Addition.Local + "/Test.jpg");
-                Frame.NavigationService.Navigate(new PictureViewPage(image, _theme));
+                // Frame.NavigationService.Navigate(new PictureViewPage(Path.GetFullPath(Addition.Local + "/Test.jpg"), _theme));
+                // Frame.NavigationService.Navigate(new VideoViewPage(Addition.Local + "/Test_2.mp4", _theme));
+                Frame.NavigationService.Navigate(new AudioViewPage(Addition.Local + "/Test.mp3", _theme));
             }
             catch (Exception ex)
             {
@@ -60,6 +62,19 @@ namespace Terminal_XP
                         break;
                     case Key.R:
                         Frame.NavigationService.Content.GetType().GetMethod("Reload")?.Invoke(Frame.NavigationService.Content, default);
+                        break;
+                    case Key.Space:
+                        Frame.NavigationService.Content.GetType().GetMethod(_stop ? "Pause" : "Play")?.Invoke(Frame.NavigationService.Content, default);
+
+                        _stop = !_stop;
+                        break;
+                    case Key.Up:
+                    case Key.VolumeUp:
+                        Frame.NavigationService.Content.GetType().GetMethod("VolumePlus")?.Invoke(Frame.NavigationService.Content, default);
+                        break;
+                    case Key.Down:
+                    case Key.VolumeDown:
+                        Frame.NavigationService.Content.GetType().GetMethod("VolumeMinus")?.Invoke(Frame.NavigationService.Content, default);
                         break;
                 }
             };

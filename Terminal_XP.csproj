@@ -52,8 +52,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Frames\AudioViewPage.xaml" />
     <Page Include="Frames\PictureViewPage.xaml" />
     <Page Include="Frames\TextViewPage.xaml" />
+    <Page Include="Frames\VideoViewPage.xaml" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -69,11 +71,17 @@
     <Compile Include="Classes\FragmentText.cs" />
     <Compile Include="Classes\Logger.cs" />
     <Compile Include="Classes\Manager.cs" />
+    <Compile Include="Frames\AudioViewPage.xaml.cs">
+      <DependentUpon>AudioViewPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Frames\PictureViewPage.xaml.cs">
       <DependentUpon>PictureViewPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Frames\TextViewPage.xaml.cs">
       <DependentUpon>TextViewPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Frames\VideoViewPage.xaml.cs">
+      <DependentUpon>VideoViewPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
