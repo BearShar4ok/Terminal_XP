@@ -66,13 +66,13 @@
                                          BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="40"/>
+                                        <ColumnDefinition Width="20"/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
                                     <Label Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Content="{TemplateBinding Tag}" FontSize="20" FontFamily="{TemplateBinding FontFamily}" Background="Transparent" Foreground="{TemplateBinding Foreground}" >
 
                                     </Label>
-                                    <Image Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Source="{TemplateBinding Tag}">
+                                    <Image Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Source="{Binding Path=.}">
                                         <!--{TemplateBinding Property=Tag}
                                         <Image.Source>
                                             <BitmapImage UriSource="{Binding Path=Tag}" />
@@ -128,10 +128,14 @@
         </ResourceDictionary>
     </Page.Resources>
     <Grid x:Name="MainFild" Background="Transparent" >
-
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Label x:Name="lblDirectory" Grid.Row="0" Background="LightCoral"/>
         <!-- <TextBlock TextWrapping="Wrap" x:Name="Print" Background="Transparent"/> -->
-        <ListBox x:Name="lstB" KeyboardNavigation.TabNavigation="Cycle" ItemContainerStyle="{StaticResource ImageText}" MouseDoubleClick="lstB_MouseDoubleClick"  Background="Transparent" Margin="50" Foreground="Wheat" BorderThickness="0">
-            <ListBoxItem Tag="G:/Coding/MyProjects/Terminal_XP/Terminal_XP/Assets/Themes/Fallout/folder.png">TEST don`t pay attention</ListBoxItem>
+        <ListBox x:Name="lstB" Grid.Row="1" KeyboardNavigation.TabNavigation="Cycle" ItemContainerStyle="{StaticResource ImageText}" MouseDoubleClick="lstB_MouseDoubleClick"  Background="Transparent" Margin="50" Foreground="Wheat" BorderThickness="0">
+            
             <!--   📂🖹🖻🖺🖾 🖼  G:/Coding/MyProjects/Terminal_XP/Terminal_XP/Assets/Themes/Fallout/folder.png -->
         </ListBox>
     </Grid>

@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Terminal.Classes;
 using System.Windows.Controls.Primitives;
+using Microsoft.SqlServer.Server;
 
 namespace Terminal.Pages
 {
@@ -24,22 +25,19 @@ namespace Terminal.Pages
     public partial class LoadingPage : Page
     {
         private string directory = "";
-        private bool isFlashCard = true;
         private int deepOfPath = 0;
+        private KeyStates prevkeyState;
+        private Dictionary<string, ListBoxItem> disks = new Dictionary<string, ListBoxItem>();
 
         //📂🖹🖻🖺🖾 🖼
         private string passFoler = @"G:\Coding\MyProjects\Terminal_XP\Terminal_XP\Assets\Themes\Fallout\folder.png";
-        private string passImage =  @"G:\Coding\MyProjects\Terminal_XP\Terminal_XP\Assets\Themes\Fallout\image.png";
+        private string passImage = @"G:\Coding\MyProjects\Terminal_XP\Terminal_XP\Assets\Themes\Fallout\image.png";
         private string passText = @"G:\Coding\MyProjects\Terminal_XP\Terminal_XP\Assets\Themes\Fallout\text.png";
         public LoadingPage()
         {
             InitializeComponent();
-            // G:/Coding/MyProjects/Terminal/Resources
-            // ../../../Resources
             DevicesManager.AddDisk += Add;
             DevicesManager.RemoveDisk += Rem;
-
-            //LoadingPage l = new LoadingPage();
 
             lstB.SelectionMode = SelectionMode.Single;
             lstB.ContextMenu = new ContextMenu();
@@ -52,32 +50,13 @@ namespace Terminal.Pages
         }
         private void Add(string text)
         {
-            // Log.Logger.Information("add: {0}", text);
             System.Diagnostics.Debug.WriteLine("add: " + text);
 
-            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() => lstB.Items.Add(new ListBoxItem()
+            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
             {
-                Tag = new PropertyPath(passFoler),
-                Content = text,
-                Style = (Style)Resources["ImageText"],
-            })));
-        }
-        private void Rem(string text)
-        {
-            System.Diagnostics.Debug.WriteLine("remove: " + text);
-            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() => lstB.Items.Remove(text)));
-        }
 
-        private void lstB_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            //MessageBox.Show(lstB.SelectedItem.ToString());
-            
-            string path = (string)(((ListBoxItem)(lstB.SelectedItem)).Content);
-           
 
-            if (deepOfPath==0)
-            {
-                directory = path;
+                directory = text;
                 string[] allFiles;
                 try
                 {
@@ -85,14 +64,30 @@ namespace Terminal.Pages
                     for (int i = 0; i < allFiles.Length; i++)
                     {
                         allFiles[i] = allFiles[i].Split(new string[] { "\\" }, StringSplitOptions.RemoveEmptyEntries)[1];
-                    }    
-                    
+                    }
+
                     if (allFiles.Contains("file.txt"))
                     {
-                        StreamReader s = new StreamReader(directory + "file.txt");
-                        directory = s.ReadLine();
-                        deepOfPath++;
-                        OpenFolder();
+                        
+                        string diskName;
+                        string fullPath;
+                        using (StreamReader sr = new StreamReader(text + "file.txt"))
+                        {
+                            string temp = sr.ReadToEnd();
+                            string[] temp2 = temp.Split('\\');
+                            diskName = temp2[temp2.Length - 1];
+                            
+                            fullPath = temp;
+                        }
+                        ListBoxItem lbi = new ListBoxItem()
+                        {
+                            DataContext = new BitmapImage(new Uri(passFoler)),
+                            Content = diskName,
+                            Tag = fullPath,
+                            Style = (Style)Resources["ImageText"],
+                        };
+                        lstB.Items.Add(lbi);
+                        disks.Add(text, lbi);
                     }
                     else
                     {
@@ -103,20 +98,50 @@ namespace Terminal.Pages
                 {
                     System.Diagnostics.Debug.WriteLine(ex.Message);
                 }
-            }
-            else if (deepOfPath >=1)
-            {
-                directory += "\\" + path;
-                deepOfPath++;
-                OpenFolder();
-            }
-            
 
-            //MessageBox.Show(directory);
+                lblDirectory.Content = directory;
+            }));
+
+        }
+        private void Rem(string text)
+        {
+            System.Diagnostics.Debug.WriteLine("remove: " + text);
+
+            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
+            {
+                object o = disks[text];
+                lstB.Items.Remove(o);
+                disks.Remove(text);
+            }));
+        }
+
+        private void lstB_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            string path = (string)(((ListBoxItem)(lstB.SelectedItem)).Tag);
+            lblDirectory.Content = directory;
+            if (IsFolder(path))
+            {
+                if (deepOfPath == 0)
+                {
+                    directory = (string)(((ListBoxItem)(lstB.SelectedItem)).Tag);
+                    OpenFolder();
+                    deepOfPath++;
+                }
+                else if (deepOfPath >= 1)
+                {
+                    directory = path;
+                    deepOfPath++;
+                    OpenFolder();
+                }
+            }
+            else
+            {
+
+            }
         }
         private void OpenFolder()
         {
-
+            lblDirectory.Content = directory;
             string[] allFiles;
             try
             {
@@ -136,24 +161,25 @@ namespace Terminal.Pages
                 ListBoxItem lstBI = new ListBoxItem()
                 {
                     Content = text,
+                    Tag = directory + "\\" + text + "." + format,
                     Style = (Style)Resources["ImageText"],
                 };
                 Image im = new Image();
-                
+
                 switch (format)
                 {
                     case "txt":
                         im.Source = new BitmapImage(new Uri(passText, UriKind.Relative));
-                        lstBI.Tag = passText;
+                        lstBI.DataContext = new BitmapImage(new Uri(passText));
                         break;
                     case "png":
-                        lstBI.Tag = new Uri(passImage);
+                        lstBI.DataContext = new BitmapImage(new Uri(passImage));
                         break;
                     case "jpg":
-                        lstBI.Tag = new Uri(passImage);
+                        lstBI.DataContext = new BitmapImage(new Uri(passImage));
                         break;
                     case "bmp":
-                        lstBI.Tag = new Uri(passImage);
+                        lstBI.DataContext = new BitmapImage(new Uri(passImage));
                         break;
                     default:
                         break;
@@ -179,8 +205,9 @@ namespace Terminal.Pages
                 }
                 ListBoxItem lstBI = new ListBoxItem()
                 {
-                    Tag = new PropertyPath( passFoler),
+                    DataContext = new BitmapImage(new Uri(passFoler)),
                     Content = text,
+                    Tag = directory + "\\" + text,
                     Style = (Style)Resources["ImageText"],
                 };
 
@@ -190,31 +217,39 @@ namespace Terminal.Pages
         }
         private void AdditionalKeys(object sender, KeyEventArgs e)
         {
+            if (prevkeyState == e.KeyStates)
+            {
+                return;
+            }
+            prevkeyState = e.KeyStates;
             switch (e.Key)
             {
                 case Key.Enter:
                     lstB_MouseDoubleClick(null, null);
                     break;
                 case Key.Escape:
-                    //lstB_MouseDoubleClick(null, null); //       e/adsadad/asdsadas/
-                    //directory.Split("/")
-                    //MessageBox.Show(directory);
-                    deepOfPath--;
                     if (deepOfPath==0)
+                    {
+                        return;
+                    }
+                    deepOfPath--;
+                    if (deepOfPath <= 0)
                     {
                         DevicesManager.ClearAllDisks();
                         lstB.Items.Clear();
+                        deepOfPath = 0;
                         return;
                     }
                     directory = directory.Remove(directory.LastIndexOf("\\"));
-                    directory = directory.Remove(directory.LastIndexOf("\\"));
-                    directory += "\\";
-
                     OpenFolder();
                     break;
                 default:
                     break;
             }
+        }
+        private bool IsFolder(string text)
+        {
+            return !(text.Contains("."));
         }
     }
 }
