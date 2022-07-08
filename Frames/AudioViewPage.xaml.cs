@@ -2,17 +2,18 @@ using System;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
-using Terminal_XP.Classes;
 
 namespace Terminal_XP.Frames
 {
     public partial class AudioViewPage : Page
     {
+        public const int CntSymbol = 64;
+        
         private string _filename;
         private string _theme;
         private MediaPlayer _player = new MediaPlayer();
         private DispatcherTimer _timer = new DispatcherTimer(DispatcherPriority.Input);
-        private bool _loaded = false;
+        private bool _loaded;
         
         public double Volume
         {
@@ -30,7 +31,7 @@ namespace Terminal_XP.Frames
             _filename = filename;
             _theme = theme;
             
-            _timer.Interval = TimeSpan.FromMilliseconds(1000);
+            _timer.Interval = TimeSpan.FromMilliseconds(100);
             _timer.Tick += UpdateProgressBar;
             _timer.Start();
             
@@ -38,22 +39,32 @@ namespace Terminal_XP.Frames
                 _player.Position = new TimeSpan(0, 0, 0);
                 _player.Play();
             };
+            
+            ProgressBar.Text = $"[{new string('-', (int)CntSymbol)}]";
 
-            Volume = 0.5d;
+            Volume = 0.01d;
             
             LoadTheme(theme);
             LoadAudio(filename);
         }
+        
         private void UpdateProgressBar(object sender, EventArgs e)
         {
-            if (_loaded)
-                ProgressAudioBar.Value = _player.Position.TotalSeconds;
+            if (!_loaded)
+                return;
+
+            var nowTime = _player.Position.TotalSeconds;
+            nowTime = nowTime > _player.NaturalDuration.TimeSpan.TotalSeconds ? _player.NaturalDuration.TimeSpan.TotalSeconds : nowTime;
+                
+            var ind = (int)Math.Ceiling(nowTime / _player.NaturalDuration.TimeSpan.TotalSeconds * CntSymbol);
+            ProgressBar.Text = $"[{new string('#', ind)}{new string('-', CntSymbol - ind)}]";
         }
         
 
         public void Closing()
         {
             _loaded = false;
+            
             _timer.Stop();
             Stop();
             _player.Close();
@@ -90,8 +101,7 @@ namespace Terminal_XP.Frames
 
             _player.MediaOpened += (obj, e) =>
             {
-                ProgressAudioBar.Minimum = 0;
-                ProgressAudioBar.Maximum = _player.NaturalDuration.TimeSpan.TotalSeconds;
+                ProgressBar.Text = $"[{new string('-', CntSymbol)}]";
                 _loaded = true;
             };
         }

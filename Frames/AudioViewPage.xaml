@@ -7,6 +7,8 @@
       mc:Ignorable="d"
       Title="AudioViewPage">
     <Grid>
-        <TextBox /> 
+        <TextBlock x:Name="ProgressBar" FontSize="32" 
+                   HorizontalAlignment="Center" VerticalAlignment="Center" 
+                   Foreground="White"/>
     </Grid>
 </Page>

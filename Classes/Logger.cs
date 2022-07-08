@@ -11,7 +11,7 @@ namespace Terminal_XP.Classes
         
         public static void Debug<T>(T obj) => Debug(JsonConvert.SerializeObject(obj));
 
-        public static void Debug(string log) => Debug(log);
+        public static void Debug(string log) => System.Diagnostics.Debug.WriteLine(log);
 
         public static void Error<T>(T obj)
         {
@@ -30,9 +30,28 @@ namespace Terminal_XP.Classes
 
         public static void Information<T>(T obj) => Debug(JsonConvert.SerializeObject(obj));
         
-        public static void Information(string log) => Information(log);
+        public static void Information(string log) => Debug(log);
 
-        public static void Log(string log, MinimumLevel level = MinimumLevel.Debug) => Log(log, level);
+        public static void Log(string log, MinimumLevel level = MinimumLevel.Debug)
+        {
+            {
+                switch (level)
+                {
+                    case MinimumLevel.Debug:
+                        Debug(log);
+                        break;
+                    case MinimumLevel.Information:
+                        Information(log);
+                        break;
+                    case MinimumLevel.Error:
+                        Error(log);
+                        break;
+                    default:
+                        Debug(log);
+                        break;
+                }
+            }
+        }
 
         public static void Log<T>(T log, MinimumLevel level = MinimumLevel.Debug)
         {

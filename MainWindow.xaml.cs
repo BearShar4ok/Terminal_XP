@@ -29,8 +29,8 @@ namespace Terminal_XP
 
                 // Frame.NavigationService.Navigate(new TextViewPage(Addition.Local + "/Test.txt", _theme));
                 // Frame.NavigationService.Navigate(new PictureViewPage(Path.GetFullPath(Addition.Local + "/Test.jpg"), _theme));
-                // Frame.NavigationService.Navigate(new VideoViewPage(Addition.Local + "/Test_2.mp4", _theme));
-                Frame.NavigationService.Navigate(new AudioViewPage(Addition.Local + "/Test.mp3", _theme));
+                // Frame.NavigationService.Navigate(new VideoViewPage(Addition.Local + "/Test.mp4", _theme));
+                // Frame.NavigationService.Navigate(new AudioViewPage(Addition.Local + "/Test.mp3", _theme));
             }
             catch (Exception ex)
             {
@@ -60,9 +60,11 @@ namespace Terminal_XP
                     case Key.Escape:
                         Close();
                         break;
+                    // TODO: Delete in future. In this moment using for test
                     case Key.R:
                         Frame.NavigationService.Content.GetType().GetMethod("Reload")?.Invoke(Frame.NavigationService.Content, default);
                         break;
+                    // End TODO
                     case Key.Space:
                         Frame.NavigationService.Content.GetType().GetMethod(_stop ? "Pause" : "Play")?.Invoke(Frame.NavigationService.Content, default);
 
