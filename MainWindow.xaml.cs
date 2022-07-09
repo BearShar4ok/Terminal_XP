@@ -54,28 +54,28 @@ namespace Terminal_XP
                         break;
                     // TODO: Delete in future. In this moment using for test
                     case Key.R:
-                        Frame.NavigationService.Content.GetType().GetMethod("Reload")?.Invoke(Frame.NavigationService.Content, default);
+                        TryExcuteMethod(Frame.NavigationService.Content.GetType(), "Reload");
                         break;
                     // End TODO
                     case Key.Space:
-                        Frame.NavigationService.Content.GetType().GetMethod(_stop ? "Pause" : "Play")?.Invoke(Frame.NavigationService.Content, default);
+                        TryExcuteMethod(Frame.NavigationService.Content.GetType(), _stop ? "Pause" : "Play");
 
                         _stop = !_stop;
                         break;
                     case Key.Up:
                     case Key.VolumeUp:
-                        Frame.NavigationService.Content.GetType().GetMethod("VolumePlus")?.Invoke(Frame.NavigationService.Content, default);
+                        TryExcuteMethod(Frame.NavigationService.Content.GetType(), "VolumePlus");
                         break;
                     case Key.Down:
                     case Key.VolumeDown:
-                        Frame.NavigationService.Content.GetType().GetMethod("VolumeMinus")?.Invoke(Frame.NavigationService.Content, default);
+                        TryExcuteMethod(Frame.NavigationService.Content.GetType(), "VolumeMinus");
                         break;
                 }
             };
 
             Closing += (obj, e) =>
             {
-                Frame.NavigationService.Content.GetType().GetMethod("Closing")?.Invoke(Frame.NavigationService.Content, default);
+                TryExcuteMethod(Frame.NavigationService.Content.GetType(), "Closing");
             };
         }
 
@@ -99,6 +99,19 @@ namespace Terminal_XP
             
             if (audio.Contains(exct))
                 Frame.NavigationService.Navigate(new AudioViewPage(filename, _theme));
+        }
+
+        private void TryExcuteMethod(Type type, string name)
+        {
+            try
+            {
+                foreach (var item in type.GetMethods())
+                {
+                    if (item.Name == name)
+                        item.Invoke(Frame.NavigationService.Content, default);
+                }
+            }
+            catch{}
         }
     }
 }
