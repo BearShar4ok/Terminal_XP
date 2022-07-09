@@ -42,8 +42,6 @@ namespace Terminal_XP.Frames
             
             ProgressBar.Text = $"[{new string('-', (int)CntSymbol)}]";
 
-            Volume = 0.01d;
-            
             LoadTheme(theme);
             LoadAudio(filename);
         }

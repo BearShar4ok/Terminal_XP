@@ -34,6 +34,7 @@ namespace Terminal_XP
             LoadTheme(_theme);
             LoadParams();
 
+            ExecuteFile(Addition.Local + "/Test.flac");
         }
 
         private void LoadTheme(string name)
@@ -60,34 +61,70 @@ namespace Terminal_XP
                     //    break;
                     // TODO: Delete in future. In this moment using for test
                     case Key.R:
-                        Frame.NavigationService.Content.GetType().GetMethod("Reload")?.Invoke(Frame.NavigationService.Content, default);
+                        TryExcuteMethod(Frame.NavigationService.Content.GetType(), "Reload");
                         break;
                     // End TODO
                     case Key.Space:
-                        Frame.NavigationService.Content.GetType().GetMethod(_stop ? "Pause" : "Play")?.Invoke(Frame.NavigationService.Content, default);
+                        TryExcuteMethod(Frame.NavigationService.Content.GetType(), _stop ? "Pause" : "Play");
 
                         _stop = !_stop;
                         break;
                     case Key.Up:
                     case Key.VolumeUp:
-                        Frame.NavigationService.Content.GetType().GetMethod("VolumePlus")?.Invoke(Frame.NavigationService.Content, default);
+                        TryExcuteMethod(Frame.NavigationService.Content.GetType(), "VolumePlus");
                         break;
                     case Key.Down:
                     case Key.VolumeDown:
-                        Frame.NavigationService.Content.GetType().GetMethod("VolumeMinus")?.Invoke(Frame.NavigationService.Content, default);
+                        TryExcuteMethod(Frame.NavigationService.Content.GetType(), "VolumeMinus");
                         break;
                 }
             };
 
             Closing += (obj, e) =>
             {
-                //Frame.NavigationService.Content.GetType().GetMethod("Closing")?.Invoke(Frame.NavigationService.Content, default);
+                TryExcuteMethod(Frame.NavigationService.Content.GetType(), "Closing");
+                
                 DevicesManager.StopLisining();
             };
 
             //////////
              Frame.NavigationService.Navigate(new Uri("Pages/LoadingPage.xaml", UriKind.Relative));
             ////////////
+        }
+
+        private void ExecuteFile(string filename)
+        {
+            var exct = Path.GetExtension(filename).Remove(0, 1);
+
+            var audio = new[] { "wav", "m4a", "mp3", "flac" };
+            var picture = new[] { "jpeg", "jpg", "tiff", "bmp" };
+            var video = new[] { "mp4", "gif", "wmv", "avi" };
+            var text = new[] { "txt" };
+
+            if (audio.Contains(exct))
+                Frame.NavigationService.Navigate(new AudioViewPage(filename, _theme));
+
+            if (picture.Contains(exct))
+                Frame.NavigationService.Navigate(new PictureViewPage(filename, _theme));
+
+            if (text.Contains(exct))
+                Frame.NavigationService.Navigate(new TextViewPage(filename, _theme));
+
+            if (video.Contains(exct))
+                Frame.NavigationService.Navigate(new VideoViewPage(filename, _theme));
+        }
+
+        private void TryExcuteMethod(Type type, string name)
+        {
+            try
+            {
+                foreach (var item in type.GetMethods())
+                {
+                    if (item.Name == name)
+                        item.Invoke(Frame.NavigationService.Content, default);
+                }
+            }
+            catch{}
         }
     }
 }
