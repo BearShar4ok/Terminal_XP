@@ -34,7 +34,7 @@ namespace Terminal_XP
             LoadTheme(_theme);
             LoadParams();
 
-            ExecuteFile(Addition.Local + "/Test.flac");
+            //ExecuteFile(Addition.Local + "/Test.flac");
         }
 
         private void LoadTheme(string name)
@@ -49,24 +49,15 @@ namespace Terminal_XP
             ResizeMode = ResizeMode.NoResize;
             AllowsTransparency = true;
 
-            DevicesManager.AddDisk += name => Logger.Debug($"Add disk: {name}");
-            DevicesManager.RemoveDisk += name => Logger.Debug($"Remove disk: {name}");
-
             KeyDown += (obj, e) =>
             {
                 switch (e.Key)
                 {
-                    //case Key.Escape:
-                    //    Close();
-                    //    break;
-                    // TODO: Delete in future. In this moment using for test
-                    case Key.R:
+                    case Key.R: //DEBUG
                         TryExcuteMethod(Frame.NavigationService.Content.GetType(), "Reload");
                         break;
-                    // End TODO
                     case Key.Space:
                         TryExcuteMethod(Frame.NavigationService.Content.GetType(), _stop ? "Pause" : "Play");
-
                         _stop = !_stop;
                         break;
                     case Key.Up:
@@ -83,13 +74,11 @@ namespace Terminal_XP
             Closing += (obj, e) =>
             {
                 TryExcuteMethod(Frame.NavigationService.Content.GetType(), "Closing");
-                
+
                 DevicesManager.StopLisining();
             };
 
-            //////////
-             Frame.NavigationService.Navigate(new Uri("Pages/LoadingPage.xaml", UriKind.Relative));
-            ////////////
+            Frame.NavigationService.Navigate(new Uri("Pages/LoadingPage.xaml", UriKind.Relative));
         }
 
         private void ExecuteFile(string filename)
@@ -124,7 +113,7 @@ namespace Terminal_XP
                         item.Invoke(Frame.NavigationService.Content, default);
                 }
             }
-            catch{}
+            catch { }
         }
     }
 }
