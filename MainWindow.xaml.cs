@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using Terminal_XP.Frames;
 using Terminal_XP.Classes;
@@ -18,24 +19,15 @@ namespace Terminal_XP
         public MainWindow()
         {
             InitializeComponent();
-            try
-            {
-                ConfigManager.Load();
             
-                _theme = ConfigManager.Config.Theme;
+            ConfigManager.Load();
             
-                LoadTheme(_theme);
-                LoadParams();
+            _theme = ConfigManager.Config.Theme;
+            
+            LoadTheme(_theme);
+            LoadParams();
 
-                // Frame.NavigationService.Navigate(new TextViewPage(Addition.Local + "/Test.txt", _theme));
-                // Frame.NavigationService.Navigate(new PictureViewPage(Path.GetFullPath(Addition.Local + "/Test.jpg"), _theme));
-                // Frame.NavigationService.Navigate(new VideoViewPage(Addition.Local + "/Test.mp4", _theme));
-                // Frame.NavigationService.Navigate(new AudioViewPage(Addition.Local + "/Test.mp3", _theme));
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
+            ExecuteFile(Addition.Local + "/Test.mp3");
         }
         
         private void LoadTheme(string name)
@@ -85,6 +77,28 @@ namespace Terminal_XP
             {
                 Frame.NavigationService.Content.GetType().GetMethod("Closing")?.Invoke(Frame.NavigationService.Content, default);
             };
+        }
+
+        private void ExecuteFile(string filename)
+        {
+            var exct = Path.GetExtension(filename).Remove(0, 1);
+
+            var picture = new[] { "jpeg", "raw", "jpg", "tiff", "bmp", "gif", "jp2" };
+            var video = new[] { "mp4", "wmv", "avi" };
+            var text = new[] { "txt" };
+            var audio = new[] { "wav", "m4a", "mp3", "acc", "flac", "alac", "dsd" };
+
+            if (picture.Contains(exct))
+                Frame.NavigationService.Navigate(new PictureViewPage(filename, _theme));
+            
+            if (text.Contains(exct))
+                Frame.NavigationService.Navigate(new TextViewPage(filename, _theme));
+            
+            if (video.Contains(exct))
+                Frame.NavigationService.Navigate(new VideoViewPage(filename, _theme));
+            
+            if (audio.Contains(exct))
+                Frame.NavigationService.Navigate(new AudioViewPage(filename, _theme));
         }
     }
 }
