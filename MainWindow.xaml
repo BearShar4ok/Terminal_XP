@@ -5,10 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Terminal_XP"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow">
     <Grid>
-        <Frame x:Name="qwe">
-
-        </Frame>
+        <Frame x:Name="Frame" Margin="50" />
     </Grid>
 </Window>

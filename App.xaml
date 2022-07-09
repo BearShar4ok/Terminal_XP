@@ -4,6 +4,6 @@
              xmlns:local="clr-namespace:Terminal_XP"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        
     </Application.Resources>
 </Application>

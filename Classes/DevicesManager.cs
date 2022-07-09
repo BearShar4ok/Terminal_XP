@@ -1,11 +1,13 @@
 ﻿using System;
+using System.IO;
+using System.Threading;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.IO;
 
-namespace Terminal.Classes
+namespace Terminal_XP.Classes
 {
     public static class DevicesManager
     {
@@ -19,7 +21,7 @@ namespace Terminal.Classes
 
         private const int Delay = 1000;
         private static Thread thread;
-
+        
         public static void StartLisining()
         {
             isActive = true;
@@ -42,12 +44,12 @@ namespace Terminal.Classes
             try
             {
                 while (isActive)
-                {
-                    var drives = DriveInfo.GetDrives();
+            {
+                var drives = DriveInfo.GetDrives();
                     var tempDisks = new List<string>();
 
-                    foreach (var disk in drives)
-                    {
+                foreach (var disk in drives)
+                {
                         tempDisks.Add(disk.Name);
 
                         if (!disks.Contains(disk.Name))
@@ -55,7 +57,7 @@ namespace Terminal.Classes
                             if (AddDisk != null)
                             {
                                 AddDisk.Invoke(disk.Name);
-                            }
+                }
                             disks.Add(disk.Name);
                         }
                     }
@@ -65,16 +67,16 @@ namespace Terminal.Classes
                         if (!tempDisks.Contains(disks[i]))
                         {
                             if (RemoveDisk!=null)
-                            {
+                {
                                 RemoveDisk.Invoke(disks[i]);
                             }
                             disks.RemoveAt(i);
-                            i--;
-                        }
+                    i--;
+                }
                     }
 
-                    Thread.Sleep(Delay);
-                }
+                Thread.Sleep(Delay);
+            }
             }
             catch (Exception ex)
             {
