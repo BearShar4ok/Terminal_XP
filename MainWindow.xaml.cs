@@ -83,10 +83,13 @@ namespace Terminal_XP
         {
             var exct = Path.GetExtension(filename).Remove(0, 1);
 
+            var audio = new[] { "wav", "m4a", "mp3", "flac" };
             var picture = new[] { "jpeg", "jpg", "tiff", "bmp" };
             var video = new[] { "mp4", "gif", "wmv", "avi" };
             var text = new[] { "txt" };
-            var audio = new[] { "wav", "m4a", "mp3", "flac" };
+
+            if (audio.Contains(exct))
+                Frame.NavigationService.Navigate(new AudioViewPage(filename, _theme));
 
             if (picture.Contains(exct))
                 Frame.NavigationService.Navigate(new PictureViewPage(filename, _theme));
@@ -96,9 +99,6 @@ namespace Terminal_XP
 
             if (video.Contains(exct))
                 Frame.NavigationService.Navigate(new VideoViewPage(filename, _theme));
-
-            if (audio.Contains(exct))
-                Frame.NavigationService.Navigate(new AudioViewPage(filename, _theme));
         }
 
         private void TryExcuteMethod(Type type, string name)
