@@ -15,21 +15,21 @@ namespace Terminal_XP
     {
         private string _theme;
         private bool _stop = true;
-        
+
         public MainWindow()
         {
             InitializeComponent();
-            
+
             ConfigManager.Load();
-            
+
             _theme = ConfigManager.Config.Theme;
-            
+
             LoadTheme(_theme);
             LoadParams();
 
             ExecuteFile(Addition.Local + "/Test.flac");
         }
-        
+
         private void LoadTheme(string name)
         {
             Background = new ImageBrush() { ImageSource = new BitmapImage(new Uri(Addition.Themes + name + "/Background.png", UriKind.Relative)) };
@@ -41,10 +41,10 @@ namespace Terminal_XP
             WindowState = WindowState.Maximized;
             ResizeMode = ResizeMode.NoResize;
             AllowsTransparency = true;
-            
+
             DevicesManager.AddDisk += name => Logger.Debug($"Add disk: {name}");
             DevicesManager.RemoveDisk += name => Logger.Debug($"Remove disk: {name}");
-            
+
             KeyDown += (obj, e) =>
             {
                 switch (e.Key)
@@ -90,13 +90,13 @@ namespace Terminal_XP
 
             if (picture.Contains(exct))
                 Frame.NavigationService.Navigate(new PictureViewPage(filename, _theme));
-            
+
             if (text.Contains(exct))
                 Frame.NavigationService.Navigate(new TextViewPage(filename, _theme));
-            
+
             if (video.Contains(exct))
                 Frame.NavigationService.Navigate(new VideoViewPage(filename, _theme));
-            
+
             if (audio.Contains(exct))
                 Frame.NavigationService.Navigate(new AudioViewPage(filename, _theme));
         }
