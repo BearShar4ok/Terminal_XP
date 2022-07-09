@@ -12,8 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Terminal.Classes;
-using Terminal.Pages;
+using Terminal_XP.Pages;
 using System.ComponentModel;
 
 using Path = System.IO.Path;
@@ -24,30 +23,19 @@ namespace Terminal_XP
     {
         private string _theme;
         private bool _stop = true;
-        
+
         public MainWindow()
         {
             InitializeComponent();
-            try
-            {
-                ConfigManager.Load();
-            
-                _theme = ConfigManager.Config.Theme;
-            
-                LoadTheme(_theme);
-                LoadParams();
+            ConfigManager.Load();
 
-                // Frame.NavigationService.Navigate(new TextViewPage(Addition.Local + "/Test.txt", _theme));
-                // Frame.NavigationService.Navigate(new PictureViewPage(Path.GetFullPath(Addition.Local + "/Test.jpg"), _theme));
-                // Frame.NavigationService.Navigate(new VideoViewPage(Addition.Local + "/Test.mp4", _theme));
-                // Frame.NavigationService.Navigate(new AudioViewPage(Addition.Local + "/Test.mp3", _theme));
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
+            _theme = ConfigManager.Config.Theme;
+
+            LoadTheme(_theme);
+            LoadParams();
+
         }
-        
+
         private void LoadTheme(string name)
         {
             Background = new ImageBrush() { ImageSource = new BitmapImage(new Uri(Addition.Themes + name + "/Background.png", UriKind.Relative)) };
@@ -59,17 +47,17 @@ namespace Terminal_XP
             WindowState = WindowState.Maximized;
             ResizeMode = ResizeMode.NoResize;
             AllowsTransparency = true;
-            
+
             DevicesManager.AddDisk += name => Logger.Debug($"Add disk: {name}");
             DevicesManager.RemoveDisk += name => Logger.Debug($"Remove disk: {name}");
-            
+
             KeyDown += (obj, e) =>
             {
                 switch (e.Key)
                 {
-                    case Key.Escape:
-                        Close();
-                        break;
+                    //case Key.Escape:
+                    //    Close();
+                    //    break;
                     // TODO: Delete in future. In this moment using for test
                     case Key.R:
                         Frame.NavigationService.Content.GetType().GetMethod("Reload")?.Invoke(Frame.NavigationService.Content, default);
@@ -93,12 +81,12 @@ namespace Terminal_XP
 
             Closing += (obj, e) =>
             {
-                Frame.NavigationService.Content.GetType().GetMethod("Closing")?.Invoke(Frame.NavigationService.Content, default);
+                //Frame.NavigationService.Content.GetType().GetMethod("Closing")?.Invoke(Frame.NavigationService.Content, default);
                 DevicesManager.StopLisining();
             };
-            
+
             //////////
-           // Frame.NavigationService.Navigate(new Uri("Pages/LoadingPage.xaml", UriKind.Relative));
+             Frame.NavigationService.Navigate(new Uri("Pages/LoadingPage.xaml", UriKind.Relative));
             ////////////
         }
     }

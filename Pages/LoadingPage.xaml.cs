@@ -13,11 +13,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Terminal.Classes;
+using Terminal_XP.Classes;
 using System.Windows.Controls.Primitives;
 using Microsoft.SqlServer.Server;
 
-namespace Terminal.Pages
+namespace Terminal_XP.Pages
 {
     /// <summary>
     /// Логика взаимодействия для LoadingPage.xaml
