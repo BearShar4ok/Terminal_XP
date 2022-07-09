@@ -27,7 +27,7 @@ namespace Terminal_XP
             LoadTheme(_theme);
             LoadParams();
 
-            ExecuteFile(Addition.Local + "/Test.mp3");
+            ExecuteFile(Addition.Local + "/Test.flac");
         }
         
         private void LoadTheme(string name)
@@ -83,10 +83,10 @@ namespace Terminal_XP
         {
             var exct = Path.GetExtension(filename).Remove(0, 1);
 
-            var picture = new[] { "jpeg", "raw", "jpg", "tiff", "bmp", "gif", "jp2" };
-            var video = new[] { "mp4", "wmv", "avi" };
+            var picture = new[] { "jpeg", "jpg", "tiff", "bmp" };
+            var video = new[] { "mp4", "gif", "wmv", "avi" };
             var text = new[] { "txt" };
-            var audio = new[] { "wav", "m4a", "mp3", "acc", "flac", "alac", "dsd" };
+            var audio = new[] { "wav", "m4a", "mp3", "flac" };
 
             if (picture.Contains(exct))
                 Frame.NavigationService.Navigate(new PictureViewPage(filename, _theme));
