@@ -24,7 +24,7 @@ namespace Terminal_XP.Frames
             _filename = filename;
             _theme = theme;
 
-            Unloaded += (obj, e) => { Closing(); };
+            //Unloaded += (obj, e) => { Closing(); };
             
             MediaPlayer.MediaEnded += (obj, e) => { 
                 MediaPlayer.Position = new TimeSpan(0, 0, 0);

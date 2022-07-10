@@ -12,7 +12,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Terminal_XP.Pages;
 using System.ComponentModel;
 
 using Path = System.IO.Path;
@@ -33,7 +32,7 @@ namespace Terminal_XP
 
             LoadTheme(_theme);
             LoadParams();
-
+            
             //ExecuteFile(Addition.Local + "/Test.flac");
         }
 
@@ -78,7 +77,7 @@ namespace Terminal_XP
                 DevicesManager.StopLisining();
             };
 
-            Frame.NavigationService.Navigate(new Uri("Pages/LoadingPage.xaml", UriKind.Relative));
+            Frame.NavigationService.Navigate(new LoadingPage("G:\\TERMINAL TEST DIRECTORIES\\E"));//G:\\TERMINAL TEST DIRECTORIES\\E\\йцу G:\\TERMINAL TEST DIRECTORIES\\E\\папка\\Новая папка
         }
 
         private void ExecuteFile(string filename)

@@ -17,7 +17,7 @@ using Terminal_XP.Classes;
 using System.Windows.Controls.Primitives;
 using Microsoft.SqlServer.Server;
 
-namespace Terminal_XP.Pages
+namespace Terminal_XP.Frames
 {
     /// <summary>
     /// Логика взаимодействия для LoadingPage.xaml
@@ -33,20 +33,43 @@ namespace Terminal_XP.Pages
         private string passFoler = @"G:\Coding\MyProjects\Terminal_XP\Terminal_XP\Assets\Themes\Fallout\folder.png";
         private string passImage = @"G:\Coding\MyProjects\Terminal_XP\Terminal_XP\Assets\Themes\Fallout\image.png";
         private string passText = @"G:\Coding\MyProjects\Terminal_XP\Terminal_XP\Assets\Themes\Fallout\text.png";
-        public LoadingPage()
+        public LoadingPage(string startDirectory)
         {
             InitializeComponent();
             DevicesManager.AddDisk += Add;
             DevicesManager.RemoveDisk += Rem;
+
+            directory = startDirectory;
+            CalculationOfDeepLevel();
+            lblDirectory.Content = directory + "         deep: " + deepOfPath;
 
             lstB.SelectionMode = SelectionMode.Single;
             lstB.ContextMenu = new ContextMenu();
 
             lstB.SelectedIndex = 0;
 
-            lstB.PreviewKeyDown += AdditionalKeys;
+            KeyDown += AdditionalKeys;
+            lstB.Focus();
 
             DevicesManager.StartLisining();
+            OpenFolder();
+        }
+        private void CalculationOfDeepLevel()
+        {
+            var temp = directory.Split('\\');
+            bool schet = false;
+            foreach (var item in temp)
+            {
+                if (schet)
+                {
+                    deepOfPath++;
+                    continue;
+                }
+                if (item== "TERMINAL TEST DIRECTORIES")
+                {
+                    schet = true;
+                }
+            }
         }
         private void Add(string text)
         {
@@ -54,13 +77,10 @@ namespace Terminal_XP.Pages
 
             Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
             {
-
-
-                directory = text;
                 string[] allFiles;
                 try
                 {
-                    allFiles = Directory.GetFiles(directory);
+                    allFiles = Directory.GetFiles(text);
                     for (int i = 0; i < allFiles.Length; i++)
                     {
                         allFiles[i] = allFiles[i].Split(new string[] { "\\" }, StringSplitOptions.RemoveEmptyEntries)[1];
@@ -86,7 +106,11 @@ namespace Terminal_XP.Pages
                             Tag = fullPath,
                             Style = (Style)Resources["ImageText"],
                         };
-                        lstB.Items.Add(lbi);
+                        if (deepOfPath==0)
+                        {
+                            lstB.Items.Add(lbi);
+                        }
+                       
                         disks.Add(text, lbi);
                     }
                     else
@@ -99,7 +123,7 @@ namespace Terminal_XP.Pages
                     System.Diagnostics.Debug.WriteLine(ex.Message);
                 }
 
-                lblDirectory.Content = directory;
+                //lblDirectory.Content = text + "         deep: " + deepOfPath;
             }));
 
         }
@@ -118,30 +142,23 @@ namespace Terminal_XP.Pages
         private void lstB_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             string path = (string)(((ListBoxItem)(lstB.SelectedItem)).Tag);
-            lblDirectory.Content = directory;
+            lblDirectory.Content = directory + "         deep: " + deepOfPath;
             if (IsFolder(path))
             {
-                if (deepOfPath == 0)
-                {
-                    directory = (string)(((ListBoxItem)(lstB.SelectedItem)).Tag);
-                    OpenFolder();
-                    deepOfPath++;
-                }
-                else if (deepOfPath >= 1)
-                {
-                    directory = path;
-                    deepOfPath++;
-                    OpenFolder();
-                }
+                directory = path;
+                deepOfPath++;
+                OpenFolder();
+                
             }
             else
             {
-
+                //this.NavigationService.Navigate(null);
+                //Content = null;
             }
         }
         private void OpenFolder()
         {
-            lblDirectory.Content = directory;
+            lblDirectory.Content = directory + "         deep: " + deepOfPath;
             string[] allFiles;
             try
             {
@@ -164,12 +181,10 @@ namespace Terminal_XP.Pages
                     Tag = directory + "\\" + text + "." + format,
                     Style = (Style)Resources["ImageText"],
                 };
-                Image im = new Image();
 
                 switch (format)
                 {
                     case "txt":
-                        im.Source = new BitmapImage(new Uri(passText, UriKind.Relative));
                         lstBI.DataContext = new BitmapImage(new Uri(passText));
                         break;
                     case "png":
@@ -242,10 +257,12 @@ namespace Terminal_XP.Pages
                     }
                     directory = directory.Remove(directory.LastIndexOf("\\"));
                     OpenFolder();
+                    lblDirectory.Content = directory + "         deep: " + deepOfPath;
                     break;
                 default:
                     break;
             }
+
         }
         private bool IsFolder(string text)
         {
