@@ -18,17 +18,17 @@ namespace Terminal_XP.Frames
         private bool _update;
         private Thread _printText;
         private Mutex _mutex = new Mutex();
-        
+
         public TextViewPage(string filename, string theme)
         {
             InitializeComponent();
             LoadTheme(theme);
             LoadParams();
-        
+
             _filename = filename;
             _theme = theme;
             Output.Text = ConfigManager.Config.SpecialSymbol;
-        
+
             Unloaded += (obj, e) => { Closing(); };
 
             LoadText();
@@ -40,15 +40,15 @@ namespace Terminal_XP.Frames
             _update = false;
             _printText.Interrupt();
         }
-        
+
         public void Reload()
         {
             ConfigManager.Load();
             LoadParams();
             LoadTheme(_theme);
-        
+
             _update = false;
-        
+
             _mutex?.WaitOne();
             _printText.Interrupt();
             Output.Text = ConfigManager.Config.SpecialSymbol;
@@ -57,32 +57,32 @@ namespace Terminal_XP.Frames
             LoadText();
             Scroller.Focus();
         }
-        
+
         private void LoadText()
         {
-            try
+            //try
+            //{
+            _printText = new Thread(() =>
             {
-                _printText = new Thread(() =>
+                using (var stream = File.OpenText(_filename))
                 {
-                    using (var stream = File.OpenText(_filename))
-                    {
-                        var text = stream.ReadToEnd();
+                    var text = stream.ReadToEnd();
 
-                        Addition.PrintLines(Output, Dispatcher, _mutex,
-                            new FragmentText(text,
-                                ConfigManager.Config.UsingDelayFastOutput ? ConfigManager.Config.DelayFastOutput : 0));
-                        UpdateCarriage();
-                    }
-                });
+                    Addition.PrintLines(Output, Dispatcher, _mutex,
+                        new FragmentText(text,
+                            ConfigManager.Config.UsingDelayFastOutput ? ConfigManager.Config.DelayFastOutput : 0));
+                    UpdateCarriage();
+                }
+            });
 
-                _printText.Start();
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(ex);
-            }
+            _printText.Start();
+            // }
+            //catch (Exception ex)
+            //{
+            //     Logger.Log(ex);
+            // }
         }
-        
+
         private void LoadTheme(string name)
         {
             Output.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), "Assets/Themes/Fallout/#Fallout Regular");
@@ -92,19 +92,19 @@ namespace Terminal_XP.Frames
         {
             Output.FontSize = ConfigManager.Config.FontSize;
             Output.Opacity = ConfigManager.Config.Opacity;
-            Output.Foreground = (Brush)new BrushConverter().ConvertFromString(ConfigManager.Config.TerminalColor); 
+            Output.Foreground = (Brush)new BrushConverter().ConvertFromString(ConfigManager.Config.TerminalColor);
         }
 
         private void UpdateCarriage()
         {
             _update = true;
-        
+
             new Thread(() =>
             {
                 while (_update)
                 {
                     _mutex?.WaitOne();
-                
+
                     Dispatcher.BeginInvoke(DispatcherPriority.Background,
                     new Action(() =>
                     {
@@ -113,9 +113,9 @@ namespace Terminal_XP.Frames
                         else
                             Output.Text += ConfigManager.Config.SpecialSymbol;
                     }));
-                
+
                     _mutex?.ReleaseMutex();
-                
+
                     Thread.Sleep((int)ConfigManager.Config.DelayUpdateCarriage);
                 }
             }).Start();

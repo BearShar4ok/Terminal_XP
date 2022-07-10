@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using Terminal_XP.Classes;
 using System.Windows.Controls.Primitives;
 using Microsoft.SqlServer.Server;
+using Path = System.IO.Path;
 
 namespace Terminal_XP.Frames
 {
@@ -25,6 +26,7 @@ namespace Terminal_XP.Frames
     public partial class LoadingPage : Page
     {
         private string directory = "";
+        private string theme;
         private int deepOfPath = 0;
         private KeyStates prevkeyState;
         private Dictionary<string, ListBoxItem> disks = new Dictionary<string, ListBoxItem>();
@@ -33,7 +35,7 @@ namespace Terminal_XP.Frames
         private string passFoler = @"G:\Coding\MyProjects\Terminal_XP\Terminal_XP\Assets\Themes\Fallout\folder.png";
         private string passImage = @"G:\Coding\MyProjects\Terminal_XP\Terminal_XP\Assets\Themes\Fallout\image.png";
         private string passText = @"G:\Coding\MyProjects\Terminal_XP\Terminal_XP\Assets\Themes\Fallout\text.png";
-        public LoadingPage(string startDirectory)
+        public LoadingPage(string startDirectory, string theme )
         {
             InitializeComponent();
             DevicesManager.AddDisk += Add;
@@ -42,6 +44,7 @@ namespace Terminal_XP.Frames
             directory = startDirectory;
             CalculationOfDeepLevel();
             lblDirectory.Content = directory + "         deep: " + deepOfPath;
+            this.theme = theme;
 
             lstB.SelectionMode = SelectionMode.Single;
             lstB.ContextMenu = new ContextMenu();
@@ -152,8 +155,7 @@ namespace Terminal_XP.Frames
             }
             else
             {
-                //this.NavigationService.Navigate(null);
-                //Content = null;
+                ExecuteFile();
             }
         }
         private void OpenFolder()
@@ -263,6 +265,27 @@ namespace Terminal_XP.Frames
                     break;
             }
 
+        }
+        private void ExecuteFile()
+        {
+            var exct = Path.GetExtension(directory).Remove(0, 1);
+
+            var audio = new[] { "wav", "m4a", "mp3", "flac" };
+            var picture = new[] { "jpeg", "jpg", "tiff", "bmp" };
+            var video = new[] { "mp4", "gif", "wmv", "avi" };
+            var text = new[] { "txt" };
+
+            if (audio.Contains(exct))
+                NavigationService.Navigate(new AudioViewPage(directory, theme));
+
+            if (picture.Contains(exct))
+                NavigationService.Navigate(new PictureViewPage(directory, theme));
+
+            if (text.Contains(exct))
+                NavigationService.Navigate(new TextViewPage(directory, theme));
+
+            if (video.Contains(exct))
+                NavigationService.Navigate(new VideoViewPage(directory, theme));
         }
         private bool IsFolder(string text)
         {

@@ -77,30 +77,10 @@ namespace Terminal_XP
                 DevicesManager.StopLisining();
             };
 
-            Frame.NavigationService.Navigate(new LoadingPage("G:\\TERMINAL TEST DIRECTORIES\\E"));//G:\\TERMINAL TEST DIRECTORIES\\E\\йцу G:\\TERMINAL TEST DIRECTORIES\\E\\папка\\Новая папка
+            Frame.NavigationService.Navigate(new LoadingPage("G:\\TERMINAL TEST DIRECTORIES\\E", _theme));//G:\\TERMINAL TEST DIRECTORIES\\E\\йцу G:\\TERMINAL TEST DIRECTORIES\\E\\папка\\Новая папка
         }
 
-        private void ExecuteFile(string filename)
-        {
-            var exct = Path.GetExtension(filename).Remove(0, 1);
-
-            var audio = new[] { "wav", "m4a", "mp3", "flac" };
-            var picture = new[] { "jpeg", "jpg", "tiff", "bmp" };
-            var video = new[] { "mp4", "gif", "wmv", "avi" };
-            var text = new[] { "txt" };
-
-            if (audio.Contains(exct))
-                Frame.NavigationService.Navigate(new AudioViewPage(filename, _theme));
-
-            if (picture.Contains(exct))
-                Frame.NavigationService.Navigate(new PictureViewPage(filename, _theme));
-
-            if (text.Contains(exct))
-                Frame.NavigationService.Navigate(new TextViewPage(filename, _theme));
-
-            if (video.Contains(exct))
-                Frame.NavigationService.Navigate(new VideoViewPage(filename, _theme));
-        }
+        
 
         private void TryExcuteMethod(Type type, string name)
         {
