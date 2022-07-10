@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
@@ -17,18 +18,21 @@ namespace Terminal_XP.Frames
             _theme = theme;
             
             LoadTheme(theme);
-            LoadImage(filename);
+            LoadImage();
         }
 
         public void Reload()
         {
             LoadTheme(_theme);
-            LoadImage(_filename);
+            LoadImage();
         }
 
-        private void LoadImage(string filename)
+        private void LoadImage()
         {
-            Picture.Source = new BitmapImage(new Uri(filename));
+            if (!File.Exists(_filename))
+                return;
+            
+            Picture.Source = new BitmapImage(new Uri(_filename));
         }
 
         private void LoadTheme(string theme)

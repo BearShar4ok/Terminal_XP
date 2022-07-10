@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -44,7 +45,7 @@ namespace Terminal_XP.Frames
             ProgressBar.Text = $"[{new string('-', (int)CntSymbol)}]";
 
             LoadTheme(theme);
-            LoadAudio(filename);
+            LoadAudio();
         }
 
         private void UpdateProgressBar(object sender, EventArgs e)
@@ -72,7 +73,7 @@ namespace Terminal_XP.Frames
         public void Reload()
         {
             LoadTheme(_theme);
-            LoadAudio(_filename);
+            LoadAudio();
         }
 
         private void LoadTheme(string name)
@@ -90,12 +91,15 @@ namespace Terminal_XP.Frames
 
         public void VolumeMinus() => Volume -= 0.01d;
 
-        private void LoadAudio(string filename)
+        private void LoadAudio()
         {
+            if (!File.Exists(_filename))
+                return;
+            
             Stop();
             _player.Close();
 
-            _player.Open(new Uri(filename, UriKind.Relative));
+            _player.Open(new Uri(_filename, UriKind.Relative));
             _player.Play();
 
             _player.MediaOpened += (obj, e) =>

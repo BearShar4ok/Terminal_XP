@@ -20,9 +20,6 @@ using Path = System.IO.Path;
 
 namespace Terminal_XP.Frames
 {
-    /// <summary>
-    /// Логика взаимодействия для LoadingPage.xaml
-    /// </summary>
     public partial class LoadingPage : Page
     {
         private string directory = "";
@@ -32,9 +29,10 @@ namespace Terminal_XP.Frames
         private Dictionary<string, ListBoxItem> disks = new Dictionary<string, ListBoxItem>();
 
         //📂🖹🖻🖺🖾 🖼
-        private string passFoler = @"G:\Coding\MyProjects\Terminal_XP\Terminal_XP\Assets\Themes\Fallout\folder.png";
-        private string passImage = @"G:\Coding\MyProjects\Terminal_XP\Terminal_XP\Assets\Themes\Fallout\image.png";
-        private string passText = @"G:\Coding\MyProjects\Terminal_XP\Terminal_XP\Assets\Themes\Fallout\text.png";
+        private string passFoler = @"C:\Users\rund2\Documents\Programming\Terminal_XP\bin\Debug\Assets\Themes\Fallout\folder.png";
+        private string passImage = @"C:\Users\rund2\Documents\Programming\Terminal_XP\bin\Debug\Assets\Themes\Fallout\image.png";
+        private string passText = @"C:\Users\rund2\Documents\Programming\Terminal_XP\bin\Debug\Assets\Themes\Fallout\text.png";
+        
         public LoadingPage(string startDirectory, string theme )
         {
             InitializeComponent();
@@ -144,11 +142,10 @@ namespace Terminal_XP.Frames
 
         private void lstB_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            string path = (string)(((ListBoxItem)(lstB.SelectedItem)).Tag);
+            directory = (string)(((ListBoxItem)(lstB.SelectedItem)).Tag);
             lblDirectory.Content = directory + "         deep: " + deepOfPath;
-            if (IsFolder(path))
+            if (IsFolder(directory))
             {
-                directory = path;
                 deepOfPath++;
                 OpenFolder();
                 
@@ -271,7 +268,7 @@ namespace Terminal_XP.Frames
             var exct = Path.GetExtension(directory).Remove(0, 1);
 
             var audio = new[] { "wav", "m4a", "mp3", "flac" };
-            var picture = new[] { "jpeg", "jpg", "tiff", "bmp" };
+            var picture = new[] { "jpeg", "png", "jpg", "tiff", "bmp" };
             var video = new[] { "mp4", "gif", "wmv", "avi" };
             var text = new[] { "txt" };
 
