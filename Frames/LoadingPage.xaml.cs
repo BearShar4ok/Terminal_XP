@@ -144,11 +144,10 @@ namespace Terminal_XP.Frames
 
         private void lstB_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            string path = (string)(((ListBoxItem)(lstB.SelectedItem)).Tag);
+            directory = (string)(((ListBoxItem)(lstB.SelectedItem)).Tag);
             lblDirectory.Content = directory + "         deep: " + deepOfPath;
-            if (IsFolder(path))
+            if (IsFolder(directory))
             {
-                directory = path;
                 deepOfPath++;
                 OpenFolder();
                 
@@ -271,7 +270,7 @@ namespace Terminal_XP.Frames
             var exct = Path.GetExtension(directory).Remove(0, 1);
 
             var audio = new[] { "wav", "m4a", "mp3", "flac" };
-            var picture = new[] { "jpeg", "jpg", "tiff", "bmp" };
+            var picture = new[] { "jpeg","png", "jpg", "tiff", "bmp" };
             var video = new[] { "mp4", "gif", "wmv", "avi" };
             var text = new[] { "txt" };
 
