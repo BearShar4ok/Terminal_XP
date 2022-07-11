@@ -31,6 +31,8 @@ namespace Terminal_XP.Frames
 
             Unloaded += (obj, e) => { Closing(); };
 
+            KeyDown += AdditionalKeys;
+
             LoadText();
             Scroller.Focus();
         }
@@ -115,6 +117,17 @@ namespace Terminal_XP.Frames
                     Thread.Sleep((int)ConfigManager.Config.DelayUpdateCarriage);
                 }
             }).Start();
+        }
+        private void AdditionalKeys(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.Escape:
+                    GC.Collect();
+                    NavigationService.Navigate(new LoadingPage(Path.GetDirectoryName(_filename), _theme));
+                    break;
+            }
+
         }
     }
 }

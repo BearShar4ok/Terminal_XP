@@ -21,7 +21,6 @@ namespace Terminal_XP
     public partial class MainWindow : Window
     {
         private string _theme;
-        private bool _stop = true;
 
         public MainWindow()
         {
@@ -54,18 +53,6 @@ namespace Terminal_XP
                 {
                     case Key.R: //DEBUG
                         TryExcuteMethod(Frame.NavigationService.Content.GetType(), "Reload");
-                        break;
-                    case Key.Space:
-                        TryExcuteMethod(Frame.NavigationService.Content.GetType(), _stop ? "Pause" : "Play");
-                        _stop = !_stop;
-                        break;
-                    case Key.Up:
-                    case Key.VolumeUp:
-                        TryExcuteMethod(Frame.NavigationService.Content.GetType(), "VolumePlus");
-                        break;
-                    case Key.Down:
-                    case Key.VolumeDown:
-                        TryExcuteMethod(Frame.NavigationService.Content.GetType(), "VolumeMinus");
                         break;
                 }
             };

@@ -29,11 +29,11 @@ namespace Terminal_XP.Frames
         private Dictionary<string, ListBoxItem> disks = new Dictionary<string, ListBoxItem>();
 
         //📂🖹🖻🖺🖾 🖼
-        private string passFoler = @"C:\Users\rund2\Documents\Programming\Terminal_XP\bin\Debug\Assets\Themes\Fallout\folder.png";
-        private string passImage = @"C:\Users\rund2\Documents\Programming\Terminal_XP\bin\Debug\Assets\Themes\Fallout\image.png";
-        private string passText = @"C:\Users\rund2\Documents\Programming\Terminal_XP\bin\Debug\Assets\Themes\Fallout\text.png";
-        
-        public LoadingPage(string startDirectory, string theme )
+        private string passFoler = @"Assets\Themes\Fallout\folder.png";
+        private string passImage = @"Assets\Themes\Fallout\image.png";
+        private string passText = @"Assets\Themes\Fallout\text.png";
+
+        public LoadingPage(string startDirectory, string theme)
         {
             InitializeComponent();
             DevicesManager.AddDisk += Add;
@@ -66,7 +66,7 @@ namespace Terminal_XP.Frames
                     deepOfPath++;
                     continue;
                 }
-                if (item== "TERMINAL TEST DIRECTORIES")
+                if (item == "TERMINAL TEST DIRECTORIES")
                 {
                     schet = true;
                 }
@@ -89,7 +89,7 @@ namespace Terminal_XP.Frames
 
                     if (allFiles.Contains("file.txt"))
                     {
-                        
+
                         string diskName;
                         string fullPath;
                         using (StreamReader sr = new StreamReader(text + "file.txt"))
@@ -97,21 +97,21 @@ namespace Terminal_XP.Frames
                             string temp = sr.ReadToEnd();
                             string[] temp2 = temp.Split('\\');
                             diskName = temp2[temp2.Length - 1];
-                            
+
                             fullPath = temp;
                         }
                         ListBoxItem lbi = new ListBoxItem()
                         {
-                            DataContext = new BitmapImage(new Uri(passFoler)),
+                            DataContext = new BitmapImage(new Uri(Path.GetFullPath(passFoler))),
                             Content = diskName,
                             Tag = fullPath,
                             Style = (Style)Resources["ImageText"],
                         };
-                        if (deepOfPath==0)
+                        if (deepOfPath == 0)
                         {
                             lstB.Items.Add(lbi);
                         }
-                       
+
                         disks.Add(text, lbi);
                     }
                     else
@@ -148,7 +148,7 @@ namespace Terminal_XP.Frames
             {
                 deepOfPath++;
                 OpenFolder();
-                
+
             }
             else
             {
@@ -184,16 +184,16 @@ namespace Terminal_XP.Frames
                 switch (format)
                 {
                     case "txt":
-                        lstBI.DataContext = new BitmapImage(new Uri(passText));
+                        lstBI.DataContext = new BitmapImage(new Uri(Path.GetFullPath(passText)));
                         break;
                     case "png":
-                        lstBI.DataContext = new BitmapImage(new Uri(passImage));
+                        lstBI.DataContext = new BitmapImage(new Uri(Path.GetFullPath(passImage)));
                         break;
                     case "jpg":
-                        lstBI.DataContext = new BitmapImage(new Uri(passImage));
+                        lstBI.DataContext = new BitmapImage(new Uri(Path.GetFullPath(passImage)));
                         break;
                     case "bmp":
-                        lstBI.DataContext = new BitmapImage(new Uri(passImage));
+                        lstBI.DataContext = new BitmapImage(new Uri(Path.GetFullPath(passImage)));
                         break;
                     default:
                         break;
@@ -219,7 +219,7 @@ namespace Terminal_XP.Frames
                 }
                 ListBoxItem lstBI = new ListBoxItem()
                 {
-                    DataContext = new BitmapImage(new Uri(passFoler)),
+                    DataContext = new BitmapImage(new Uri(Path.GetFullPath(passFoler))),
                     Content = text,
                     Tag = directory + "\\" + text,
                     Style = (Style)Resources["ImageText"],
@@ -242,7 +242,7 @@ namespace Terminal_XP.Frames
                     lstB_MouseDoubleClick(null, null);
                     break;
                 case Key.Escape:
-                    if (deepOfPath==0)
+                    if (deepOfPath == 0)
                     {
                         return;
                     }

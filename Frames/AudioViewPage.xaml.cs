@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Terminal_XP.Classes;
@@ -12,6 +13,7 @@ namespace Terminal_XP.Frames
         public const int CntSymbol = 64;
         private string _filename;
         private string _theme;
+        private bool _stop;
         private MediaPlayer _player = new MediaPlayer();
         private DispatcherTimer _timer = new DispatcherTimer(DispatcherPriority.Input);
         private bool _loaded;
@@ -43,6 +45,8 @@ namespace Terminal_XP.Frames
             };
 
             ProgressBar.Text = $"[{new string('-', (int)CntSymbol)}]";
+
+            KeyDown += AdditionalKeys;
 
             LoadTheme(theme);
             LoadAudio();
@@ -107,6 +111,32 @@ namespace Terminal_XP.Frames
                 ProgressBar.Text = $"[{new string('-', CntSymbol)}]";
                 _loaded = true;
             };
+        }
+        private void AdditionalKeys(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.Escape:
+                    GC.Collect();
+                    NavigationService.Navigate(new LoadingPage(Path.GetDirectoryName(_filename), _theme));
+                    break;
+                case Key.Space:
+                    if (_stop)
+                        Pause();
+                    else
+                        Play();
+                    _stop = !_stop;
+                    break;
+                case Key.Up:
+                case Key.VolumeUp:
+                    VolumePlus();
+                    break;
+                case Key.Down:
+                case Key.VolumeDown:
+                    VolumeMinus();
+                    break;
+            }
+
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Terminal_XP.Frames
 {
@@ -8,6 +9,7 @@ namespace Terminal_XP.Frames
     {
         private string _filename;
         private string _theme;
+        private bool _stop;
 
         public double Volume
         {
@@ -33,6 +35,8 @@ namespace Terminal_XP.Frames
             };
 
             MediaPlayer.Focusable = false;
+
+            KeyDown += AdditionalKeys;
 
             LoadTheme(theme);
             LoadVideo();
@@ -73,6 +77,32 @@ namespace Terminal_XP.Frames
         private void LoadTheme(string theme)
         {
             
+        }
+        private void AdditionalKeys(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.Escape:
+                    GC.Collect();
+                    NavigationService.Navigate(new LoadingPage(Path.GetDirectoryName(_filename), _theme));
+                    break;
+                case Key.Space:
+                    if (_stop)
+                        Pause();
+                    else
+                        Play();
+                    _stop = !_stop;
+                    break;
+                case Key.Up:
+                case Key.VolumeUp:
+                    VolumePlus();
+                    break;
+                case Key.Down:
+                case Key.VolumeDown:
+                    VolumeMinus();
+                    break;
+            }
+
         }
     }
 }
