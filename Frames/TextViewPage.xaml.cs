@@ -43,7 +43,6 @@ namespace Terminal_XP.Frames
         public void Closing()
         {
             _update = false;
-            _printText.Interrupt();
         }
 
         public void Reload()

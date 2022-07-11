@@ -29,49 +29,40 @@ namespace Terminal_XP.Frames
         private Dictionary<string, ListBoxItem> disks = new Dictionary<string, ListBoxItem>();
 
         //📂🖹🖻🖺🖾 🖼
-        private string passFoler = @"Assets\Themes\Fallout\folder.png";
-        private string passImage = @"Assets\Themes\Fallout\image.png";
-        private string passText = @"Assets\Themes\Fallout\text.png";
+        private string passFoler;
+        private string passImage;
+        private string passText;
+        private string passAudio;
+        private string passVideo;
 
         public LoadingPage(string startDirectory, string theme)
         {
             InitializeComponent();
+
             DevicesManager.AddDisk += Add;
-            DevicesManager.RemoveDisk += Rem;
+            DevicesManager.RemoveDisk += Remove;
 
             directory = startDirectory;
             CalculationOfDeepLevel();
-            lblDirectory.Content = directory + "         deep: " + deepOfPath;
-            this.theme = theme;
+            DisplayDirectory();
 
             lstB.SelectionMode = SelectionMode.Single;
             lstB.ContextMenu = new ContextMenu();
-
             lstB.SelectedIndex = 0;
-
-            KeyDown += AdditionalKeys;
             lstB.Focus();
 
+            KeyDown += AdditionalKeys;
+
+            this.theme = theme;
+            passFoler = @"Assets\Themes\Fallout\folder.png";
+            passImage = @"Assets\Themes\Fallout\image.png";
+            passText = @"Assets\Themes\Fallout\text.png";
+            passAudio = @"Assets\Themes\Fallout\audio.png";
+            passVideo = @"Assets\Themes\Fallout\video.png";
             DevicesManager.StartLisining();
             OpenFolder();
         }
-        private void CalculationOfDeepLevel()
-        {
-            var temp = directory.Split('\\');
-            bool schet = false;
-            foreach (var item in temp)
-            {
-                if (schet)
-                {
-                    deepOfPath++;
-                    continue;
-                }
-                if (item == "TERMINAL TEST DIRECTORIES")
-                {
-                    schet = true;
-                }
-            }
-        }
+
         private void Add(string text)
         {
             System.Diagnostics.Debug.WriteLine("add: " + text);
@@ -94,11 +85,8 @@ namespace Terminal_XP.Frames
                         string fullPath;
                         using (StreamReader sr = new StreamReader(text + "file.txt"))
                         {
-                            string temp = sr.ReadToEnd();
-                            string[] temp2 = temp.Split('\\');
-                            diskName = temp2[temp2.Length - 1];
-
-                            fullPath = temp;
+                            fullPath = sr.ReadToEnd();
+                            diskName = Path.GetFileNameWithoutExtension(fullPath);//temp2[temp2.Length - 1];
                         }
                         ListBoxItem lbi = new ListBoxItem()
                         {
@@ -123,12 +111,10 @@ namespace Terminal_XP.Frames
                 {
                     System.Diagnostics.Debug.WriteLine(ex.Message);
                 }
-
-                //lblDirectory.Content = text + "         deep: " + deepOfPath;
             }));
 
         }
-        private void Rem(string text)
+        private void Remove(string text)
         {
             System.Diagnostics.Debug.WriteLine("remove: " + text);
 
@@ -139,16 +125,15 @@ namespace Terminal_XP.Frames
                 disks.Remove(text);
             }));
         }
-
         private void lstB_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            directory = (string)(((ListBoxItem)(lstB.SelectedItem)).Tag);
-            lblDirectory.Content = directory + "         deep: " + deepOfPath;
+            directory = (string)((ListBoxItem)lstB.SelectedItem).Tag;
+
             if (IsFolder(directory))
             {
                 deepOfPath++;
+                DisplayDirectory();
                 OpenFolder();
-
             }
             else
             {
@@ -157,7 +142,11 @@ namespace Terminal_XP.Frames
         }
         private void OpenFolder()
         {
-            lblDirectory.Content = directory + "         deep: " + deepOfPath;
+            FindFiles();
+            FindFolders();
+        }
+        private void FindFiles()
+        {
             string[] allFiles;
             try
             {
@@ -170,9 +159,8 @@ namespace Terminal_XP.Frames
             lstB.Items.Clear();
             for (int i = 0; i < allFiles.Length; i++)
             {
-                string[] template = allFiles[i].Split('\\');
-                string text = (template[template.Length - 1].Split('.'))[0];
-                string format = (template[template.Length - 1].Split('.'))[1].ToLower();
+                string text = Path.GetFileNameWithoutExtension(allFiles[i]);
+                string format = Path.GetExtension(allFiles[i]).Remove(0, 1);
                 //  🖹🖻🖺
                 ListBoxItem lstBI = new ListBoxItem()
                 {
@@ -180,26 +168,38 @@ namespace Terminal_XP.Frames
                     Tag = directory + "\\" + text + "." + format,
                     Style = (Style)Resources["ImageText"],
                 };
-
                 switch (format)
                 {
                     case "txt":
                         lstBI.DataContext = new BitmapImage(new Uri(Path.GetFullPath(passText)));
                         break;
                     case "png":
-                        lstBI.DataContext = new BitmapImage(new Uri(Path.GetFullPath(passImage)));
-                        break;
                     case "jpg":
-                        lstBI.DataContext = new BitmapImage(new Uri(Path.GetFullPath(passImage)));
-                        break;
+                    case "jepg":
+                    case "tiff":
                     case "bmp":
                         lstBI.DataContext = new BitmapImage(new Uri(Path.GetFullPath(passImage)));
+                        break;
+                    case "wav":
+                    case "m4a":
+                    case "mp3":
+                    case "flac":
+                        lstBI.DataContext = new BitmapImage(new Uri(Path.GetFullPath(passAudio)));
+                        break;
+                    case "gif":
+                    case "mp4":
+                    case "wmv":
+                    case "avi":
+                        lstBI.DataContext = new BitmapImage(new Uri(Path.GetFullPath(passVideo)));
                         break;
                     default:
                         break;
                 }
                 lstB.Items.Add(lstBI);
             }
+        }
+        private void FindFolders()
+        {
             string[] allDirectories;
             try
             {
@@ -211,8 +211,7 @@ namespace Terminal_XP.Frames
             }
             for (int i = 0; i < allDirectories.Length; i++)
             {
-                string[] template = allDirectories[i].Split('\\');
-                string text = (template[template.Length - 1].Split('.'))[0];
+                string text = Path.GetFileNameWithoutExtension(allDirectories[i]);
                 if (text == "System Volume Information")
                 {
                     continue;
@@ -232,9 +231,7 @@ namespace Terminal_XP.Frames
         private void AdditionalKeys(object sender, KeyEventArgs e)
         {
             if (prevkeyState == e.KeyStates)
-            {
                 return;
-            }
             prevkeyState = e.KeyStates;
             switch (e.Key)
             {
@@ -243,25 +240,23 @@ namespace Terminal_XP.Frames
                     break;
                 case Key.Escape:
                     if (deepOfPath == 0)
-                    {
                         return;
-                    }
                     deepOfPath--;
-                    if (deepOfPath <= 0)
+                    if (deepOfPath == 0)
                     {
                         DevicesManager.ClearAllDisks();
                         lstB.Items.Clear();
                         deepOfPath = 0;
+                        DisplayDirectory();
                         return;
                     }
                     directory = directory.Remove(directory.LastIndexOf("\\"));
+                    DisplayDirectory();
                     OpenFolder();
-                    lblDirectory.Content = directory + "         deep: " + deepOfPath;
                     break;
                 default:
                     break;
             }
-
         }
         private void ExecuteFile()
         {
@@ -283,6 +278,33 @@ namespace Terminal_XP.Frames
 
             if (video.Contains(exct))
                 NavigationService.Navigate(new VideoViewPage(directory, theme));
+        }
+        private void DisplayDirectory()
+        {
+            var elems = directory.Split('\\');
+            string path = "";
+            for (int i = elems.Length - 1; i > elems.Length - 1 - deepOfPath; i--)
+            {
+                path = elems[i] + "\\" + path;
+            }
+            lblDirectory.Content = path;
+        }
+        private void CalculationOfDeepLevel()
+        {
+            var temp = directory.Split('\\');
+            bool schet = false;
+            foreach (var item in temp)
+            {
+                if (schet)
+                {
+                    deepOfPath++;
+                    continue;
+                }
+                if (item == "TERMINAL TEST DIRECTORIES")
+                {
+                    schet = true;
+                }
+            }
         }
         private bool IsFolder(string text)
         {

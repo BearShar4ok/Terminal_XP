@@ -45,7 +45,7 @@ namespace Terminal_XP.Frames
             };
 
             ProgressBar.Text = $"[{new string('-', (int)CntSymbol)}]";
-            
+
             Focusable = true;
             Focus();
 
@@ -64,7 +64,7 @@ namespace Terminal_XP.Frames
             nowTime = nowTime > _player.NaturalDuration.TimeSpan.TotalSeconds ? _player.NaturalDuration.TimeSpan.TotalSeconds : nowTime;
 
             var ind = (int)Math.Ceiling(nowTime / _player.NaturalDuration.TimeSpan.TotalSeconds * CntSymbol);
-            ProgressBar.Text = $"[{new string('#', ind)}{new string('-', CntSymbol - ind)}]";
+            ProgressBar.Text = $"[{new string('>', ind)}{new string('=', CntSymbol - ind)}]";
         }
 
 
@@ -102,7 +102,7 @@ namespace Terminal_XP.Frames
         {
             if (!File.Exists(_filename))
                 return;
-            
+
             Stop();
             _player.Close();
 
@@ -111,7 +111,7 @@ namespace Terminal_XP.Frames
 
             _player.MediaOpened += (obj, e) =>
             {
-                ProgressBar.Text = $"[{new string('-', CntSymbol)}]";
+                ProgressBar.Text = $"[{new string('=', CntSymbol)}]";
                 _loaded = true;
             };
         }
