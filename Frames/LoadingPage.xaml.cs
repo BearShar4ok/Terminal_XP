@@ -35,6 +35,8 @@ namespace Terminal_XP.Frames
         private string passAudio;
         private string passVideo;
 
+        private const string asseccFileToReadDisk = "READ_DISK.txt";
+
         public LoadingPage(string startDirectory, string theme)
         {
             InitializeComponent();
@@ -54,11 +56,11 @@ namespace Terminal_XP.Frames
             KeyDown += AdditionalKeys;
 
             this.theme = theme;
-            passFoler = @"Assets\Themes\Fallout\folder.png";
-            passImage = @"Assets\Themes\Fallout\image.png";
-            passText = @"Assets\Themes\Fallout\text.png";
-            passAudio = @"Assets\Themes\Fallout\audio.png";
-            passVideo = @"Assets\Themes\Fallout\video.png";
+            passFoler = Addition.Themes + theme + @"\folder.png";
+            passImage = Addition.Themes + theme + @"\image.png";
+            passText =  Addition.Themes + theme + @"\text.png";
+            passAudio = Addition.Themes + theme + @"\audio.png";
+            passVideo = Addition.Themes + theme + @"\video.png";
             DevicesManager.StartLisining();
             OpenFolder();
         }
@@ -78,12 +80,12 @@ namespace Terminal_XP.Frames
                         allFiles[i] = allFiles[i].Split(new string[] { "\\" }, StringSplitOptions.RemoveEmptyEntries)[1];
                     }
 
-                    if (allFiles.Contains("file.txt"))
+                    if (allFiles.Contains(asseccFileToReadDisk))
                     {
 
                         string diskName;
                         string fullPath;
-                        using (StreamReader sr = new StreamReader(text + "file.txt"))
+                        using (StreamReader sr = new StreamReader(text + asseccFileToReadDisk))
                         {
                             fullPath = sr.ReadToEnd();
                             diskName = Path.GetFileNameWithoutExtension(fullPath);//temp2[temp2.Length - 1];

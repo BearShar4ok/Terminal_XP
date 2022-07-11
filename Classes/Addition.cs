@@ -9,7 +9,6 @@ namespace Terminal_XP.Classes
     {
         public const string Themes = "Assets/Themes/";
         public const string Assets = "Assets";
-        public const string Local = "Local";
         public const string ErrorFile = "files/Error.log";
         
         public static T To<T>(this object obj)
@@ -19,10 +18,6 @@ namespace Terminal_XP.Classes
 
             return default;
         }
-
-        public static void PrintLines<T>(T element, Dispatcher dispatcher,
-            params FragmentText[] TextArray) where T : TextBlock
-            => PrintLines(element, dispatcher, default, TextArray);
 
         public static void PrintLines<T>(T element, Dispatcher dispatcher, Mutex mutex = default, params FragmentText[] TextArray) where T : TextBlock
         {

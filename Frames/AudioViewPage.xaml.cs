@@ -66,8 +66,6 @@ namespace Terminal_XP.Frames
             var ind = (int)Math.Ceiling(nowTime / _player.NaturalDuration.TimeSpan.TotalSeconds * CntSymbol);
             ProgressBar.Text = $"[{new string('>', ind)}{new string('=', CntSymbol - ind)}]";
         }
-
-
         public void Closing()
         {
             _loaded = false;
