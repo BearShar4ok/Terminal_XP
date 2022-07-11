@@ -18,8 +18,10 @@ namespace Terminal_XP.Frames
             _filename = filename;
             _theme = theme;
 
+            Focusable = true;
+            Focus();
+
             KeyDown += AdditionalKeys;
-            Picture.KeyDown += AdditionalKeys;
 
             LoadTheme(theme);
             LoadImage();
@@ -43,6 +45,7 @@ namespace Terminal_XP.Frames
         {
 
         }
+        
         private void AdditionalKeys(object sender, KeyEventArgs e)
         {
             switch (e.Key)

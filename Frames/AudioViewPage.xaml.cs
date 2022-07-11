@@ -45,6 +45,9 @@ namespace Terminal_XP.Frames
             };
 
             ProgressBar.Text = $"[{new string('-', (int)CntSymbol)}]";
+            
+            Focusable = true;
+            Focus();
 
             KeyDown += AdditionalKeys;
 
@@ -117,6 +120,7 @@ namespace Terminal_XP.Frames
             switch (e.Key)
             {
                 case Key.Escape:
+                    Closing();
                     GC.Collect();
                     NavigationService.Navigate(new LoadingPage(Path.GetDirectoryName(_filename), _theme));
                     break;
