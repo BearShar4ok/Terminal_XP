@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Windows.Controls;
 
 namespace Terminal_XP.Frames
@@ -34,7 +35,7 @@ namespace Terminal_XP.Frames
             MediaPlayer.Focusable = false;
 
             LoadTheme(theme);
-            LoadVideo(filename);
+            LoadVideo();
         }
 
         public void Closing()
@@ -45,12 +46,15 @@ namespace Terminal_XP.Frames
         public void Reload()
         {
             LoadTheme(_theme);
-            LoadVideo(_filename);
+            LoadVideo();
         }
 
-        private void LoadVideo(string filename)
+        private void LoadVideo()
         {
-            MediaPlayer.Source = new Uri(filename, UriKind.Relative);
+            if (!File.Exists(_filename))
+                return;
+            
+            MediaPlayer.Source = new Uri(_filename, UriKind.Relative);
             
             Stop();
             Play();

@@ -60,8 +60,9 @@ namespace Terminal_XP.Frames
 
         private void LoadText()
         {
-            //try
-            //{
+            if (!File.Exists(_filename))
+                return;
+            
             _printText = new Thread(() =>
             {
                 using (var stream = File.OpenText(_filename))
@@ -76,11 +77,6 @@ namespace Terminal_XP.Frames
             });
 
             _printText.Start();
-            // }
-            //catch (Exception ex)
-            //{
-            //     Logger.Log(ex);
-            // }
         }
 
         private void LoadTheme(string name)
