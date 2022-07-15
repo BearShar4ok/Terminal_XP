@@ -1,7 +1,13 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Navigation;
 using System.Windows.Threading;
+using Terminal_XP.Frames;
 
 namespace Terminal_XP.Classes
 {
@@ -42,6 +48,30 @@ namespace Terminal_XP.Classes
                         Thread.Sleep((int)fragmentText.Delay);
                 }
             }
-        } 
+        }
+
+        public static Page GetPageByFilename(string filename, string theme)
+        {
+            var exct = Path.GetExtension(filename).Remove(0, 1);
+
+            var audio = new[] { "wav", "m4a", "mp3", "flac" };
+            var picture = new[] { "jpeg", "png", "jpg", "tiff", "bmp" };
+            var video = new[] { "mp4", "gif", "wmv", "avi" };
+            var text = new[] { "txt" };
+
+            if (audio.Contains(exct))
+                return new AudioViewPage(filename, theme);
+
+            if (picture.Contains(exct))
+                return new PictureViewPage(filename, theme);
+
+            if (text.Contains(exct))
+                return new TextViewPage(filename, theme);
+
+            if (video.Contains(exct))
+                return new VideoViewPage(filename, theme);
+
+            return default;
+        }
     }
 }

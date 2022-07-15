@@ -53,6 +53,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="Frames\AudioViewPage.xaml" />
+    <Page Include="Frames\HackPage.xaml" />
     <Page Include="Frames\PictureViewPage.xaml" />
     <Page Include="Frames\TextViewPage.xaml" />
     <Page Include="Frames\VideoViewPage.xaml" />
@@ -73,6 +74,9 @@
     <Compile Include="Classes\Manager.cs" />
     <Compile Include="Frames\AudioViewPage.xaml.cs">
       <DependentUpon>AudioViewPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Frames\HackPage.xaml.cs">
+      <DependentUpon>HackPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Frames\PictureViewPage.xaml.cs">
       <DependentUpon>PictureViewPage.xaml</DependentUpon>

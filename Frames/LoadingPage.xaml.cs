@@ -56,11 +56,11 @@ namespace Terminal_XP.Frames
             KeyDown += AdditionalKeys;
 
             this.theme = theme;
-            passFoler = Addition.Themes + theme + @"\folder.png";
-            passImage = Addition.Themes + theme + @"\image.png";
-            passText =  Addition.Themes + theme + @"\text.png";
-            passAudio = Addition.Themes + theme + @"\audio.png";
-            passVideo = Addition.Themes + theme + @"\video.png";
+            passFoler = Addition.Themes + theme + @"/folder.png";
+            passImage = Addition.Themes + theme + @"/image.png";
+            passText =  Addition.Themes + theme + @"/text.png";
+            passAudio = Addition.Themes + theme + @"/audio.png";
+            passVideo = Addition.Themes + theme + @"/video.png";
             DevicesManager.StartLisining();
             OpenFolder();
         }
@@ -262,24 +262,7 @@ namespace Terminal_XP.Frames
         }
         private void ExecuteFile()
         {
-            var exct = Path.GetExtension(directory).Remove(0, 1);
-
-            var audio = new[] { "wav", "m4a", "mp3", "flac" };
-            var picture = new[] { "jpeg", "png", "jpg", "tiff", "bmp" };
-            var video = new[] { "mp4", "gif", "wmv", "avi" };
-            var text = new[] { "txt" };
-
-            if (audio.Contains(exct))
-                NavigationService.Navigate(new AudioViewPage(directory, theme));
-
-            if (picture.Contains(exct))
-                NavigationService.Navigate(new PictureViewPage(directory, theme));
-
-            if (text.Contains(exct))
-                NavigationService.Navigate(new TextViewPage(directory, theme));
-
-            if (video.Contains(exct))
-                NavigationService.Navigate(new VideoViewPage(directory, theme));
+            NavigationService.Navigate(Addition.GetPageByFilename(directory, theme));
         }
         private void DisplayDirectory()
         {
