@@ -9,7 +9,7 @@
     "SpecialSymbol": "❚",
     "DefaultVolume": 0.30,
     "WordsForHacking": [ "привет", "дорогой", "друг", "мир", "дружба", "встреча", "ненависть" ],
-    "RatioSpawnWords": 15,
+    "RatioSpawnWords": 5,
     "LengthHackString": 500,
     "CountLivesForHacking": 6
 }

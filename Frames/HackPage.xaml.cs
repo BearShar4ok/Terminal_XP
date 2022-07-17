@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -16,40 +17,56 @@ namespace Terminal_XP.Frames
     public partial class HackPage : Page
     {
         private const string Symbols = "~!@#$%^&*()_-=+{}|?/\"\';:<>";
+        private const bool IsDebugMod = false;
+        
+        private int HeightConsole = 40;
+        private int CountCharInLine = 50;
         
         private string[] _words;
         private string _filename;
         private string _theme;
+        private FontFamily _localFontFamily;
         private Random _random = new Random();
 
         private string _rightWord;
-        private uint _lives;
+        private int _lives;
+        private int _startColumnSpon;
         private int _rowSpon;
         private int _columnSpon;
+        private int _lineNumber;
         private List<List<Span>> _spans = new List<List<Span>>();
-        
-        private int _lineNumber = 0;
-        
-        
+
         public HackPage(string filename, string theme)
         {
             InitializeComponent();
 
             _words = ConfigManager.Config.WordsForHacking;
             _rightWord = _words[_random.Next(_words.Length)];
-            _lives = ConfigManager.Config.CountLivesForHacking;
+            _lives = (int)ConfigManager.Config.CountLivesForHacking;
             
             _filename = filename;
             _theme = theme;
-            
-            KeyDown += KeyPress;
- 
+
+            LoadTheme(_theme);
+
+            Application.Current.MainWindow.KeyDown += KeyPress;
+
             Initialize();
+        }
+
+        public void Reload()
+        {
+            LoadTheme(_theme);
         }
 
         private void Closing()
         {
-            
+            Application.Current.MainWindow.KeyDown -= KeyPress;
+        }
+
+        private void LoadTheme(string theme)
+        {
+            _localFontFamily = new FontFamily(new Uri("pack://application:,,,/"), "Assets/Themes/Fallout/#Fallout Regular");
         }
 
         private void GoToBack()
@@ -61,6 +78,8 @@ namespace Terminal_XP.Frames
 
         private void GoToFile()
         {
+            Closing();
+            GC.Collect();
             NavigationService.Navigate(Addition.GetPageByFilename(_filename, _theme));
         }
         
@@ -75,6 +94,8 @@ namespace Terminal_XP.Frames
             var inds = Enumerable.Range(0, _words.Length).ToList();
             inds.Remove(Array.IndexOf(_words, _rightWord));
             
+            var random = new Random();
+            
             for (var i = 0; i < length; i++)
             {
                 if (result.Length >= pos && pos != -1)
@@ -82,31 +103,21 @@ namespace Terminal_XP.Frames
                     result += _rightWord;
                     pos = -1;
                 }
-
-                if (lstWord)
+                
+                if (!lstWord && random.Next(0, 5) == 0 && inds.Count > 0)
                 {
-                    currSymb = Symbols[_random.Next(Symbols.Length)].ToString();
-                    lstWord = false;
+                    var ind = inds[random.Next(inds.Count)];
+                    currSymb += _words[ind];
+                    lstWord = true;
                 }
                 else
                 {
-                    if (_random.Next(0, (int)ConfigManager.Config.RatioSpawnWords) == 0 && inds.Count > 0)
-                    {
-                        var ind = inds[_random.Next(inds.Count)];
-                        currSymb += _words[ind];
-                        
-                        lstWord = true;
-                    }
-                    else
-                    {
-                        currSymb += Symbols[_random.Next(Symbols.Length)].ToString();
-                        
-                        lstWord = false;
-                    }
+                    currSymb = Symbols[random.Next(Symbols.Length)].ToString();
+                    lstWord = false;
                 }
 
                 if ((result + currSymb).Length > length) continue;
-                if ((result + currSymb).Length > pos && pos != -1) continue;;
+                if ((result + currSymb).Length > pos && pos != -1) continue;
                 
                 result += currSymb;
             }
@@ -121,7 +132,7 @@ namespace Terminal_XP.Frames
 
             for (var i = 0; i < str.Length; i++)
             {
-                if (i % 50 == 0)
+                if (i % CountCharInLine == 0)
                     leftP.Inlines.Add(new LineBreak());
                 
                 if (char.IsLetter(str[i]))
@@ -130,16 +141,43 @@ namespace Terminal_XP.Frames
                 {   
                     if (word != "" && (i + 1 == str.Length || char.IsLetter(str[i + 1])))
                     {
-                        leftP.Inlines.Add(new Span(new Run(word) { FontSize = 32 }));
+                        leftP.Inlines.Add(new Span(new Run(word)
+                        {
+                            FontSize = ConfigManager.Config.FontSize,
+                            Foreground = (Brush)new BrushConverter().ConvertFromString(ConfigManager.Config.TerminalColor),
+                            FontFamily = _localFontFamily
+                        }));
+                        
                         word = "";
                     }
                     
-                    leftP.Inlines.Add(new Run(str[i].ToString()) { FontSize = 32 });
+                    leftP.Inlines.Add(new Run(str[i].ToString())
+                    {
+                        FontSize = ConfigManager.Config.FontSize,
+                        Foreground = (Brush)new BrushConverter().ConvertFromString(ConfigManager.Config.TerminalColor)
+                    });
                 }
 
             }
+        }
+
+        private int FindStartColumn()
+        {
+            for (var i = 0; i < _spans.Count; i++)
+            {
+                if (_spans[i].Count > 0)
+                    return i;
+            }
+
+            return -1;
+        }
+
+        private void SetHighlite(Span span)
+        {
+            var run = (Run)span.Inlines.FirstInline;
             
-            leftRTB.Focus();
+            span.Background = new SolidColorBrush(Colors.DarkGreen);
+            run.Foreground = new SolidColorBrush(Colors.Azure);
         }
         
         private void Initialize()
@@ -163,11 +201,19 @@ namespace Terminal_XP.Frames
                         break;
                 }
             }
+
+            CountCharInLine = (int)(LeftRTB.ActualWidth / MeasureString("@", LeftRTB.FontFamily, LeftRTB.FontStyle,
+                LeftRTB.FontWeight, LeftRTB.FontStretch, LeftRTB.FontSize).Width);
+
+            var test = GetTextBlock("@");
+            HeightConsole = (int) MeasureString(test.Text, test.FontFamily, test.FontStyle, test.FontWeight,
+                test.FontStretch, test.FontSize).Height;
             
             _spans.Add(oneSpan);
+            _startColumnSpon = FindStartColumn();
+            _columnSpon = _startColumnSpon;
 
-            _spans[_columnSpon][_rowSpon].Background = new SolidColorBrush(Colors.DarkGreen);
-            _spans[_columnSpon][_rowSpon].Focus();
+            SetHighlite(_spans[_columnSpon][_rowSpon]);
         }
         
         private void KeyPress(object sender, KeyEventArgs e)
@@ -198,7 +244,7 @@ namespace Terminal_XP.Frames
             }
         }
 
-        private void FillConsole() => AddTextToConsole(CheckTheWord());
+        private void FillConsole() => CheckTheWord().Split('\n').ForEach(x => AddTextToConsole(x));
         
         private int HowManyCorrectSymbols(string word)
         {
@@ -218,18 +264,11 @@ namespace Terminal_XP.Frames
 
         private string CheckTheWord()
         {
-            if (_lives == 0) // progressBar.Value
+            var text = ((Run) _spans[_columnSpon][_rowSpon].Inlines.FirstInline).Text;
+            
+            if (text == _rightWord)
             {
-                MessageBox.Show("Файл заблокирован");
                 GoToFile();
-
-                return ">DENIED";
-            }
-
-            if (((Run) _spans[_columnSpon][_rowSpon].Inlines.FirstInline).Text == _rightWord)
-            {
-                MessageBox.Show("Файл заблокирован");
-                GoToBack();
                 
                 return ">ACESS";
             }
@@ -237,33 +276,46 @@ namespace Terminal_XP.Frames
             {
                 _lives--;
 
+                if (_lives >= 0)
+                    return ">" + HowManyCorrectSymbols(text) + " из " + _rightWord.Distinct().Count() + " верно!\n>DENIED";
+                
+                MessageBox.Show("Файл заблокирован");
+                GoToBack();
+
                 return ">DENIED";
             }
         }
+        
+        private TextBlock GetTextBlock(string message) => new TextBlock() {
+            FontSize = ConfigManager.Config.FontSize,
+            Opacity = ConfigManager.Config.Opacity,
+            Foreground = (Brush)new BrushConverter().ConvertFromString(ConfigManager.Config.TerminalColor),
+            Margin = new Thickness(5, 0, 5, 0),
+            VerticalAlignment = VerticalAlignment.Top,
+            Text = message,
+            FontFamily = _localFontFamily,
+            Focusable = false
+        };
 
         private void AddTextToConsole(string message)
         {
             Dispatcher.BeginInvoke(new Action(() =>
             {
-                Output.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(55) });
-                
-                var text = new TextBlock()
-                {
-                    FontSize = 14,
-                    Margin = new Thickness(5, 0, 5, 0),
-                    VerticalAlignment = VerticalAlignment.Top,
-                    Text = message
-                };
-                
+                Output.RowDefinitions.Add(new RowDefinition() {Height = new GridLength(HeightConsole)});
+
                 var border = new Border()
                 {
                     CornerRadius = new CornerRadius(5),
                     BorderThickness = new Thickness(1),
-                    Child = text
+                    Child = GetTextBlock(message),
+                    Focusable = false
                 };
 
+                if (IsDebugMod)
+                    border.BorderBrush = Brushes.Aqua;
+
                 Grid.SetRow(border, _lineNumber);
-                Grid.SetRow(text, _lineNumber);
+                Grid.SetRow(border.Child, _lineNumber);
                 
                 Output.Children.Add(border);
                 _lineNumber++;
@@ -272,13 +324,17 @@ namespace Terminal_XP.Frames
         
         private void ClearBackgoundSpans()
         {
-            for (var i = 0; i < _spans.Count; i++)
-            {
-                for (var j = 0; j < _spans[i].Count; j++)
-                {
-                    _spans[i][j].Background = new SolidColorBrush(Colors.White);
-                }
-            }
+            _spans.ForEach(
+                spans => spans.ForEach(
+                    span =>
+                    {
+                        var run = (Run)span.Inlines.FirstInline;
+                        
+                        span.Background = new SolidColorBrush(Colors.Transparent);
+                        run.Foreground = (Brush)new BrushConverter().ConvertFromString(ConfigManager.Config.TerminalColor);
+                    }
+                )
+            );
         }
         
         private void CorrectSpanPos(bool isItArrow)
@@ -307,7 +363,7 @@ namespace Terminal_XP.Frames
                 
                 if (_columnSpon >= _spans.Count)
                 {
-                    _columnSpon = 1;
+                    _columnSpon = _startColumnSpon;
                     _rowSpon = 0;
                 }
             }
@@ -318,24 +374,42 @@ namespace Terminal_XP.Frames
             ClearBackgoundSpans();
             var isItArrow = true;
 
-            if (direction == Direction.Left)
-                _rowSpon -= 1;
-            if (direction == Direction.Right)
-                _rowSpon += 1;
-            if (direction == Direction.Up)
-                _columnSpon -= 1;
-            if (direction == Direction.Down)
-                _columnSpon += 1;
-            if (direction == Direction.JustNext)
+            switch (direction)
             {
-                _rowSpon += 1;
-                isItArrow = false;
+                case Direction.Left:
+                    _rowSpon -= 1;
+                    break;
+                case Direction.Right:
+                    _rowSpon += 1;
+                    break;
+                case Direction.Up:
+                    _columnSpon -= 1;
+                    break;
+                case Direction.Down:
+                    _columnSpon += 1;
+                    break;
+                case Direction.JustNext:
+                    _rowSpon += 1;
+                    isItArrow = false;
+                    break;
             }
 
             CorrectSpanPos(isItArrow);
 
-            _spans[_columnSpon][_rowSpon].Background = new SolidColorBrush(Colors.DarkGreen);
-            _spans[_columnSpon][_rowSpon].Focus();
+            SetHighlite(_spans[_columnSpon][_rowSpon]);
+        }
+        
+        private Size MeasureString(string candidate, FontFamily font, FontStyle style, FontWeight weight, FontStretch stretch, double fontsize)
+        {
+            var formattedText = new FormattedText(
+                candidate,
+                CultureInfo.CurrentCulture,
+                FlowDirection.LeftToRight,
+                new Typeface(font, style, weight, stretch),
+                fontsize,
+                Brushes.Black);
+
+            return new Size(formattedText.Width, formattedText.Height);
         }
     }
 }

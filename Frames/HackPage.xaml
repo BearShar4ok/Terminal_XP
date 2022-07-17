@@ -6,26 +6,18 @@
       xmlns:local="clr-namespace:Terminal_XP.Frames"
       mc:Ignorable="d"
       Title="HackPage">
-    <Grid>
-        <Grid x:Name="MainGrid">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="0.1*"/>
-                <RowDefinition/>
-                <RowDefinition Height="0.05*"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="0.7*"/>
-                <ColumnDefinition Width="0.5*"/>
-            </Grid.ColumnDefinitions>
+    <Grid x:Name="MainGrid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="0.5*"/>
+        </Grid.ColumnDefinitions>
 
-            <RichTextBox x:Name="leftRTB" Grid.Column="0" Grid.Row="1" IsReadOnly="True" BorderBrush="White" Width="1000">
-                <FlowDocument PageWidth="{Binding ElementName=leftRTB, Path=ActualWidth}">
-                    <Paragraph Name="leftP" BorderBrush="White">
-                    </Paragraph>
-                </FlowDocument>
-            </RichTextBox>
+        <RichTextBox Focusable="False" x:Name="LeftRTB" Grid.Column="0" IsReadOnly="True" BorderBrush="Transparent" Background="Transparent">
+            <FlowDocument Focusable="False" PageWidth="{Binding ElementName=LeftRTB, Path=ActualWidth}">
+                <Paragraph Focusable="False" Name="leftP" BorderBrush="White" />
+            </FlowDocument>
+        </RichTextBox>
 
-            <Grid x:Name="Output" Grid.Row="1" Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
-        </Grid>
+        <Grid Margin="10 0 0 0" Focusable="False" x:Name="Output" Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
     </Grid>
 </Page>

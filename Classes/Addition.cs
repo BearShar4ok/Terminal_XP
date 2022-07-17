@@ -17,6 +17,17 @@ namespace Terminal_XP.Classes
         public const string Assets = "Assets";
         public const string ErrorFile = "files/Error.log";
         
+        public static void ForEach<T>(this IEnumerable<T> lst, Action<T> action)
+        {
+            if (action == null)
+                return;
+            
+            foreach (var item in lst)
+            {
+                action?.Invoke(item);
+            }
+        }
+        
         public static T To<T>(this object obj)
         {
             if (obj is T tobj)

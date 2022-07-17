@@ -59,7 +59,7 @@ namespace Terminal_XP
 
             Closing += (obj, e) =>
             {
-                TryExcuteMethod(Frame.NavigationService.Content.GetType(), "Closing");
+                TryExcuteMethod(Frame.NavigationService.Content?.GetType(), "Closing");
 
                 DevicesManager.StopLisining();
             };
