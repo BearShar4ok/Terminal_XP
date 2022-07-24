@@ -14,14 +14,20 @@ namespace Terminal_XP.Frames
 {
     public enum Direction { Left, Right, Up, Down, JustNext }
     
+    // TODO: сделать количество букв в строке адаптивным к размеру экрана (это параметр CountCharInLine)
+    // TODO: Мб переделать генератор, чтобы он в текст вставлял радномное число слов, в не с какой-то верноятностью добавлял слова
+    // TODO: Чтобы слова не повторялись надо раскомментировать трочку 118
+    // TODO: Переделать распеределение слов, т. к. может получиться, что из-за слова предыдущая строка будет идти не до конца(см. метод AddToField)
+    // TODO: И ещё мб сделать, чтобы все символы были одного размера
+    
     public partial class HackPage : Page
     {
         private const string Symbols = "~!@#$%^&*()_-=+{}|?/\"\';:<>";
         private const bool IsDebugMod = false;
         
-        private int HeightConsole = 40;
+        private int HeightConsole = 35;
         private int CountCharInLine = 50;
-        
+
         private string[] _words;
         private string _filename;
         private string _theme;
@@ -31,6 +37,7 @@ namespace Terminal_XP.Frames
         private string _rightWord;
         private int _lives;
         private int _startColumnSpon;
+        private int _lastColumnSpon;
         private int _rowSpon;
         private int _columnSpon;
         private int _lineNumber;
@@ -108,6 +115,7 @@ namespace Terminal_XP.Frames
                 {
                     var ind = inds[random.Next(inds.Count)];
                     currSymb += _words[ind];
+                    // inds.Remove(ind);
                     lstWord = true;
                 }
                 else
@@ -172,6 +180,51 @@ namespace Terminal_XP.Frames
             return -1;
         }
 
+        private int FindNextColumn(int column)
+        {
+            for (var i = column + 1; i < _spans.Count; i++)
+            {
+                if (_spans[i].Count > 0)
+                    return i;
+            }
+            
+            for (var i = 0; i <= column; i++)
+            {
+                if (_spans[i].Count > 0)
+                    return i;
+            }
+
+            return -1;
+        }
+        
+        private int FindPrevColumn(int column)
+        {
+            for (var i = column - 1; i >= 0; i--)
+            {
+                if (_spans[i].Count > 0)
+                    return i;
+            }
+            
+            for (var i = _spans.Count - 1; i >= column; i--)
+            {
+                if (_spans[i].Count > 0)
+                    return i;
+            }
+
+            return -1;
+        }
+        
+        private int FindLastColumn()
+        {
+            for (var i = _spans.Count - 1; i >= 0; i--)
+            {
+                if (_spans[i].Count > 0)
+                    return i;
+            }
+
+            return -1;
+        }
+
         private void SetHighlite(Span span)
         {
             var run = (Run)span.Inlines.FirstInline;
@@ -182,6 +235,11 @@ namespace Terminal_XP.Frames
         
         private void Initialize()
         {
+            var test = GetTextBlock("@");
+            var size = MeasureString(test.Text, test.FontFamily, test.FontStyle, test.FontWeight, test.FontStretch, test.FontSize);
+
+            HeightConsole = (int) Math.Ceiling(size.Height);
+
             AddToField();
             
             var inlines = leftP.Inlines.ToList();
@@ -205,12 +263,9 @@ namespace Terminal_XP.Frames
             CountCharInLine = (int)(LeftRTB.ActualWidth / MeasureString("@", LeftRTB.FontFamily, LeftRTB.FontStyle,
                 LeftRTB.FontWeight, LeftRTB.FontStretch, LeftRTB.FontSize).Width);
 
-            var test = GetTextBlock("@");
-            HeightConsole = (int) MeasureString(test.Text, test.FontFamily, test.FontStyle, test.FontWeight,
-                test.FontStretch, test.FontSize).Height;
-            
             _spans.Add(oneSpan);
             _startColumnSpon = FindStartColumn();
+            _lastColumnSpon = FindLastColumn();
             _columnSpon = _startColumnSpon;
 
             SetHighlite(_spans[_columnSpon][_rowSpon]);
@@ -346,10 +401,10 @@ namespace Terminal_XP.Frames
                 
                 if (_columnSpon <= 0)
                     _columnSpon = 1;
-                
+
                 if (_rowSpon >= _spans[_columnSpon].Count)
                     _rowSpon = _spans[_columnSpon].Count - 1;
-                    
+
                 if (_rowSpon < 0)
                     _rowSpon = 0;
             }
@@ -357,14 +412,26 @@ namespace Terminal_XP.Frames
             {
                 if (_rowSpon >= _spans[_columnSpon].Count)
                 {
-                    _columnSpon += 1;
+                    _columnSpon = FindNextColumn(_columnSpon);
                     _rowSpon = 0;
+                }
+                
+                if (_rowSpon < 0)
+                {
+                    _columnSpon = FindPrevColumn(_columnSpon);
+                    _rowSpon = _spans[_columnSpon].Count - 1;
                 }
                 
                 if (_columnSpon >= _spans.Count)
                 {
                     _columnSpon = _startColumnSpon;
                     _rowSpon = 0;
+                }
+
+                if (_columnSpon < 0)
+                {
+                    _columnSpon = FindLastColumn();
+                    _rowSpon = _spans[_columnSpon].Count - 1;
                 }
             }
         }
@@ -378,9 +445,11 @@ namespace Terminal_XP.Frames
             {
                 case Direction.Left:
                     _rowSpon -= 1;
+                    isItArrow = false;
                     break;
                 case Direction.Right:
                     _rowSpon += 1;
+                    isItArrow = false;
                     break;
                 case Direction.Up:
                     _columnSpon -= 1;
