@@ -340,6 +340,7 @@ namespace Terminal_XP.Frames
             if (text == _rightWord)
             {
                 SuccessfullyHacking?.Invoke(true);
+                GoToBack();
                 return ">ACESS";
             }
             
@@ -349,6 +350,7 @@ namespace Terminal_XP.Frames
                 return ">" + HowManyCorrectSymbols(text) + " из " + _rightWord.Distinct().Count() + " верно!\n>DENIED";
                 
             SuccessfullyHacking?.Invoke(false);
+            GoToBack();
             return ">DENIED";
         }
         
