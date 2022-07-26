@@ -138,23 +138,22 @@ namespace Terminal_XP.Frames
             directory = (string)((ListBoxItem)lstB.SelectedItem).Tag;
             if (directory.Split('\\')[directory.Split('\\').Length-1] == "..")
             {
-                int a = 0;
-            //    if (deepOfPath == 0)
-            //        return;
-            //    deepOfPath--;
-            //    if (deepOfPath == 0)
-            //    {
-            //        DevicesManager.ClearAllDisks();
-            //        lstB.Items.Clear();
-            //        deepOfPath = 0;
-            //        DisplayDirectory();
-            //        return;
-            //    }
-            //    directory = directory.Remove(directory.LastIndexOf("\\"));
-            //    DisplayDirectory();
-            //    OpenFolder();
-            //    Focus();
-            //    return;
+                if (deepOfPath == 0)
+                    return;
+                deepOfPath--;
+                if (deepOfPath == 0)
+                {
+                    DevicesManager.ClearAllDisks();
+                    lstB.Items.Clear();
+                    deepOfPath = 0;
+                    DisplayDirectory();
+                    return;
+                }
+                directory = directory.Remove(directory.LastIndexOf("\\"));
+                directory = directory.Remove(directory.LastIndexOf("\\"));
+                DisplayDirectory();
+                OpenFolder();
+                return;
             }
 
             if (IsFolder(directory))
@@ -173,7 +172,9 @@ namespace Terminal_XP.Frames
             FindFolders();
             FindFiles();
             lstB.SelectedIndex = 0;
-            lstB.Focus();
+            //Focus();
+            //lstB.Focus();
+            //Focus();
         }
         private void FindFiles()
         {
@@ -273,7 +274,6 @@ namespace Terminal_XP.Frames
 
                 lstB.Items.Add(lstBI);
             }
-            lstB.SelectedIndex = 0;
         }
         private void AdditionalKeys(object sender, KeyEventArgs e)
         {
@@ -285,25 +285,19 @@ namespace Terminal_XP.Frames
                 case Key.Enter:
                     lstB_MouseDoubleClick(null, null);
                     break;
-                case Key.Escape:
-                    if (deepOfPath == 0)
-                        return;
-                    deepOfPath--;
-                    if (deepOfPath == 0)
-                    {
-                        DevicesManager.ClearAllDisks();
-                        lstB.Items.Clear();
-                        deepOfPath = 0;
-                        DisplayDirectory();
-                        return;
-                    }
-                    directory = directory.Remove(directory.LastIndexOf("\\"));
-                    DisplayDirectory();
-                    OpenFolder();
-                    Focus();
-                    break;
                 default:
                     break;
+            }
+        }
+        private void testetet(bool a)
+        {
+            if (a)
+            {
+                NavigationService.Navigate(Addition.GetPageByFilename(directory, theme));
+            }
+            else
+            {
+                MessageBox.Show("aaaa");
             }
         }
         private void ExecuteFile()
@@ -316,11 +310,13 @@ namespace Terminal_XP.Frames
                     content = JsonConvert.DeserializeObject<ConfigDeserializer>(File.ReadAllText((string)((ListBoxItem)lstB.SelectedItem).Tag + ".config"));
                     if (!content.HasPassword)
                     {
-                        NavigationService.Navigate(Addition.GetPageByFilename(directory, theme, this));
+                        NavigationService.Navigate(Addition.GetPageByFilename(directory, theme));
                     }
                     else
                     {
-                        NavigationService.Navigate(Addition.GetPageByFilename(directory, theme, this));
+                        HackPage hp = new HackPage(theme);
+                        hp.SuccesfullyHacked += testetet;
+                        NavigationService.Navigate(hp);
                     }
                 }
                 catch (Exception)
@@ -330,10 +326,10 @@ namespace Terminal_XP.Frames
             }
             else
             {
-                NavigationService.Navigate(Addition.GetPageByFilename(directory, theme, this));
+                NavigationService.Navigate(Addition.GetPageByFilename(directory, theme));
             }
-
-
+            lstB.SelectedIndex = 0;
+            lstB.Focus();
         }
         private void DisplayDirectory()
         {
@@ -369,11 +365,6 @@ namespace Terminal_XP.Frames
         private void Closing()
         {
             DevicesManager.StopLisining();
-        }
-        public void test()
-        {
-            lstB.SelectedIndex = 0;
-            lstB.Focus();
         }
     }
 }

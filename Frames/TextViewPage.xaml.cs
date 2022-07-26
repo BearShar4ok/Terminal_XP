@@ -18,9 +18,8 @@ namespace Terminal_XP.Frames
         private bool _update;
         private Mutex _mutex = new Mutex();
 
-        LoadingPage loadingPage;
 
-        public TextViewPage(string filename, string theme, LoadingPage loadingPage)
+        public TextViewPage(string filename, string theme)
         {
             InitializeComponent();
             LoadTheme(theme);
@@ -31,6 +30,7 @@ namespace Terminal_XP.Frames
             Output.Text = ConfigManager.Config.SpecialSymbol;
 
             Application.Current.MainWindow.KeyDown += AdditionalKeys;
+
 
             LoadText();
         }
@@ -120,9 +120,7 @@ namespace Terminal_XP.Frames
                 case Key.Escape:
                     Closing();
                     GC.Collect();
-                    loadingPage.test();
-                    NavigationService.Navigate(loadingPage);
-                    loadingPage.test();
+                    NavigationService.GoBack();
                     break;
             }
         }

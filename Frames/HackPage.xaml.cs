@@ -25,13 +25,12 @@ namespace Terminal_XP.Frames
         private const string Symbols = "~!@#$%^&*()_-=+{}|?/\"\';:<>";
         private const bool IsDebugMod = false;
 
-        public Action<bool> SucclHacking { get; }
+        public Action<bool> SuccesfullyHacked;
 
         private int HeightConsole = 35;
         private int CountCharInLine = 50;
 
         private string[] _words;
-        private string _filename;
         private string _theme;
         private FontFamily _localFontFamily;
         private Random _random = new Random();
@@ -45,7 +44,7 @@ namespace Terminal_XP.Frames
         private int _lineNumber;
         private List<List<Span>> _spans = new List<List<Span>>();
 
-        public HackPage(string filename, string theme)
+        public HackPage(string theme)
         {
             InitializeComponent();
 
@@ -53,7 +52,6 @@ namespace Terminal_XP.Frames
             _rightWord = _words[_random.Next(_words.Length)];
             _lives = (int)ConfigManager.Config.CountLivesForHacking;
             
-            _filename = filename;
             _theme = theme;
 
             LoadTheme(_theme);
@@ -61,6 +59,9 @@ namespace Terminal_XP.Frames
             Application.Current.MainWindow.KeyDown += KeyPress;
 
             Initialize();
+            /// dedub
+            AddTextToConsole(_rightWord);
+            ///
         }
 
         // Method to reload page
@@ -84,17 +85,9 @@ namespace Terminal_XP.Frames
         {
             Closing();
             GC.Collect();
-            NavigationService?.Navigate(new LoadingPage(Path.GetDirectoryName(_filename), _theme));
+            NavigationService.GoBack();
         }
 
-        // Method to open file
-        private void GoToFile()
-        {
-            Closing();
-            GC.Collect();
-            NavigationService.Navigate(Addition.GetPageByFilename(_filename, _theme,null));
-        }
-        
         // Method to generate string with words
         private string GenerateRandomString(int length)
         {
@@ -341,7 +334,7 @@ namespace Terminal_XP.Frames
             
             if (text == _rightWord)
             {
-                SucclHacking?.Invoke(true);
+                SuccesfullyHacked?.Invoke(true);
                 return ">ACESS";
             }
             
@@ -349,8 +342,8 @@ namespace Terminal_XP.Frames
 
             if (_lives >= 0)
                 return ">" + HowManyCorrectSymbols(text) + " из " + _rightWord.Distinct().Count() + " верно!\n>DENIED";
-                
-            SucclHacking?.Invoke(false);
+
+            SuccesfullyHacked?.Invoke(false);
             return ">DENIED";
         }
         
