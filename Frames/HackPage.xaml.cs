@@ -111,8 +111,12 @@ namespace Terminal_XP.Frames
                 // Check pos right word and set that
                 if (result.Length >= pos && pos != -1)
                 {
+                    if (!Symbols.Contains(result[result.Length - 1]))
+                        result = result.Remove(result.Length - currSymb.Length - 1);
+                    
                     result += _rightWord;
                     pos = -1;
+                    lstWord = true;
                 }
                 
                 // Add word if last not word :) or and symbol
