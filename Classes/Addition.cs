@@ -61,7 +61,7 @@ namespace Terminal_XP.Classes
             }
         }
 
-        public static Page GetPageByFilename(string filename, string theme)
+        public static Page GetPageByFilename(string filename, string theme, LoadingPage loadingPage)
         {
             var exct = Path.GetExtension(filename).Remove(0, 1);
 
@@ -77,7 +77,7 @@ namespace Terminal_XP.Classes
                 return new PictureViewPage(filename, theme);
 
             if (text.Contains(exct))
-                return new TextViewPage(filename, theme);
+                return new TextViewPage(filename, theme, loadingPage);
 
             if (video.Contains(exct))
                 return new VideoViewPage(filename, theme);

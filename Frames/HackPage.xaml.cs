@@ -87,7 +87,7 @@ namespace Terminal_XP.Frames
         {
             Closing();
             GC.Collect();
-            NavigationService.Navigate(Addition.GetPageByFilename(_filename, _theme));
+            NavigationService.Navigate(Addition.GetPageByFilename(_filename, _theme,null));
         }
         
         private string GenerateRandomString(int length)

@@ -19,7 +19,9 @@ namespace Terminal_XP.Frames
         private Thread _printText;
         private Mutex _mutex = new Mutex();
 
-        public TextViewPage(string filename, string theme)
+        LoadingPage loadingPage;
+
+        public TextViewPage(string filename, string theme, LoadingPage loadingPage)
         {
             InitializeComponent();
             LoadTheme(theme);
@@ -30,7 +32,7 @@ namespace Terminal_XP.Frames
             Output.Text = ConfigManager.Config.SpecialSymbol;
 
             Unloaded += (obj, e) => { Closing(); };
-            
+
             Focusable = true;
             Focus();
 
@@ -38,6 +40,7 @@ namespace Terminal_XP.Frames
 
             LoadText();
             Scroller.Focus();
+            this.loadingPage = loadingPage;
         }
 
         public void Closing()
@@ -127,7 +130,9 @@ namespace Terminal_XP.Frames
                 case Key.Escape:
                     Closing();
                     GC.Collect();
-                    NavigationService.Navigate(new LoadingPage(Path.GetDirectoryName(_filename), _theme));
+                    loadingPage.test();
+                    NavigationService.Navigate(loadingPage);
+                    loadingPage.test();
                     break;
             }
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-
+using Newtonsoft.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -17,6 +17,7 @@ using Terminal_XP.Classes;
 using System.Windows.Controls.Primitives;
 using Microsoft.SqlServer.Server;
 using Path = System.IO.Path;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Terminal_XP.Frames
 {
@@ -34,12 +35,15 @@ namespace Terminal_XP.Frames
         private string passText;
         private string passAudio;
         private string passVideo;
+        private string passDefault;
 
         private const string asseccFileToReadDisk = "READ_DISK.txt";
 
         public LoadingPage(string startDirectory, string theme)
         {
             InitializeComponent();
+
+            //Focus();
 
             DevicesManager.AddDisk += Add;
             DevicesManager.RemoveDisk += Remove;
@@ -49,7 +53,7 @@ namespace Terminal_XP.Frames
             DisplayDirectory();
 
             lstB.SelectionMode = SelectionMode.Single;
-            lstB.ContextMenu = new ContextMenu();
+            //lstB.ContextMenu = new ContextMenu();
             lstB.SelectedIndex = 0;
             lstB.Focus();
 
@@ -58,9 +62,10 @@ namespace Terminal_XP.Frames
             this.theme = theme;
             passFoler = Addition.Themes + theme + @"/folder.png";
             passImage = Addition.Themes + theme + @"/image.png";
-            passText =  Addition.Themes + theme + @"/text.png";
+            passText = Addition.Themes + theme + @"/text.png";
             passAudio = Addition.Themes + theme + @"/audio.png";
             passVideo = Addition.Themes + theme + @"/video.png";
+            passDefault = Addition.Themes + theme + @"/default.jpg";
             DevicesManager.StartLisining();
             OpenFolder();
         }
@@ -130,6 +135,25 @@ namespace Terminal_XP.Frames
         private void lstB_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             directory = (string)((ListBoxItem)lstB.SelectedItem).Tag;
+            if (directory.Split('\\')[directory.Split('\\').Length-1] == "..")
+            {
+                if (deepOfPath == 0)
+                    return;
+                deepOfPath--;
+                if (deepOfPath == 0)
+                {
+                    DevicesManager.ClearAllDisks();
+                    lstB.Items.Clear();
+                    deepOfPath = 0;
+                    DisplayDirectory();
+                    return;
+                }
+                directory = directory.Remove(directory.LastIndexOf("\\"));
+                DisplayDirectory();
+                OpenFolder();
+                Focus();
+                return;
+            }
 
             if (IsFolder(directory))
             {
@@ -146,6 +170,8 @@ namespace Terminal_XP.Frames
         {
             FindFiles();
             FindFolders();
+            lstB.SelectedIndex = 0;
+            lstB.Focus();
         }
         private void FindFiles()
         {
@@ -159,11 +185,26 @@ namespace Terminal_XP.Frames
                 allFiles = new string[0];
             }
             lstB.Items.Clear();
+
+            ListBoxItem lstBI_ = new ListBoxItem()
+            {
+                DataContext = new BitmapImage(new Uri(Path.GetFullPath(passFoler))),
+                Content = "..",
+                Tag = directory + "\\..",
+                Style = (Style)Resources["ImageText"],
+            };
+
+            lstB.Items.Add(lstBI_);
+
             for (int i = 0; i < allFiles.Length; i++)
             {
                 string text = Path.GetFileNameWithoutExtension(allFiles[i]);
                 string format = Path.GetExtension(allFiles[i]).Remove(0, 1);
                 //  🖹🖻🖺
+
+                //if (format == "config")
+                //continue;
+
                 ListBoxItem lstBI = new ListBoxItem()
                 {
                     Content = text,
@@ -195,6 +236,7 @@ namespace Terminal_XP.Frames
                         lstBI.DataContext = new BitmapImage(new Uri(Path.GetFullPath(passVideo)));
                         break;
                     default:
+                        lstBI.DataContext = new BitmapImage(new Uri(Path.GetFullPath(passDefault)));
                         break;
                 }
                 lstB.Items.Add(lstBI);
@@ -202,6 +244,7 @@ namespace Terminal_XP.Frames
         }
         private void FindFolders()
         {
+
             string[] allDirectories;
             try
             {
@@ -241,20 +284,21 @@ namespace Terminal_XP.Frames
                     lstB_MouseDoubleClick(null, null);
                     break;
                 case Key.Escape:
-                    if (deepOfPath == 0)
-                        return;
-                    deepOfPath--;
-                    if (deepOfPath == 0)
-                    {
-                        DevicesManager.ClearAllDisks();
-                        lstB.Items.Clear();
-                        deepOfPath = 0;
-                        DisplayDirectory();
-                        return;
-                    }
-                    directory = directory.Remove(directory.LastIndexOf("\\"));
-                    DisplayDirectory();
-                    OpenFolder();
+                    //if (deepOfPath == 0)
+                    //    return;
+                    //deepOfPath--;
+                    //if (deepOfPath == 0)
+                    //{
+                    //    DevicesManager.ClearAllDisks();
+                    //    lstB.Items.Clear();
+                    //    deepOfPath = 0;
+                    //    DisplayDirectory();
+                    //    return;
+                    //}
+                    //directory = directory.Remove(directory.LastIndexOf("\\"));
+                    //DisplayDirectory();
+                    //OpenFolder();
+                    //Focus();
                     break;
                 default:
                     break;
@@ -262,7 +306,32 @@ namespace Terminal_XP.Frames
         }
         private void ExecuteFile()
         {
-            NavigationService.Navigate(Addition.GetPageByFilename(directory, theme));
+            ConfigDeserializer content;
+            if (Directory.GetFiles(directory.Remove(directory.LastIndexOf("\\"))).Contains((string)((ListBoxItem)lstB.SelectedItem).Tag + ".config"))//проверка на наличие .config
+            {
+                try
+                {
+                    content = JsonConvert.DeserializeObject<ConfigDeserializer>(File.ReadAllText((string)((ListBoxItem)lstB.SelectedItem).Tag + ".config"));
+                    if (!content.HasPassword)
+                    {
+                        NavigationService.Navigate(Addition.GetPageByFilename(directory, theme, this));
+                    }
+                    else
+                    {
+                        NavigationService.Navigate(Addition.GetPageByFilename(directory, theme, this));
+                    }
+                }
+                catch (Exception)
+                {
+
+                }
+            }
+            else
+            {
+                NavigationService.Navigate(Addition.GetPageByFilename(directory, theme, this));
+            }
+
+
         }
         private void DisplayDirectory()
         {
@@ -294,6 +363,15 @@ namespace Terminal_XP.Frames
         private bool IsFolder(string text)
         {
             return !(text.Contains("."));
+        }
+        private void Closing()
+        {
+            DevicesManager.StopLisining();
+        }
+        public void test()
+        {
+            lstB.SelectedIndex = 0;
+            lstB.Focus();
         }
     }
 }
