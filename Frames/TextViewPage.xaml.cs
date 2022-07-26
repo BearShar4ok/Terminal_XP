@@ -31,7 +31,6 @@ namespace Terminal_XP.Frames
 
             Application.Current.MainWindow.KeyDown += AdditionalKeys;
 
-
             LoadText();
         }
 
@@ -119,8 +118,7 @@ namespace Terminal_XP.Frames
             {
                 case Key.Escape:
                     Closing();
-                    GC.Collect();
-                    NavigationService.GoBack();
+                    NavigationService?.GoBack();
                     break;
             }
         }

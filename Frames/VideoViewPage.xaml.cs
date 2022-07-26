@@ -83,8 +83,7 @@ namespace Terminal_XP.Frames
             {
                 case Key.Escape:
                     Closing();
-                    GC.Collect();
-                    NavigationService.GoBack();
+                    NavigationService?.GoBack();
                     break;
                 case Key.Space:
                     if (_stop)

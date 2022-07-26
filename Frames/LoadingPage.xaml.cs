@@ -53,7 +53,6 @@ namespace Terminal_XP.Frames
             DisplayDirectory();
 
             lstB.SelectionMode = SelectionMode.Single;
-            //lstB.ContextMenu = new ContextMenu();
             lstB.SelectedIndex = 0;
             lstB.FocusVisualStyle = null;
             lstB.Focus();
@@ -315,7 +314,7 @@ namespace Terminal_XP.Frames
                     else
                     {
                         HackPage hp = new HackPage(theme);
-                        hp.SuccesfullyHacked += testetet;
+                        hp.SuccessfullyHacking += testetet;
                         NavigationService.Navigate(hp);
                     }
                 }
