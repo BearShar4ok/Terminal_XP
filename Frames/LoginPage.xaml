@@ -6,11 +6,12 @@
       xmlns:local="clr-namespace:Terminal_XP.Frames"
       mc:Ignorable="d"
       Title="LoginPage"
-      Focusable="False"
-      Width="500"
-      Height="100">
-    <Grid>
-        <TextBox x:Name="Login" Text="" Margin="0 0 10 0" Width="300" Height="30" FontSize="32" />
-            <TextBox x:Name="Password"/>
+      Focusable="False">
+    <Grid x:Name="Main">
+        <Label x:Name="LblLogin" HorizontalAlignment="Left" Content="Login:" Background="Transparent" BorderThickness="0" Focusable="False" />
+        <TextBox x:Name="TBLogin" HorizontalAlignment="Left" Background="Transparent" BorderThickness="0" VerticalContentAlignment="Center" />
+        
+        <Label x:Name="LblPassword" HorizontalAlignment="Left" Content="Password:" Background="Transparent" BorderThickness="0" Focusable="False" />
+        <TextBox x:Name="TBPassword" HorizontalAlignment="Left" Background="Transparent" BorderThickness="0" VerticalContentAlignment="Center" />
     </Grid>
 </Page>

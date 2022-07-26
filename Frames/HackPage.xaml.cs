@@ -114,7 +114,7 @@ namespace Terminal_XP.Frames
                 }
                 
                 // Add word if last not word :) or and symbol
-                if (!lstWord && random.Next(0, 5) == 0 && inds.Count > 0)
+                if (!lstWord && random.Next(0, (int)ConfigManager.Config.RatioSpawnWords) == 0 && inds.Count > 0)
                 {
                     var ind = inds[random.Next(inds.Count)];
                     currSymb += _words[ind];
@@ -409,15 +409,18 @@ namespace Terminal_XP.Frames
         }
         
         // Correcting position next span
-        private void CorrectSpanPos(bool isItArrow)
+        private void CorrectSpanPos(bool isItArrow, bool up)
         {
             if (isItArrow)
             {
                 if (_columnSpon >= _spans.Count)
                     _columnSpon = _spans.Count - 1;
                 
-                if (_columnSpon <= 0)
-                    _columnSpon = 1;
+                if (_columnSpon < 0)
+                    _columnSpon = 0;
+                
+                if (_spans[_columnSpon].Count == 0) 
+                    _columnSpon = up ? FindPrevColumn(_columnSpon) : FindNextColumn(_columnSpon);
 
                 if (_rowSpon >= _spans[_columnSpon].Count)
                     _rowSpon = _spans[_columnSpon].Count - 1;
@@ -458,6 +461,7 @@ namespace Terminal_XP.Frames
         {
             ClearBackgroundSpans();
             var isItArrow = true;
+            var up = true;
 
             switch (direction)
             {
@@ -474,6 +478,7 @@ namespace Terminal_XP.Frames
                     break;
                 case Direction.Down:
                     _columnSpon += 1;
+                    up = false;
                     break;
                 case Direction.JustNext:
                     _rowSpon += 1;
@@ -481,7 +486,7 @@ namespace Terminal_XP.Frames
                     break;
             }
 
-            CorrectSpanPos(isItArrow);
+            CorrectSpanPos(isItArrow, up);
 
             SetHighlight(_spans[_columnSpon][_rowSpon]);
         }
