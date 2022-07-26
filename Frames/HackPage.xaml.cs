@@ -16,7 +16,7 @@ namespace Terminal_XP.Frames
     
     // TODO: сделать количество букв в строке адаптивным к размеру экрана (это параметр CountCharInLine)
     // TODO: Мб переделать генератор, чтобы он в текст вставлял радномное число слов, в не с какой-то верноятностью добавлял слова
-    // TODO: Чтобы слова не повторялись надо раскомментировать трочку 132
+    // TODO: Чтобы слова не повторялись надо раскомментировать трочку 121
     // TODO: Переделать распеределение слов, т. к. может получиться, что из-за слова предыдущая строка будет идти не до конца(см. метод AddToField)
     // TODO: И ещё мб сделать, чтобы все символы были одного размера
     
@@ -31,7 +31,6 @@ namespace Terminal_XP.Frames
         private int CountCharInLine = 50;
 
         private string[] _words;
-        private string _filename;
         private string _theme;
         private FontFamily _localFontFamily;
 
@@ -44,7 +43,7 @@ namespace Terminal_XP.Frames
         private int _lineNumber;
         private List<List<Span>> _spans = new List<List<Span>>();
 
-        public HackPage(string filename, string theme)
+        public HackPage(string theme)
         {
             InitializeComponent();
 
@@ -54,8 +53,7 @@ namespace Terminal_XP.Frames
             _rightWord = _words[new Random().Next(_words.Length)];
             // Get count lives
             _lives = (int)ConfigManager.Config.CountLivesForHacking;
-            
-            _filename = filename;
+
             _theme = theme;
 
             LoadTheme(_theme);
@@ -85,18 +83,9 @@ namespace Terminal_XP.Frames
         private void GoToBack()
         {
             Closing();
-            GC.Collect();
-            NavigationService?.Navigate(new LoadingPage(Path.GetDirectoryName(_filename), _theme));
+            NavigationService?.GoBack();
         }
 
-        // Method to open file
-        private void GoToFile()
-        {
-            Closing();
-            GC.Collect();
-            NavigationService.Navigate(Addition.GetPageByFilename(_filename, _theme));
-        }
-        
         // Method to generate string with words
         private string GenerateRandomString(int length)
         {

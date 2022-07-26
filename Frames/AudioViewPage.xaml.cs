@@ -133,9 +133,9 @@ namespace Terminal_XP.Frames
             switch (e.Key)
             {
                 case Key.Escape:
-                    // Closing page and go to loadpage
+                    // Closing page and go to loading page
                     Closing();
-                    NavigationService.Navigate(new LoadingPage(Path.GetDirectoryName(_filename), _theme));
+                    NavigationService?.GoBack();
                     break;
                 case Key.Space:
                     if (_stop)
