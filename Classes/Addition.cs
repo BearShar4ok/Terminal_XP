@@ -36,12 +36,15 @@ namespace Terminal_XP.Classes
             return default;
         }
 
-        public static void PrintLines<T>(T element, Dispatcher dispatcher, Mutex mutex = default, params FragmentText[] TextArray) where T : TextBlock
+        public static void PrintLines<T>(T element, Dispatcher dispatcher, ref bool working, Mutex mutex = default, params FragmentText[] TextArray) where T : TextBlock
         {
             foreach (var fragmentText in TextArray)
             {
                 foreach (var symbol in fragmentText.Text)
                 {
+                    if (!working)
+                        return;
+                    
                     mutex?.WaitOne();
                     
                     dispatcher.BeginInvoke(DispatcherPriority.Background,

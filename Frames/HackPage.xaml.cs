@@ -16,7 +16,7 @@ namespace Terminal_XP.Frames
     
     // TODO: сделать количество букв в строке адаптивным к размеру экрана (это параметр CountCharInLine)
     // TODO: Мб переделать генератор, чтобы он в текст вставлял радномное число слов, в не с какой-то верноятностью добавлял слова
-    // TODO: Чтобы слова не повторялись надо раскомментировать трочку 118
+    // TODO: Чтобы слова не повторялись надо раскомментировать трочку 130
     // TODO: Переделать распеределение слов, т. к. может получиться, что из-за слова предыдущая строка будет идти не до конца(см. метод AddToField)
     // TODO: И ещё мб сделать, чтобы все символы были одного размера
     
@@ -24,7 +24,9 @@ namespace Terminal_XP.Frames
     {
         private const string Symbols = "~!@#$%^&*()_-=+{}|?/\"\';:<>";
         private const bool IsDebugMod = false;
-        
+
+        public Action<bool> SucclHacking { get; }
+
         private int HeightConsole = 35;
         private int CountCharInLine = 50;
 
@@ -61,6 +63,7 @@ namespace Terminal_XP.Frames
             Initialize();
         }
 
+        // Method to reload page
         public void Reload()
         {
             LoadTheme(_theme);
@@ -76,6 +79,7 @@ namespace Terminal_XP.Frames
             _localFontFamily = new FontFamily(new Uri("pack://application:,,,/"), "Assets/Themes/Fallout/#Fallout Regular");
         }
 
+        // Method to return back to LoadPage
         private void GoToBack()
         {
             Closing();
@@ -83,6 +87,7 @@ namespace Terminal_XP.Frames
             NavigationService?.Navigate(new LoadingPage(Path.GetDirectoryName(_filename), _theme));
         }
 
+        // Method to open file
         private void GoToFile()
         {
             Closing();
@@ -90,27 +95,34 @@ namespace Terminal_XP.Frames
             NavigationService.Navigate(Addition.GetPageByFilename(_filename, _theme));
         }
         
+        // Method to generate string with words
         private string GenerateRandomString(int length)
         {
+            // Init position right word
             var pos = _random.Next(length - _rightWord.Length - 1);
             
+            // Result string
             var result = "";
             var lstWord = false;
             var currSymb = "";
             
+            // Get list indexes for words
             var inds = Enumerable.Range(0, _words.Length).ToList();
+            // Remove index right word
             inds.Remove(Array.IndexOf(_words, _rightWord));
             
             var random = new Random();
             
             for (var i = 0; i < length; i++)
             {
+                // Check pos right word and set that
                 if (result.Length >= pos && pos != -1)
                 {
                     result += _rightWord;
                     pos = -1;
                 }
                 
+                // Add word if last not word :) or and symbol
                 if (!lstWord && random.Next(0, 5) == 0 && inds.Count > 0)
                 {
                     var ind = inds[random.Next(inds.Count)];
@@ -124,7 +136,9 @@ namespace Terminal_XP.Frames
                     lstWord = false;
                 }
 
+                // Check length result string 
                 if ((result + currSymb).Length > length) continue;
+                // Check about position right word
                 if ((result + currSymb).Length > pos && pos != -1) continue;
                 
                 result += currSymb;
@@ -133,6 +147,7 @@ namespace Terminal_XP.Frames
             return result;
         }
 
+        // Method to split generated string to list spans
         private void AddToField()
         {
             var str = GenerateRandomString((int)ConfigManager.Config.LengthHackString);
@@ -169,6 +184,7 @@ namespace Terminal_XP.Frames
             }
         }
 
+        // Find first index column where contains words
         private int FindStartColumn()
         {
             for (var i = 0; i < _spans.Count; i++)
@@ -180,6 +196,7 @@ namespace Terminal_XP.Frames
             return -1;
         }
 
+        // Find next index column where contains words
         private int FindNextColumn(int column)
         {
             for (var i = column + 1; i < _spans.Count; i++)
@@ -197,6 +214,7 @@ namespace Terminal_XP.Frames
             return -1;
         }
         
+        // Find prev index column where contains words
         private int FindPrevColumn(int column)
         {
             for (var i = column - 1; i >= 0; i--)
@@ -323,22 +341,17 @@ namespace Terminal_XP.Frames
             
             if (text == _rightWord)
             {
-                GoToFile();
-                
+                SucclHacking?.Invoke(true);
                 return ">ACESS";
             }
-            else
-            {
-                _lives--;
+            
+            _lives--;
 
-                if (_lives >= 0)
-                    return ">" + HowManyCorrectSymbols(text) + " из " + _rightWord.Distinct().Count() + " верно!\n>DENIED";
+            if (_lives >= 0)
+                return ">" + HowManyCorrectSymbols(text) + " из " + _rightWord.Distinct().Count() + " верно!\n>DENIED";
                 
-                MessageBox.Show("Файл заблокирован");
-                GoToBack();
-
-                return ">DENIED";
-            }
+            SucclHacking?.Invoke(false);
+            return ">DENIED";
         }
         
         private TextBlock GetTextBlock(string message) => new TextBlock() {

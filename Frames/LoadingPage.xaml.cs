@@ -49,8 +49,7 @@ namespace Terminal_XP.Frames
             DisplayDirectory();
 
             lstB.SelectionMode = SelectionMode.Single;
-            lstB.ContextMenu = new ContextMenu();
-            lstB.SelectedIndex = 0;
+            lstB.FocusVisualStyle = null;
             lstB.Focus();
 
             KeyDown += AdditionalKeys;
