@@ -137,22 +137,23 @@ namespace Terminal_XP.Frames
             directory = (string)((ListBoxItem)lstB.SelectedItem).Tag;
             if (directory.Split('\\')[directory.Split('\\').Length-1] == "..")
             {
-                if (deepOfPath == 0)
-                    return;
-                deepOfPath--;
-                if (deepOfPath == 0)
-                {
-                    DevicesManager.ClearAllDisks();
-                    lstB.Items.Clear();
-                    deepOfPath = 0;
-                    DisplayDirectory();
-                    return;
-                }
-                directory = directory.Remove(directory.LastIndexOf("\\"));
-                DisplayDirectory();
-                OpenFolder();
-                Focus();
-                return;
+                int a = 0;
+            //    if (deepOfPath == 0)
+            //        return;
+            //    deepOfPath--;
+            //    if (deepOfPath == 0)
+            //    {
+            //        DevicesManager.ClearAllDisks();
+            //        lstB.Items.Clear();
+            //        deepOfPath = 0;
+            //        DisplayDirectory();
+            //        return;
+            //    }
+            //    directory = directory.Remove(directory.LastIndexOf("\\"));
+            //    DisplayDirectory();
+            //    OpenFolder();
+            //    Focus();
+            //    return;
             }
 
             if (IsFolder(directory))
@@ -168,8 +169,8 @@ namespace Terminal_XP.Frames
         }
         private void OpenFolder()
         {
-            FindFiles();
             FindFolders();
+            FindFiles();
             lstB.SelectedIndex = 0;
             lstB.Focus();
         }
@@ -184,18 +185,6 @@ namespace Terminal_XP.Frames
             {
                 allFiles = new string[0];
             }
-            lstB.Items.Clear();
-
-            ListBoxItem lstBI_ = new ListBoxItem()
-            {
-                DataContext = new BitmapImage(new Uri(Path.GetFullPath(passFoler))),
-                Content = "..",
-                Tag = directory + "\\..",
-                Style = (Style)Resources["ImageText"],
-            };
-
-            lstB.Items.Add(lstBI_);
-
             for (int i = 0; i < allFiles.Length; i++)
             {
                 string text = Path.GetFileNameWithoutExtension(allFiles[i]);
@@ -254,6 +243,18 @@ namespace Terminal_XP.Frames
             {
                 allDirectories = new string[0];
             }
+            lstB.Items.Clear();
+            if (deepOfPath !=0)
+            {
+                ListBoxItem lstBI_ = new ListBoxItem()
+                {
+                    DataContext = new BitmapImage(new Uri(Path.GetFullPath(passFoler))),
+                    Content = "..",
+                    Tag = directory + "\\..",
+                    Style = (Style)Resources["ImageText"],
+                };
+                lstB.Items.Add(lstBI_);
+            }
             for (int i = 0; i < allDirectories.Length; i++)
             {
                 string text = Path.GetFileNameWithoutExtension(allDirectories[i]);
@@ -284,21 +285,21 @@ namespace Terminal_XP.Frames
                     lstB_MouseDoubleClick(null, null);
                     break;
                 case Key.Escape:
-                    //if (deepOfPath == 0)
-                    //    return;
-                    //deepOfPath--;
-                    //if (deepOfPath == 0)
-                    //{
-                    //    DevicesManager.ClearAllDisks();
-                    //    lstB.Items.Clear();
-                    //    deepOfPath = 0;
-                    //    DisplayDirectory();
-                    //    return;
-                    //}
-                    //directory = directory.Remove(directory.LastIndexOf("\\"));
-                    //DisplayDirectory();
-                    //OpenFolder();
-                    //Focus();
+                    if (deepOfPath == 0)
+                        return;
+                    deepOfPath--;
+                    if (deepOfPath == 0)
+                    {
+                        DevicesManager.ClearAllDisks();
+                        lstB.Items.Clear();
+                        deepOfPath = 0;
+                        DisplayDirectory();
+                        return;
+                    }
+                    directory = directory.Remove(directory.LastIndexOf("\\"));
+                    DisplayDirectory();
+                    OpenFolder();
+                    Focus();
                     break;
                 default:
                     break;
