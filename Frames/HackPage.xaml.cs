@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Navigation;
 using Terminal_XP.Classes;
 
 namespace Terminal_XP.Frames
@@ -43,6 +45,8 @@ namespace Terminal_XP.Frames
         private int _lineNumber;
         private List<List<Span>> _spans = new List<List<Span>>();
 
+        private static NavigationService _NavigationService { get; } = (System.Windows.Application.Current.MainWindow as MainWindow).Frame.NavigationService;
+
         public HackPage(string theme)
         {
             InitializeComponent();
@@ -56,6 +60,8 @@ namespace Terminal_XP.Frames
             _theme = theme;
 
             LoadTheme(_theme);
+
+           // KeepAlive = true;
 
             Application.Current.MainWindow.KeyDown += KeyPress;
 
@@ -85,7 +91,7 @@ namespace Terminal_XP.Frames
         private void GoToBack()
         {
             Closing();
-            NavigationService?.GoBack();
+            _NavigationService.GoBack();
         }
 
         // Method to generate string with words
@@ -345,8 +351,13 @@ namespace Terminal_XP.Frames
             
             if (text == _rightWord)
             {
+                GC.Collect();
+                //Closing();
+                //Focus();
+                //GoToBack();
+
                 SuccessfullyHacking?.Invoke(true);
-                GoToBack();
+                
                 return ">ACESS";
             }
             
@@ -354,9 +365,13 @@ namespace Terminal_XP.Frames
 
             if (_lives >= 0)
                 return ">" + HowManyCorrectSymbols(text) + " из " + _rightWord.Distinct().Count() + " верно!\n>DENIED";
-
+            //Focus();
+            GC.Collect();
+            //Closing();
+            //GoToBack();
+                
             SuccessfullyHacking?.Invoke(false);
-            GoToBack();
+        
             return ">DENIED";
         }
         

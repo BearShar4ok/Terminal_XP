@@ -39,6 +39,8 @@ namespace Terminal_XP.Frames
 
         private const string asseccFileToReadDisk = "READ_DISK.txt";
 
+        private static NavigationService _NavigationService { get; } = (System.Windows.Application.Current.MainWindow as MainWindow).Frame.NavigationService;
+
         public LoadingPage(string startDirectory, string theme)
         {
             InitializeComponent();
@@ -58,6 +60,8 @@ namespace Terminal_XP.Frames
             lstB.Focus();
 
             KeyDown += AdditionalKeys;
+
+            //KeepAlive = true;
 
             this.theme = theme;
             passFoler = Addition.Themes + theme + @"/folder.png";
@@ -288,11 +292,12 @@ namespace Terminal_XP.Frames
                     break;
             }
         }
-        private void testetet(bool a)
+        private void OpenFile(bool hachResult)
         {
-            if (a)
+            //Focus();
+            if (hachResult)
             {
-                NavigationService.Navigate(Addition.GetPageByFilename(directory, theme));
+                _NavigationService.Navigate(Addition.GetPageByFilename(directory, theme));
             }
             else
             {
@@ -309,13 +314,14 @@ namespace Terminal_XP.Frames
                     content = JsonConvert.DeserializeObject<ConfigDeserializer>(File.ReadAllText((string)((ListBoxItem)lstB.SelectedItem).Tag + ".config"));
                     if (!content.HasPassword)
                     {
-                        NavigationService.Navigate(Addition.GetPageByFilename(directory, theme));
+                        _NavigationService.Navigate(Addition.GetPageByFilename(directory, theme));
                     }
                     else
                     {
                         HackPage hp = new HackPage(theme);
-                        hp.SuccessfullyHacking += testetet;
-                        NavigationService.Navigate(hp);
+                        
+                        _NavigationService.Navigate(hp);
+                        hp.SuccessfullyHacking += OpenFile;
                     }
                 }
                 catch (Exception)
@@ -325,7 +331,7 @@ namespace Terminal_XP.Frames
             }
             else
             {
-                NavigationService.Navigate(Addition.GetPageByFilename(directory, theme));
+                _NavigationService.Navigate(Addition.GetPageByFilename(directory, theme));
             }
             lstB.SelectedIndex = 0;
             lstB.Focus();
