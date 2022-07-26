@@ -57,14 +57,9 @@ namespace Terminal_XP
                 }
             };
 
-            Closing += (obj, e) =>
-            {
-                TryExcuteMethod(Frame.NavigationService.Content?.GetType(), "Closing");
+            Closing += (obj, e) => DevicesManager.StopLisining();
 
-                DevicesManager.StopLisining();
-            };
-
-            Frame.NavigationService.Navigate(new LoadingPage(Path.GetFullPath("Local/"), _theme));//G:\\TERMINAL TEST DIRECTORIES\\E\\йцу G:\\TERMINAL TEST DIRECTORIES\\E\\папка\\Новая папка
+                Frame.NavigationService.Navigate(new LoadingPage(Path.GetFullPath("Local/"), _theme));//G:\\TERMINAL TEST DIRECTORIES\\E\\йцу G:\\TERMINAL TEST DIRECTORIES\\E\\папка\\Новая папка
             // Frame.NavigationService.Navigate(new HackPage(Path.GetFullPath("Local/Test.jpg"), _theme));
         }
 

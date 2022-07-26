@@ -25,7 +25,7 @@ namespace Terminal_XP.Frames
         private const string Symbols = "~!@#$%^&*()_-=+{}|?/\"\';:<>";
         private const bool IsDebugMod = false;
 
-        public Action<bool> SucclHacking { get; }
+        public event Action<bool> SuccessfullyHacking;
 
         private int HeightConsole = 35;
         private int CountCharInLine = 50;
@@ -350,7 +350,7 @@ namespace Terminal_XP.Frames
             
             if (text == _rightWord)
             {
-                SucclHacking?.Invoke(true);
+                SuccessfullyHacking?.Invoke(true);
                 return ">ACESS";
             }
             
@@ -359,7 +359,7 @@ namespace Terminal_XP.Frames
             if (_lives >= 0)
                 return ">" + HowManyCorrectSymbols(text) + " из " + _rightWord.Distinct().Count() + " верно!\n>DENIED";
                 
-            SucclHacking?.Invoke(false);
+            SuccessfullyHacking?.Invoke(false);
             return ">DENIED";
         }
         
