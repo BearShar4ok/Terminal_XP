@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -27,19 +28,13 @@ namespace Terminal_XP.Frames
             _filename = filename;
             _theme = theme;
 
-            //Unloaded += (obj, e) => { Closing(); };
             
             MediaPlayer.MediaEnded += (obj, e) => { 
                 MediaPlayer.Position = new TimeSpan(0, 0, 0);
                 MediaPlayer.Play();
             };
 
-            MediaPlayer.Focusable = false;
-            
-            Focusable = true;
-            Focus();
-
-            KeyDown += AdditionalKeys;
+            Application.Current.MainWindow.KeyDown += AdditionalKeys;
 
             LoadTheme(theme);
             LoadVideo();
@@ -48,6 +43,7 @@ namespace Terminal_XP.Frames
         public void Closing()
         {
             Stop();
+            Application.Current.MainWindow.KeyDown -= AdditionalKeys;
         }
         
         public void Reload()

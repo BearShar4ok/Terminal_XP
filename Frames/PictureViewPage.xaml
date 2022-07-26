@@ -5,8 +5,15 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:Terminal_XP.Frames"
       mc:Ignorable="d"
-      Title="PictureViewPage">
+      Title="PictureViewPage"
+      Focusable="False">
     <Grid>
-        <Image x:Name="Picture" Stretch="Fill" />
+        <Image x:Name="Picture"  Focusable="False" Stretch="Fill">
+            <Image.Style>
+                <Style TargetType="Image">
+                    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                </Style>
+            </Image.Style>
+        </Image>
     </Grid>
 </Page>

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -10,7 +11,11 @@ namespace Terminal_XP.Frames
 {
     public partial class AudioViewPage : Page
     {
+        // Count 
         public const int CntSymbol = 64;
+        public const char CharAllLen = '=';
+        public const char CharCurrLen = '>';
+        
         private string _filename;
         private string _theme;
         private bool _stop;
@@ -18,6 +23,7 @@ namespace Terminal_XP.Frames
         private DispatcherTimer _timer = new DispatcherTimer(DispatcherPriority.Input);
         private bool _loaded;
 
+        // Set player's volume from 0 to 1
         public double Volume
         {
             get => _player.Volume;
@@ -34,40 +40,35 @@ namespace Terminal_XP.Frames
             _filename = filename;
             _theme = theme;
 
+            // Init timer to update progress bar
             _timer.Interval = TimeSpan.FromMilliseconds(100);
             _timer.Tick += UpdateProgressBar;
             _timer.Start();
 
+            // Event to restart playing audio
             _player.MediaEnded += (obj, e) =>
             {
                 _player.Position = new TimeSpan(0, 0, 0);
                 _player.Play();
             };
+            
+            // Init Progress bar, when audio loaded
+            _player.MediaOpened += (obj, e) =>
+            {
+                ProgressBar.Text = $"[{new string(CharAllLen, CntSymbol)}]";
+                _loaded = true;
+            };
 
-            ProgressBar.Text = $"[{new string('-', (int)CntSymbol)}]";
-
-            Focusable = true;
-            Focus();
-
-            KeyDown += AdditionalKeys;
+            Application.Current.MainWindow.KeyDown += AdditionalKeys;
 
             LoadTheme(theme);
             LoadAudio();
         }
 
-        private void UpdateProgressBar(object sender, EventArgs e)
-        {
-            if (!_loaded)
-                return;
-
-            var nowTime = _player.Position.TotalSeconds;
-            nowTime = nowTime > _player.NaturalDuration.TimeSpan.TotalSeconds ? _player.NaturalDuration.TimeSpan.TotalSeconds : nowTime;
-
-            var ind = (int)Math.Ceiling(nowTime / _player.NaturalDuration.TimeSpan.TotalSeconds * CntSymbol);
-            ProgressBar.Text = $"[{new string('>', ind)}{new string('=', CntSymbol - ind)}]";
-        }
+        // Method to invoke when page closing
         public void Closing()
         {
+            Application.Current.MainWindow.KeyDown -= AdditionalKeys;
             _loaded = false;
 
             _timer.Stop();
@@ -75,17 +76,18 @@ namespace Terminal_XP.Frames
             _player.Close();
         }
 
+        // Method for relaod page
         public void Reload()
         {
             LoadTheme(_theme);
             LoadAudio();
         }
-
+        
         private void LoadTheme(string name)
         {
 
         }
-
+        
         public void Play() => _player.Play();
 
         public void Stop() => _player.Stop();
@@ -96,30 +98,43 @@ namespace Terminal_XP.Frames
 
         public void VolumeMinus() => Volume -= 0.01d;
 
+        // Method to load audio
         private void LoadAudio()
         {
             if (!File.Exists(_filename))
                 return;
 
+            // Stopping last audio file
             Stop();
             _player.Close();
 
+            // Open and play audio
             _player.Open(new Uri(_filename, UriKind.Relative));
             _player.Play();
-
-            _player.MediaOpened += (obj, e) =>
-            {
-                ProgressBar.Text = $"[{new string('=', CntSymbol)}]";
-                _loaded = true;
-            };
         }
+
+        private void UpdateProgressBar(object sender, EventArgs e)
+        {
+            if (!_loaded)
+                return;
+
+            var nowTime = _player.Position.TotalSeconds;
+            // if nowTime > TotalSeconds, set last 
+            nowTime = nowTime > _player.NaturalDuration.TimeSpan.TotalSeconds ? _player.NaturalDuration.TimeSpan.TotalSeconds : nowTime;
+
+            // Get index symbol to change
+            var ind = (int)Math.Ceiling(nowTime / _player.NaturalDuration.TimeSpan.TotalSeconds * CntSymbol);
+            // Set new line to progress bar
+            ProgressBar.Text = $"[{new string(CharCurrLen, ind)}{new string(CharAllLen, CntSymbol - ind)}]";
+        }
+        
         private void AdditionalKeys(object sender, KeyEventArgs e)
         {
             switch (e.Key)
             {
                 case Key.Escape:
+                    // Closing page and go to loadpage
                     Closing();
-                    GC.Collect();
                     NavigationService.Navigate(new LoadingPage(Path.GetDirectoryName(_filename), _theme));
                     break;
                 case Key.Space:

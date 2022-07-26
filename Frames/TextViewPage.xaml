@@ -5,10 +5,22 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:Terminal_XP.Frames"
       mc:Ignorable="d"
-      Title="TextViewPage">
+      Title="TextViewPage"
+      Focusable="False">
     <Grid>
-        <ScrollViewer x:Name="Scroller" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
-            <TextBlock x:Name="Output" TextWrapping="Wrap"/>
+        <ScrollViewer x:Name="Scroller" Focusable="False" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
+            <ScrollViewer.Style>
+                <Style TargetType="ScrollViewer">
+                    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                </Style>
+            </ScrollViewer.Style>
+            <TextBlock x:Name="Output" Focusable="False" TextWrapping="Wrap">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
         </ScrollViewer>
     </Grid>
 </Page>
