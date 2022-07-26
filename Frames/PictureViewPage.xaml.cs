@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -18,13 +19,15 @@ namespace Terminal_XP.Frames
             _filename = filename;
             _theme = theme;
 
-            Focusable = true;
-            Focus();
-
-            KeyDown += AdditionalKeys;
+            Application.Current.MainWindow.KeyDown += AdditionalKeys;
 
             LoadTheme(theme);
             LoadImage();
+        }
+
+        public void Closing()
+        {
+            Application.Current.MainWindow.KeyDown -= AdditionalKeys;
         }
 
         public void Reload()
@@ -51,6 +54,7 @@ namespace Terminal_XP.Frames
             switch (e.Key)
             {
                 case Key.Escape:
+                    Closing();
                     GC.Collect();
                     NavigationService.Navigate(new LoadingPage(Path.GetDirectoryName(_filename), _theme));
                     break;

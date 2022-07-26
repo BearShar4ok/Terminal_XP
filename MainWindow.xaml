@@ -7,6 +7,20 @@
         mc:Ignorable="d"
         Title="MainWindow">
     <Grid>
-        <Frame x:Name="Frame" NavigationUIVisibility="Hidden" Margin="50" />
+        <!--<Window>
+            <Window.Style>
+                <Style x:Name="FrameStyle" TargetType="Frame">
+                    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                </Style>
+            </Window.Style>
+        </Window>-->
+        
+        <Frame x:Name="Frame" IsTabStop="False" BorderBrush="Transparent" Focusable="False" NavigationUIVisibility="Hidden" Margin="50">
+            <Frame.Style>
+                <Style TargetType="Frame">
+                    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                </Style>
+            </Frame.Style>
+        </Frame>
     </Grid>
 </Window>

@@ -65,7 +65,7 @@ namespace Terminal_XP
 
                 DevicesManager.StopLisining();
             };
-
+            
             Frame.NavigationService.Navigate(new LoadingPage("", _theme));//G:\\TERMINAL TEST DIRECTORIES\\E\\йцу G:\\TERMINAL TEST DIRECTORIES\\E\\папка\\Новая папка
             //Frame.NavigationService.Navigate(new HackPage(Path.GetFullPath("Local/Test.jpg"), _theme));
         }

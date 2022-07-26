@@ -16,7 +16,6 @@ namespace Terminal_XP.Frames
         private string _filename;
         private string _theme;
         private bool _update;
-        private Thread _printText;
         private Mutex _mutex = new Mutex();
 
         LoadingPage loadingPage;
@@ -31,21 +30,15 @@ namespace Terminal_XP.Frames
             _theme = theme;
             Output.Text = ConfigManager.Config.SpecialSymbol;
 
-            Unloaded += (obj, e) => { Closing(); };
-
-            Focusable = true;
-            Focus();
-
-            KeyDown += AdditionalKeys;
+            Application.Current.MainWindow.KeyDown += AdditionalKeys;
 
             LoadText();
-            Scroller.Focus();
-            this.loadingPage = loadingPage;
         }
 
         public void Closing()
         {
             _update = false;
+            Application.Current.MainWindow.KeyDown -= AdditionalKeys;
         }
 
         public void Reload()
@@ -57,12 +50,10 @@ namespace Terminal_XP.Frames
             _update = false;
 
             _mutex?.WaitOne();
-            _printText.Interrupt();
             Output.Text = ConfigManager.Config.SpecialSymbol;
             _mutex?.ReleaseMutex();
 
             LoadText();
-            Scroller.Focus();
         }
 
         private void LoadText()
@@ -70,20 +61,20 @@ namespace Terminal_XP.Frames
             if (!File.Exists(_filename))
                 return;
             
-            _printText = new Thread(() =>
+            _update = true;
+            
+            new Thread(() =>
             {
                 using (var stream = File.OpenText(_filename))
                 {
                     var text = stream.ReadToEnd();
 
-                    Addition.PrintLines(Output, Dispatcher, _mutex,
+                    Addition.PrintLines(Output, Dispatcher, ref _update, _mutex,
                         new FragmentText(text,
                             ConfigManager.Config.UsingDelayFastOutput ? ConfigManager.Config.DelayFastOutput : 0));
                     UpdateCarriage();
                 }
-            });
-
-            _printText.Start();
+            }).Start();
         }
 
         private void LoadTheme(string name)
@@ -100,8 +91,6 @@ namespace Terminal_XP.Frames
 
         private void UpdateCarriage()
         {
-            _update = true;
-
             new Thread(() =>
             {
                 while (_update)
@@ -123,6 +112,7 @@ namespace Terminal_XP.Frames
                 }
             }).Start();
         }
+        
         private void AdditionalKeys(object sender, KeyEventArgs e)
         {
             switch (e.Key)
@@ -135,7 +125,6 @@ namespace Terminal_XP.Frames
                     loadingPage.test();
                     break;
             }
-
         }
     }
 }

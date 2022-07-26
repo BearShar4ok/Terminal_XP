@@ -5,8 +5,15 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:Terminal_XP.Frames"
       mc:Ignorable="d"
-      Title="VideoViewPage">
+      Title="VideoViewPage"
+      Focusable="False">
     <Grid>
-        <MediaElement x:Name="MediaPlayer" LoadedBehavior="Manual" UnloadedBehavior="Manual" Stretch="Fill" />
+        <MediaElement x:Name="MediaPlayer" Focusable="False" LoadedBehavior="Manual" UnloadedBehavior="Manual" Stretch="Fill">
+            <MediaElement.Style>
+                <Style TargetType="MediaElement">
+                    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                </Style>
+            </MediaElement.Style>
+        </MediaElement>
     </Grid>
 </Page>
