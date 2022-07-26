@@ -13,8 +13,11 @@ namespace Terminal_XP.Classes
 {
     public static class Addition
     {
+        // Path to directory with themes 
         public const string Themes = "Assets/Themes/";
+        // Path to directory with assets 
         public const string Assets = "Assets";
+        // Path to directory with error.log file 
         public const string ErrorFile = "files/Error.log";
         
         public static void ForEach<T>(this IEnumerable<T> lst, Action<T> action)
@@ -24,18 +27,11 @@ namespace Terminal_XP.Classes
             
             foreach (var item in lst)
             {
-                action?.Invoke(item);
+                action.Invoke(item);
             }
         }
-        
-        public static T To<T>(this object obj)
-        {
-            if (obj is T tobj)
-                return tobj;
 
-            return default;
-        }
-
+        // Method to print list string to textblock with delay
         public static void PrintLines<T>(T element, Dispatcher dispatcher, ref bool working, Mutex mutex = default, params FragmentText[] TextArray) where T : TextBlock
         {
             foreach (var fragmentText in TextArray)
@@ -64,6 +60,7 @@ namespace Terminal_XP.Classes
             }
         }
 
+        // Get page file by filename
         public static Page GetPageByFilename(string filename, string theme)
         {
             var exct = Path.GetExtension(filename).Remove(0, 1);
