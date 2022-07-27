@@ -329,10 +329,11 @@ namespace Terminal_XP.Frames
                     }
                     else
                     {
-                        HackPage hp = new HackPage(theme);
+                        //HackPage hp = new HackPage(theme);
+                        LoginPage lp = new LoginPage(theme,content.LoginsAndPasswords);
 
-                        _NavigationService.Navigate(hp);
-                        hp.SuccessfullyHacking += OpenFile;
+                        _NavigationService.Navigate(lp);
+                        lp.LogingIn += OpenFile;
                     }
                 }
                 catch (Exception ex)

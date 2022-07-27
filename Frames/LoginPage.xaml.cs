@@ -26,6 +26,7 @@ namespace Terminal_XP.Frames
         private bool _updateLogin;
         private bool _updatePassword;
         private readonly Mutex _mutex = new Mutex();
+        public event Action<bool> LogingIn;
 
         public LoginPage(string theme, Dictionary<string, string> dct)
         {
@@ -55,7 +56,9 @@ namespace Terminal_XP.Frames
             {
                 _updatePassword = false;
             };
-            
+
+            Application.Current.MainWindow.KeyDown += KeyPress;
+
             LoadTheme(theme);
             LoadParams();
 
@@ -66,6 +69,7 @@ namespace Terminal_XP.Frames
 
         public void Closing()
         {
+            Application.Current.MainWindow.KeyDown -= KeyPress;
             _updateLogin = false;
             _updatePassword = false;
         }
@@ -176,7 +180,7 @@ namespace Terminal_XP.Frames
             }
         }
 
-        private bool CheckLogin()
+        private void CheckLogin()
         {
             var login = TBLogin.Text;
             var password = TBPassword.Text;
@@ -186,11 +190,12 @@ namespace Terminal_XP.Frames
 
             if (password.EndsWith(Caret))
                 password = password.Remove(password.Length - 1);
-            
+
             if (_loging.ContainsKey(login) && _loging[login] == password)
-                return true;
-            
-            return false;
+                LogingIn(true);
+            //return true;
+            LogingIn(false);
+            //return false;
         }
         
         private void UpdateCarriage(TextBox textBox)
