@@ -77,14 +77,14 @@ namespace Terminal_XP.Frames
             LoadTheme(_theme);
         }
 
-        private void Closing()
-        {
-            Application.Current.MainWindow.KeyDown -= KeyPress;
-        }
-
         private void LoadTheme(string theme)
         {
             _localFontFamily = new FontFamily(new Uri("pack://application:,,,/"), "Assets/Themes/Fallout/#Fallout Regular");
+        }
+
+        private void Closing()
+        {
+            Application.Current.MainWindow.KeyDown -= KeyPress;
         }
 
         // Method to return back to LoadPage

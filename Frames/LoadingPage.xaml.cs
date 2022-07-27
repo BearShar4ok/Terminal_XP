@@ -18,11 +18,12 @@ using System.Windows.Controls.Primitives;
 using Microsoft.SqlServer.Server;
 using Path = System.IO.Path;
 using static System.Net.Mime.MediaTypeNames;
+using System.Threading;
 
 namespace Terminal_XP.Frames
 {
     //TODO: ИСПРАВИТЬ -> при переход\е на новый уровень в дереве фаылов при первичном нажатии фокус попадает на ListTextBox, хотя он там есть
-    
+
     public partial class LoadingPage : Page
     {
         private string directory = "";
@@ -73,7 +74,7 @@ namespace Terminal_XP.Frames
             passText = Addition.Themes + theme + @"/text.png";
             passAudio = Addition.Themes + theme + @"/audio.png";
             passVideo = Addition.Themes + theme + @"/video.png";
-            passDefault = Addition.Themes + theme + @"/default.jpg";
+            passDefault = Addition.Themes + theme + @"/default.png";
             DevicesManager.StartLisining();
 
             OpenFolder();
@@ -307,13 +308,23 @@ namespace Terminal_XP.Frames
             if (hachResult)
             {
                 // Success in huch
+                //MessageBox.Show("Success login");
+                _NavigationService.GoBack();
                 _NavigationService.Navigate(Addition.GetPageByFilename(directory, theme));
             }
             else
             {
                 // Fail in huch
+                //MessageBox.Show("Fail login");
                 _NavigationService.GoBack();
             }
+        }
+        private void StartHucking()
+        {
+            //MessageBox.Show("start huck");
+            HackPage hp = new HackPage(theme);
+            _NavigationService.Navigate(hp);
+            hp.SuccessfullyHacking += OpenFile;
         }
         private void ExecuteFile()
         {
@@ -329,11 +340,11 @@ namespace Terminal_XP.Frames
                     }
                     else
                     {
-                        //HackPage hp = new HackPage(theme);
-                        LoginPage lp = new LoginPage(theme,content.LoginsAndPasswords);
+                        LoginPage lp = new LoginPage(theme, content.LoginsAndPasswords);
 
                         _NavigationService.Navigate(lp);
                         lp.LogingIn += OpenFile;
+                        lp.StartHuch += StartHucking;
                     }
                 }
                 catch (Exception ex)

@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Navigation;
 using System.Windows.Threading;
 using Terminal_XP.Classes;
 
@@ -27,10 +28,17 @@ namespace Terminal_XP.Frames
         private bool _updatePassword;
         private readonly Mutex _mutex = new Mutex();
         public event Action<bool> LogingIn;
+        public event Action StartHuch;
+
+        public static RoutedCommand OpenHuckPageCommand = new RoutedCommand();
+
+        private static NavigationService _NavigationService { get; } = (System.Windows.Application.Current.MainWindow as MainWindow).Frame.NavigationService;
 
         public LoginPage(string theme, Dictionary<string, string> dct)
         {
             InitializeComponent();
+
+            OpenHuckPageCommand.InputGestures.Add(new KeyGesture(Key.R, ModifierKeys.Control));
 
             _theme = theme;
             _loging = dct;
@@ -45,7 +53,7 @@ namespace Terminal_XP.Frames
             {
                 _updateLogin = false;
             };
-            
+
             TBPassword.GotFocus += (obj, e) =>
             {
                 _updatePassword = true;
@@ -65,6 +73,9 @@ namespace Terminal_XP.Frames
             CreateAndSetGrid();
 
             TBLogin.Focus();
+
+            TBPassword.Text = "pas";
+            TBLogin.Text = "log";
         }
 
         public void Closing()
@@ -74,24 +85,31 @@ namespace Terminal_XP.Frames
             _updatePassword = false;
         }
 
+        // Method to return back to LoadPage
+        private void GoToBack()
+        {
+            Closing();
+            _NavigationService.GoBack();
+        }
+
         public void Relaod()
         {
             LoadTheme(_theme);
             LoadParams();
-            
+
             _updateLogin = false;
             _updatePassword = false;
-            
+
             TBLogin.Focus();
         }
 
         private void LoadTheme(string theme)
         {
             var fontFamily = new FontFamily(new Uri("pack://application:,,,/"), Addition.Themes + theme + "/#Fallout Regular");
-            
+
             TBLogin.FontFamily = fontFamily;
             LblLogin.FontFamily = fontFamily;
-            
+
             TBPassword.FontFamily = fontFamily;
             LblPassword.FontFamily = fontFamily;
         }
@@ -100,30 +118,30 @@ namespace Terminal_XP.Frames
         {
             TBLogin.Text = "";
             TBPassword.Text = "";
-            
+
             TBLogin.FontSize = ConfigManager.Config.FontSize;
             TBLogin.Opacity = ConfigManager.Config.Opacity;
             TBLogin.Foreground = (Brush)new BrushConverter().ConvertFromString(ConfigManager.Config.TerminalColor);
-            
+
             LblLogin.FontSize = ConfigManager.Config.FontSize;
             LblLogin.Opacity = ConfigManager.Config.Opacity;
             LblLogin.Foreground = (Brush)new BrushConverter().ConvertFromString(ConfigManager.Config.TerminalColor);
-            
-            
+
+
             TBPassword.FontSize = ConfigManager.Config.FontSize;
             TBPassword.Opacity = ConfigManager.Config.Opacity;
             TBPassword.Foreground = (Brush)new BrushConverter().ConvertFromString(ConfigManager.Config.TerminalColor);
-            
+
             LblPassword.FontSize = ConfigManager.Config.FontSize;
             LblPassword.Opacity = ConfigManager.Config.Opacity;
             LblPassword.Foreground = (Brush)new BrushConverter().ConvertFromString(ConfigManager.Config.TerminalColor);
-            
+
             var height = MeasureString("@", TBLogin.FontFamily, TBLogin.FontStyle, TBLogin.FontWeight, TBLogin.FontStretch, TBLogin.FontSize).Height;
             height += 10;
-            
+
             TBLogin.Height = height;
             LblLogin.Height = height;
-            
+
             TBPassword.Height = height;
             LblPassword.Height = height;
 
@@ -136,7 +154,7 @@ namespace Terminal_XP.Frames
                 LblLogin.BorderThickness = new Thickness(1);
                 TBPassword.BorderThickness = new Thickness(1);
                 LblPassword.BorderThickness = new Thickness(1);
-                
+
                 TBLogin.BorderBrush = Brushes.Fuchsia;
                 LblLogin.BorderBrush = Brushes.Fuchsia;
                 TBPassword.BorderBrush = Brushes.Fuchsia;
@@ -149,16 +167,16 @@ namespace Terminal_XP.Frames
             Main.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(LblLogin.Height) });
             Main.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(10) });
             Main.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(LblPassword.Height) });
-            
+
             Main.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(Math.Max(GetSizeLbl(LblLogin).Width, GetSizeLbl(LblPassword).Width) + 15) });
             Main.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(10) });
             Main.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(TbWidth) });
-            
+
             Grid.SetRow(LblLogin, 0);
             Grid.SetRow(TBLogin, 0);
             Grid.SetRow(LblPassword, 2);
             Grid.SetRow(TBPassword, 2);
-            
+
             Grid.SetColumn(LblLogin, 0);
             Grid.SetColumn(TBLogin, 2);
             Grid.SetColumn(LblPassword, 0);
@@ -192,18 +210,24 @@ namespace Terminal_XP.Frames
                 password = password.Remove(password.Length - 1);
 
             if (_loging.ContainsKey(login) && _loging[login] == password)
-                LogingIn(true);
-            //return true;
-            LogingIn(false);
-            //return false;
+            {
+                //GoToBack();
+                Closing();
+                GC.Collect();
+                LogingIn?.Invoke(true);
+                return;
+            }
+            Closing();
+            GC.Collect();
+            LogingIn?.Invoke(false);
         }
-        
+
         private void UpdateCarriage(TextBox textBox)
         {
             new Thread(() =>
             {
                 _mutex.WaitOne();
-                
+
                 while (GetUpdate(textBox))
                 {
                     Dispatcher.BeginInvoke(DispatcherPriority.Background,
@@ -225,8 +249,8 @@ namespace Terminal_XP.Frames
                     );
 
                     Thread.Sleep((int)ConfigManager.Config.DelayUpdateCarriage);
-                } 
-                
+                }
+
                 Dispatcher.BeginInvoke(DispatcherPriority.Background,
                 new Action(() =>
                     {
@@ -238,7 +262,7 @@ namespace Terminal_XP.Frames
                         }
                     })
                 );
-                
+
                 _mutex.ReleaseMutex();
             }).Start();
         }
@@ -257,7 +281,7 @@ namespace Terminal_XP.Frames
 
         private static Size GetSizeLbl(Label lbl) => MeasureString(lbl.Content.ToString(), lbl.FontFamily, lbl.FontStyle,
             lbl.FontWeight, lbl.FontStretch, lbl.FontSize);
-        
+
         private static Size MeasureString(string candidate, FontFamily font, FontStyle style, FontWeight weight, FontStretch stretch, double fontsize)
         {
             var formattedText = new FormattedText(
@@ -269,6 +293,12 @@ namespace Terminal_XP.Frames
                 Brushes.Black);
 
             return new Size(formattedText.Width, formattedText.Height);
+        }
+
+        private void OpenHuckPage(object sender, ExecutedRoutedEventArgs e)
+        {
+            GoToBack();
+            StartHuch();
         }
     }
 }
