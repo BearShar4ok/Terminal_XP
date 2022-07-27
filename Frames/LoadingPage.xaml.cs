@@ -21,15 +21,20 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace Terminal_XP.Frames
 {
+    //TODO: ИСПРАВИТЬ -> при переход\е на новый уровень в дереве фаылов при первичном нажатии фокус попадает на ListTextBox, хотя он там есть
+    
     public partial class LoadingPage : Page
     {
         private string directory = "";
         private string theme;
+
         private int deepOfPath = 0;
+        private int selectedIndex = 0;
+
         private KeyStates prevkeyState;
+
         private Dictionary<string, ListBoxItem> disks = new Dictionary<string, ListBoxItem>();
 
-        //📂🖹🖻🖺🖾 🖼
         private string passFoler;
         private string passImage;
         private string passText;
@@ -44,24 +49,21 @@ namespace Terminal_XP.Frames
         public LoadingPage(string startDirectory, string theme)
         {
             InitializeComponent();
-
-            //Focus();
-
+            // Add actions to devices
             DevicesManager.AddDisk += Add;
             DevicesManager.RemoveDisk += Remove;
-
+            // Preparation in file tree
             directory = startDirectory;
             CalculationOfDeepLevel();
             DisplayDirectory();
-
+            // Preparation of ListTextBox
             lstB.SelectionMode = SelectionMode.Single;
             lstB.SelectedIndex = 0;
             lstB.FocusVisualStyle = null;
             lstB.Focus();
 
             KeyDown += AdditionalKeys;
-
-            //KeepAlive = true;
+            KeepAlive = true;
 
             this.theme = theme;
             passFoler = Addition.Themes + theme + @"/folder.png";
@@ -71,6 +73,7 @@ namespace Terminal_XP.Frames
             passVideo = Addition.Themes + theme + @"/video.png";
             passDefault = Addition.Themes + theme + @"/default.jpg";
             DevicesManager.StartLisining();
+
             OpenFolder();
         }
 
@@ -97,7 +100,7 @@ namespace Terminal_XP.Frames
                         using (StreamReader sr = new StreamReader(text + asseccFileToReadDisk))
                         {
                             fullPath = sr.ReadToEnd();
-                            diskName = Path.GetFileNameWithoutExtension(fullPath);//temp2[temp2.Length - 1];
+                            diskName = Path.GetFileNameWithoutExtension(fullPath);
                         }
                         ListBoxItem lbi = new ListBoxItem()
                         {
@@ -139,7 +142,7 @@ namespace Terminal_XP.Frames
         private void lstB_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             directory = (string)((ListBoxItem)lstB.SelectedItem).Tag;
-            if (directory.Split('\\')[directory.Split('\\').Length-1] == "..")
+            if (directory.Split('\\')[directory.Split('\\').Length - 1] == "..")
             {
                 if (deepOfPath == 0)
                     return;
@@ -150,6 +153,8 @@ namespace Terminal_XP.Frames
                     lstB.Items.Clear();
                     deepOfPath = 0;
                     DisplayDirectory();
+                    lstB.SelectedIndex = 0;
+                    selectedIndex = lstB.SelectedIndex;
                     return;
                 }
                 directory = directory.Remove(directory.LastIndexOf("\\"));
@@ -167,7 +172,9 @@ namespace Terminal_XP.Frames
             }
             else
             {
+                selectedIndex = lstB.SelectedIndex;
                 ExecuteFile();
+                lstB.Focus();
             }
         }
         private void OpenFolder()
@@ -175,10 +182,10 @@ namespace Terminal_XP.Frames
             FindFolders();
             FindFiles();
             lstB.SelectedIndex = 0;
-            //Focus();
-            //lstB.Focus();
-            //Focus();
+            selectedIndex = lstB.SelectedIndex;
+            lstB.Focus();
         }
+        // Look for all files in directory
         private void FindFiles()
         {
             string[] allFiles;
@@ -236,9 +243,9 @@ namespace Terminal_XP.Frames
                 lstB.Items.Add(lstBI);
             }
         }
+        // Look for all folders in directory
         private void FindFolders()
         {
-
             string[] allDirectories;
             try
             {
@@ -249,7 +256,7 @@ namespace Terminal_XP.Frames
                 allDirectories = new string[0];
             }
             lstB.Items.Clear();
-            if (deepOfPath !=0)
+            if (deepOfPath != 0)
             {
                 ListBoxItem lstBI_ = new ListBoxItem()
                 {
@@ -278,6 +285,7 @@ namespace Terminal_XP.Frames
                 lstB.Items.Add(lstBI);
             }
         }
+        // All additional keys, which cant be used in System hotkeys
         private void AdditionalKeys(object sender, KeyEventArgs e)
         {
             if (prevkeyState == e.KeyStates)
@@ -294,20 +302,21 @@ namespace Terminal_XP.Frames
         }
         private void OpenFile(bool hachResult)
         {
-            //Focus();
             if (hachResult)
             {
+                // Success in huch
                 _NavigationService.Navigate(Addition.GetPageByFilename(directory, theme));
             }
             else
             {
-                MessageBox.Show("aaaa");
+                // Fail in huch
+                _NavigationService.GoBack();
             }
         }
         private void ExecuteFile()
         {
             ConfigDeserializer content;
-            if (Directory.GetFiles(directory.Remove(directory.LastIndexOf("\\"))).Contains((string)((ListBoxItem)lstB.SelectedItem).Tag + ".config"))//проверка на наличие .config
+            if (Directory.GetFiles(directory.Remove(directory.LastIndexOf("\\"))).Contains((string)((ListBoxItem)lstB.SelectedItem).Tag + ".config"))// Looking for .config
             {
                 try
                 {
@@ -319,23 +328,24 @@ namespace Terminal_XP.Frames
                     else
                     {
                         HackPage hp = new HackPage(theme);
-                        
+
                         _NavigationService.Navigate(hp);
                         hp.SuccessfullyHacking += OpenFile;
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-
+                    MessageBox.Show(ex.Message.ToString());
                 }
             }
             else
             {
                 _NavigationService.Navigate(Addition.GetPageByFilename(directory, theme));
             }
-            lstB.SelectedIndex = 0;
+            lstB.SelectedIndex = selectedIndex;
             lstB.Focus();
         }
+        // Debug pink line
         private void DisplayDirectory()
         {
             var elems = directory.Split('\\');

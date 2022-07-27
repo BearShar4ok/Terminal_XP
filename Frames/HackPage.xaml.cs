@@ -130,7 +130,6 @@ namespace Terminal_XP.Frames
                 {
                     var ind = inds[random.Next(inds.Count)];
                     currSymb += _words[ind];
-                    // inds.Remove(ind);
                     lstWord = true;
                 }
                 else
