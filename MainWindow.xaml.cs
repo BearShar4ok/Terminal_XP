@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.ComponentModel;
-
+using Terminal_XP.Windows;
 using Path = System.IO.Path;
 
 namespace Terminal_XP
@@ -64,6 +64,7 @@ namespace Terminal_XP
             Closing += (obj, e) => DevicesManager.StopLisining();
 
             Frame.NavigationService.Navigate(new LoginPage(_theme, new Dictionary<string, string>() { { "admin", "admin" } }));
+            new AlertWindow("Test", "Вы точно человек?", "Ok", _theme).Show();
             // Frame.NavigationService.Navigate(new LoadingPage(Path.GetFullPath("Local/"), _theme));//G:\\TERMINAL TEST DIRECTORIES\\E\\йцу G:\\TERMINAL TEST DIRECTORIES\\E\\папка\\Новая папка
             // Frame.NavigationService.Navigate(new HackPage(Path.GetFullPath("Local/Test.jpg"), _theme));
         }

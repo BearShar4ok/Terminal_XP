@@ -7,7 +7,6 @@
     "DelayFastOutput": 1,
     "DelayUpdateCarriage": 500,
     "SpecialSymbol": "❚",
-    "DefaultVolume": 0.30,
     "WordsForHacking": [ "привет", "дорогой", "друг", "мир", "дружба", "встреча", "ненависть" ],
     "RatioSpawnWords": 500,
     "LengthHackString": 500,

@@ -137,6 +137,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Themes\Fallout\Alert_background.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Themes\Fallout\Background.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
