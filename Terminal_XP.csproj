@@ -39,6 +39,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -68,6 +69,7 @@
     </Compile>
     <Compile Include="Classes\Addition.cs" />
     <Compile Include="Classes\Config.cs" />
+    <Compile Include="Classes\ConfigDeserializer.cs" />
     <Compile Include="Classes\ConfigManager.cs" />
     <Compile Include="Classes\DevicesManager.cs" />
     <Compile Include="Classes\FragmentText.cs" />

@@ -18,6 +18,7 @@ namespace Terminal_XP.Frames
         private bool _update;
         private Mutex _mutex = new Mutex();
 
+
         public TextViewPage(string filename, string theme)
         {
             InitializeComponent();
@@ -27,7 +28,7 @@ namespace Terminal_XP.Frames
             _filename = filename;
             _theme = theme;
             Output.Text = ConfigManager.Config.SpecialSymbol;
-            
+
             Application.Current.MainWindow.KeyDown += AdditionalKeys;
 
             LoadText();

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-
+using Newtonsoft.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -17,52 +17,65 @@ using Terminal_XP.Classes;
 using System.Windows.Controls.Primitives;
 using Microsoft.SqlServer.Server;
 using Path = System.IO.Path;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Terminal_XP.Frames
 {
+    //TODO: ИСПРАВИТЬ -> при переход\е на новый уровень в дереве фаылов при первичном нажатии фокус попадает на ListTextBox, хотя он там есть
+    
     public partial class LoadingPage : Page
     {
         private string directory = "";
         private string theme;
+
         private int deepOfPath = 0;
+        private int selectedIndex = 0;
+
         private KeyStates prevkeyState;
+
         private Dictionary<string, ListBoxItem> disks = new Dictionary<string, ListBoxItem>();
 
-        //📂🖹🖻🖺🖾 🖼
         private string passFoler;
         private string passImage;
         private string passText;
         private string passAudio;
         private string passVideo;
+        private string passDefault;
 
         private const string asseccFileToReadDisk = "READ_DISK.txt";
+
+        private static NavigationService _NavigationService { get; } = (System.Windows.Application.Current.MainWindow as MainWindow).Frame.NavigationService;
 
         public LoadingPage(string startDirectory, string theme)
         {
             InitializeComponent();
-
+            // Add actions to devices
             DevicesManager.AddDisk += Add;
             DevicesManager.RemoveDisk += Remove;
-
+            // Preparation in file tree
             directory = startDirectory;
             CalculationOfDeepLevel();
             DisplayDirectory();
-
+            // Preparation of ListTextBox
             lstB.SelectionMode = SelectionMode.Single;
+            lstB.SelectedIndex = 0;
             lstB.FocusVisualStyle = null;
             lstB.Focus();
 
             KeepAlive = true;
 
             KeyDown += AdditionalKeys;
+            KeepAlive = true;
 
             this.theme = theme;
             passFoler = Addition.Themes + theme + @"/folder.png";
             passImage = Addition.Themes + theme + @"/image.png";
-            passText =  Addition.Themes + theme + @"/text.png";
+            passText = Addition.Themes + theme + @"/text.png";
             passAudio = Addition.Themes + theme + @"/audio.png";
             passVideo = Addition.Themes + theme + @"/video.png";
+            passDefault = Addition.Themes + theme + @"/default.jpg";
             DevicesManager.StartLisining();
+
             OpenFolder();
         }
 
@@ -89,7 +102,7 @@ namespace Terminal_XP.Frames
                         using (StreamReader sr = new StreamReader(text + asseccFileToReadDisk))
                         {
                             fullPath = sr.ReadToEnd();
-                            diskName = Path.GetFileNameWithoutExtension(fullPath);//temp2[temp2.Length - 1];
+                            diskName = Path.GetFileNameWithoutExtension(fullPath);
                         }
                         ListBoxItem lbi = new ListBoxItem()
                         {
@@ -131,6 +144,27 @@ namespace Terminal_XP.Frames
         private void lstB_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             directory = (string)((ListBoxItem)lstB.SelectedItem).Tag;
+            if (directory.Split('\\')[directory.Split('\\').Length - 1] == "..")
+            {
+                if (deepOfPath == 0)
+                    return;
+                deepOfPath--;
+                if (deepOfPath == 0)
+                {
+                    DevicesManager.ClearAllDisks();
+                    lstB.Items.Clear();
+                    deepOfPath = 0;
+                    DisplayDirectory();
+                    lstB.SelectedIndex = 0;
+                    selectedIndex = lstB.SelectedIndex;
+                    return;
+                }
+                directory = directory.Remove(directory.LastIndexOf("\\"));
+                directory = directory.Remove(directory.LastIndexOf("\\"));
+                DisplayDirectory();
+                OpenFolder();
+                return;
+            }
 
             if (IsFolder(directory))
             {
@@ -140,14 +174,20 @@ namespace Terminal_XP.Frames
             }
             else
             {
+                selectedIndex = lstB.SelectedIndex;
                 ExecuteFile();
+                lstB.Focus();
             }
         }
         private void OpenFolder()
         {
-            FindFiles();
             FindFolders();
+            FindFiles();
+            lstB.SelectedIndex = 0;
+            selectedIndex = lstB.SelectedIndex;
+            lstB.Focus();
         }
+        // Look for all files in directory
         private void FindFiles()
         {
             string[] allFiles;
@@ -159,12 +199,15 @@ namespace Terminal_XP.Frames
             {
                 allFiles = new string[0];
             }
-            lstB.Items.Clear();
             for (int i = 0; i < allFiles.Length; i++)
             {
                 string text = Path.GetFileNameWithoutExtension(allFiles[i]);
                 string format = Path.GetExtension(allFiles[i]).Remove(0, 1);
                 //  🖹🖻🖺
+
+                //if (format == "config")
+                //continue;
+
                 ListBoxItem lstBI = new ListBoxItem()
                 {
                     Content = text,
@@ -196,11 +239,13 @@ namespace Terminal_XP.Frames
                         lstBI.DataContext = new BitmapImage(new Uri(Path.GetFullPath(passVideo)));
                         break;
                     default:
+                        lstBI.DataContext = new BitmapImage(new Uri(Path.GetFullPath(passDefault)));
                         break;
                 }
                 lstB.Items.Add(lstBI);
             }
         }
+        // Look for all folders in directory
         private void FindFolders()
         {
             string[] allDirectories;
@@ -211,6 +256,18 @@ namespace Terminal_XP.Frames
             catch (Exception)
             {
                 allDirectories = new string[0];
+            }
+            lstB.Items.Clear();
+            if (deepOfPath != 0)
+            {
+                ListBoxItem lstBI_ = new ListBoxItem()
+                {
+                    DataContext = new BitmapImage(new Uri(Path.GetFullPath(passFoler))),
+                    Content = "..",
+                    Tag = directory + "\\..",
+                    Style = (Style)Resources["ImageText"],
+                };
+                lstB.Items.Add(lstBI_);
             }
             for (int i = 0; i < allDirectories.Length; i++)
             {
@@ -229,8 +286,8 @@ namespace Terminal_XP.Frames
 
                 lstB.Items.Add(lstBI);
             }
-            lstB.SelectedIndex = 0;
         }
+        // All additional keys, which cant be used in System hotkeys
         private void AdditionalKeys(object sender, KeyEventArgs e)
         {
             if (prevkeyState == e.KeyStates)
@@ -241,30 +298,56 @@ namespace Terminal_XP.Frames
                 case Key.Enter:
                     lstB_MouseDoubleClick(null, null);
                     break;
-                case Key.Escape:
-                    if (deepOfPath == 0)
-                        return;
-                    deepOfPath--;
-                    if (deepOfPath == 0)
-                    {
-                        DevicesManager.ClearAllDisks();
-                        lstB.Items.Clear();
-                        deepOfPath = 0;
-                        DisplayDirectory();
-                        return;
-                    }
-                    directory = directory.Remove(directory.LastIndexOf("\\"));
-                    DisplayDirectory();
-                    OpenFolder();
-                    break;
                 default:
                     break;
             }
         }
+        private void OpenFile(bool hachResult)
+        {
+            if (hachResult)
+            {
+                // Success in huch
+                _NavigationService.Navigate(Addition.GetPageByFilename(directory, theme));
+            }
+            else
+            {
+                // Fail in huch
+                _NavigationService.GoBack();
+            }
+        }
         private void ExecuteFile()
         {
-            NavigationService.Navigate(Addition.GetPageByFilename(directory, theme));
+            ConfigDeserializer content;
+            if (Directory.GetFiles(directory.Remove(directory.LastIndexOf("\\"))).Contains((string)((ListBoxItem)lstB.SelectedItem).Tag + ".config"))// Looking for .config
+            {
+                try
+                {
+                    content = JsonConvert.DeserializeObject<ConfigDeserializer>(File.ReadAllText((string)((ListBoxItem)lstB.SelectedItem).Tag + ".config"));
+                    if (!content.HasPassword)
+                    {
+                        _NavigationService.Navigate(Addition.GetPageByFilename(directory, theme));
+                    }
+                    else
+                    {
+                        HackPage hp = new HackPage(theme);
+
+                        _NavigationService.Navigate(hp);
+                        hp.SuccessfullyHacking += OpenFile;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message.ToString());
+                }
+            }
+            else
+            {
+                _NavigationService.Navigate(Addition.GetPageByFilename(directory, theme));
+            }
+            lstB.SelectedIndex = selectedIndex;
+            lstB.Focus();
         }
+        // Debug pink line
         private void DisplayDirectory()
         {
             var elems = directory.Split('\\');
@@ -295,6 +378,10 @@ namespace Terminal_XP.Frames
         private bool IsFolder(string text)
         {
             return !(text.Contains("."));
+        }
+        private void Closing()
+        {
+            DevicesManager.StopLisining();
         }
     }
 }

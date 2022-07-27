@@ -29,6 +29,10 @@ namespace Terminal_XP
 
             _theme = ConfigManager.Config.Theme;
 
+            //Topmost = true;     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////      ВЕРНУТЬ
+
+            //Cursor = Cursors.None;
+
             LoadTheme(_theme);
             LoadParams();
             
@@ -56,7 +60,7 @@ namespace Terminal_XP
                         break;
                 }
             };
-
+            
             Closing += (obj, e) => DevicesManager.StopLisining();
 
             Frame.NavigationService.Navigate(new LoginPage(_theme, new Dictionary<string, string>() { { "admin", "admin" } }));
