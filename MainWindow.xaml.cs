@@ -59,7 +59,7 @@ namespace Terminal_XP
 
             Closing += (obj, e) => DevicesManager.StopLisining();
 
-            Frame.NavigationService.Navigate(new LoginPage(_theme));
+            Frame.NavigationService.Navigate(new LoginPage(_theme, new Dictionary<string, string>() { { "admin", "admin" } }));
             // Frame.NavigationService.Navigate(new LoadingPage(Path.GetFullPath("Local/"), _theme));//G:\\TERMINAL TEST DIRECTORIES\\E\\йцу G:\\TERMINAL TEST DIRECTORIES\\E\\папка\\Новая папка
             // Frame.NavigationService.Navigate(new HackPage(Path.GetFullPath("Local/Test.jpg"), _theme));
         }

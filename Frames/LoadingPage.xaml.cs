@@ -52,6 +52,8 @@ namespace Terminal_XP.Frames
             lstB.FocusVisualStyle = null;
             lstB.Focus();
 
+            KeepAlive = true;
+
             KeyDown += AdditionalKeys;
 
             this.theme = theme;

@@ -1,32 +1,60 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Terminal_XP.Classes;
-using System.Windows.Controls.Primitives;
 
 namespace Terminal_XP.Frames
 {
     public partial class LoginPage : Page
     {
-        private const int TBWidth = 400;
-        private const bool IsDebugMod = true;
+        private const int TbWidth = 400;
+        private const string Caret = "_";
+        private const bool IsDebugMod = false;
 
-        private string _theme;
-        private bool _update = false;
-        
-        public LoginPage(string theme)
+        private readonly string _theme;
+        private readonly Dictionary<string, string> _loging;
+
+        private bool _haveCaretLogin;
+        private bool _haveCaretPassword;
+        private bool _updateLogin;
+        private bool _updatePassword;
+        private readonly Mutex _mutex = new Mutex();
+
+        public LoginPage(string theme, Dictionary<string, string> dct)
         {
             InitializeComponent();
 
             _theme = theme;
+            _loging = dct;
+
+            TBLogin.GotFocus += (obj, e) =>
+            {
+                _updateLogin = true;
+                UpdateCarriage(TBLogin);
+            };
+
+            TBLogin.LostFocus += (obj, e) =>
+            {
+                _updateLogin = false;
+            };
             
-            UpdateCarriage(TBLogin);
-            UpdateCarriage(TBPassword);
+            TBPassword.GotFocus += (obj, e) =>
+            {
+                _updatePassword = true;
+                UpdateCarriage(TBPassword);
+            };
+
+            TBPassword.LostFocus += (obj, e) =>
+            {
+                _updatePassword = false;
+            };
             
             LoadTheme(theme);
             LoadParams();
@@ -36,10 +64,19 @@ namespace Terminal_XP.Frames
             TBLogin.Focus();
         }
 
+        public void Closing()
+        {
+            _updateLogin = false;
+            _updatePassword = false;
+        }
+
         public void Relaod()
         {
             LoadTheme(_theme);
             LoadParams();
+            
+            _updateLogin = false;
+            _updatePassword = false;
             
             TBLogin.Focus();
         }
@@ -86,8 +123,8 @@ namespace Terminal_XP.Frames
             TBPassword.Height = height;
             LblPassword.Height = height;
 
-            TBLogin.Width = TBWidth;
-            TBPassword.Width = TBWidth;
+            TBLogin.Width = TbWidth;
+            TBPassword.Width = TbWidth;
 
             if (IsDebugMod)
             {
@@ -111,7 +148,7 @@ namespace Terminal_XP.Frames
             
             Main.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(Math.Max(GetSizeLbl(LblLogin).Width, GetSizeLbl(LblPassword).Width) + 15) });
             Main.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(10) });
-            Main.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(TBWidth) });
+            Main.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(TbWidth) });
             
             Grid.SetRow(LblLogin, 0);
             Grid.SetRow(TBLogin, 0);
@@ -123,25 +160,94 @@ namespace Terminal_XP.Frames
             Grid.SetColumn(LblPassword, 0);
             Grid.SetColumn(TBPassword, 2);
         }
+
+        private void KeyPress(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.Escape:
+                    Closing();
+                    NavigationService?.GoBack();
+                    break;
+                case Key.Enter:
+                    // Check right login and password
+                    CheckLogin();
+                    break;
+            }
+        }
+
+        private bool CheckLogin()
+        {
+            var login = TBLogin.Text;
+            var password = TBPassword.Text;
+
+            if (login.EndsWith(Caret))
+                login = login.Remove(login.Length - 1);
+
+            if (password.EndsWith(Caret))
+                password = password.Remove(password.Length - 1);
+            
+            if (_loging.ContainsKey(login) && _loging[login] == password)
+                return true;
+            
+            return false;
+        }
         
         private void UpdateCarriage(TextBox textBox)
         {
             new Thread(() =>
             {
-                while (_update)
+                _mutex.WaitOne();
+                
+                while (GetUpdate(textBox))
                 {
                     Dispatcher.BeginInvoke(DispatcherPriority.Background,
                         new Action(() =>
                         {
-                            if (textBox.Text.Length > 0 && textBox.Text[textBox.Text.Length - 1].ToString() == ConfigManager.Config.SpecialSymbol)
+                            if (textBox.Text.Length > 0 && textBox.Text.EndsWith(Caret) && GetHaveCaret(textBox))
+                            {
                                 textBox.Text = textBox.Text.Remove(textBox.Text.Length - 1);
+                                textBox.CaretIndex = textBox.Text.Length;
+                                SetHaveCaret(textBox, false);
+                            }
                             else
-                                textBox.Text += ConfigManager.Config.SpecialSymbol;
-                        }));
+                            {
+                                textBox.Text += Caret;
+                                textBox.CaretIndex = textBox.Text.Length - 1;
+                                SetHaveCaret(textBox, true);
+                            }
+                        })
+                    );
 
                     Thread.Sleep((int)ConfigManager.Config.DelayUpdateCarriage);
-                }
+                } 
+                
+                Dispatcher.BeginInvoke(DispatcherPriority.Background,
+                new Action(() =>
+                    {
+                        if (textBox.Text.Length > 0 && textBox.Text.EndsWith(Caret) && GetHaveCaret(textBox))
+                        {
+                            textBox.Text = textBox.Text.Remove(textBox.Text.Length - 1);
+                            textBox.CaretIndex = textBox.Text.Length;
+                            SetHaveCaret(textBox, false);
+                        }
+                    })
+                );
+                
+                _mutex.ReleaseMutex();
             }).Start();
+        }
+
+        private bool GetHaveCaret(TextBox textBox) => textBox == TBLogin ? _haveCaretLogin : _haveCaretPassword;
+
+        private bool GetUpdate(TextBox textBox) => textBox == TBLogin ? _updateLogin : _updatePassword;
+
+        private void SetHaveCaret(TextBox textBox, bool val)
+        {
+            if (textBox == TBLogin)
+                _haveCaretLogin = val;
+
+            _haveCaretPassword = val;
         }
 
         private static Size GetSizeLbl(Label lbl) => MeasureString(lbl.Content.ToString(), lbl.FontFamily, lbl.FontStyle,
