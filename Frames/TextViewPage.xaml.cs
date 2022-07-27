@@ -76,9 +76,9 @@ namespace Terminal_XP.Frames
             }).Start();
         }
 
-        private void LoadTheme(string name)
+        private void LoadTheme(string theme)
         {
-            Output.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), "Assets/Themes/Fallout/#Fallout Regular");
+            Output.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), Addition.Themes + theme + "/#Fallout Regular");
         }
 
         private void LoadParams()
