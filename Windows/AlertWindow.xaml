@@ -6,7 +6,10 @@
         xmlns:local="clr-namespace:Terminal_XP.Windows"
         mc:Ignorable="d"
         WindowStyle="None"
-        Title="AlertWindow" Height="150" Width="250">
+        Title="AlertWindow" 
+        Height="300" Width="500"
+        AllowsTransparency="True"
+        Cursor="None">
     <Border BorderThickness="2" BorderBrush="Red">
         <Grid>
             <Grid.RowDefinitions>
@@ -14,11 +17,22 @@
                 <RowDefinition Height="55*"/>
                 <RowDefinition Height="25*"/>
             </Grid.RowDefinitions>
-            <TextBox x:Name="titleTextBox" Grid.Row="0" Text="Title"  FontSize="20" />
-            <TextBox x:Name="textTextBox" Grid.Row="1" Text="Title"  FontSize="20" />
-            <Button x:Name="reseltButton" Grid.Row="2" Content="Button" Width="80" Margin="0,0,0,5">
-
-            </Button>
+            
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            
+            <StackPanel Grid.ColumnSpan="3" Grid.Row="0">
+                <Label x:Name="LblTitle" Background="Transparent"  FontSize="20" />
+                <Separator Background="Black" />
+            </StackPanel>
+            
+            <Label x:Name="LblMessage" Background="Transparent" Grid.ColumnSpan="3" Grid.Row="1" HorizontalContentAlignment="Center" FontSize="20" />
+            <Border BorderBrush="Black" BorderThickness="3" Grid.Row="2" Grid.Column="1" Background="#dddddd" Margin="0,0,0,5">
+                <Label x:Name="LblButton" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+            </Border>
         </Grid>
     </Border>
 </Window>

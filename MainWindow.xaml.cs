@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.ComponentModel;
-
+using Terminal_XP.Windows;
 using Path = System.IO.Path;
 
 namespace Terminal_XP
