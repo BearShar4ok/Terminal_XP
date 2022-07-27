@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Navigation;
 using System.Windows.Threading;
 using Terminal_XP.Classes;
 
@@ -33,9 +34,12 @@ namespace Terminal_XP.Frames
             }
         }
 
-        public AudioViewPage(string filename, string theme)
+        public AudioViewPage(string filename, string theme, bool clearPage = false)
         {
             InitializeComponent();
+
+            if (clearPage)
+                Addition.NavigationService.Navigated += RemoveLast;
 
             _filename = filename;
             _theme = theme;
@@ -64,10 +68,16 @@ namespace Terminal_XP.Frames
             LoadTheme(theme);
             LoadAudio();
         }
+        
+        private void RemoveLast(object obj, NavigationEventArgs e)
+        {
+            Addition.NavigationService?.RemoveBackEntry();
+        }
 
         // Method to invoke when page closing
         public void Closing()
         {
+            Addition.NavigationService.Navigated -= RemoveLast;
             Application.Current.MainWindow.KeyDown -= AdditionalKeys;
             _loaded = false;
 
@@ -135,7 +145,7 @@ namespace Terminal_XP.Frames
                 case Key.Escape:
                     // Closing page and go to loading page
                     Closing();
-                    NavigationService?.GoBack();
+                    Addition.NavigationService?.GoBack();
                     break;
                 case Key.Space:
                     if (_stop)

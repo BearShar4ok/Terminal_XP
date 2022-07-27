@@ -90,21 +90,21 @@ namespace Terminal_XP.Classes
         }
 
         // Get page file by filename
-        public static Page GetPageByFilename(string filename, string theme)
+        public static Page GetPageByFilename(string filename, string theme, bool clearPage = false)
         {
             var exct = Path.GetExtension(filename).Remove(0, 1);
 
             if (Audio.Contains(exct))
-                return new AudioViewPage(filename, theme);
+                return new AudioViewPage(filename, theme, clearPage);
             
             if (Video.Contains(exct))
-                return new VideoViewPage(filename, theme);
+                return new VideoViewPage(filename, theme, clearPage);
 
             if (Image.Contains(exct))
-                return new PictureViewPage(filename, theme);
+                return new PictureViewPage(filename, theme, clearPage);
 
             if (Text.Contains(exct))
-                return new TextViewPage(filename, theme);
+                return new TextViewPage(filename, theme, clearPage);
 
             return default;
         }

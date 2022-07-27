@@ -8,8 +8,7 @@
       Title="LoginPage"
       Focusable="False">
     <Page.CommandBindings>
-        <CommandBinding Command="{x:Static local:LoginPage.OpenHuckPageCommand}" 
-                     Executed="OpenHuckPage"/>
+        <CommandBinding Command="{x:Static local:LoginPage.OpenHackPageCommand}" Executed="OpenHackPage"/>
     </Page.CommandBindings>
     <Grid x:Name="Main">
         <Label x:Name="LblLogin" HorizontalAlignment="Left" Content="Login:" Background="Transparent" BorderThickness="0" Focusable="False" />

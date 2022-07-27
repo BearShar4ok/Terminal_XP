@@ -17,31 +17,27 @@ namespace Terminal_XP.Frames
     {
         private const int TbWidth = 400;
         private const string Caret = "_";
-        private const bool IsDebugMod = false;
+        private const bool IsDebugMod = true;
 
         private readonly string _theme;
-        private readonly Dictionary<string, string> _loging;
+        private readonly string _filename;
+        private readonly Dictionary<string, string> _database;
 
         private bool _haveCaretLogin;
         private bool _haveCaretPassword;
         private bool _updateLogin;
         private bool _updatePassword;
         private readonly Mutex _mutex = new Mutex();
-        public event Action<bool> LogingIn;
-        public event Action StartHuch;
 
-        public static RoutedCommand OpenHuckPageCommand = new RoutedCommand();
+        public static RoutedCommand OpenHackPageCommand = new RoutedCommand();
 
-        private static NavigationService _NavigationService { get; } = (System.Windows.Application.Current.MainWindow as MainWindow).Frame.NavigationService;
-
-        public LoginPage(string theme, Dictionary<string, string> dct)
+        public LoginPage(string filename, string theme, Dictionary<string, string> dct)
         {
             InitializeComponent();
 
-            OpenHuckPageCommand.InputGestures.Add(new KeyGesture(Key.R, ModifierKeys.Control));
-
             _theme = theme;
-            _loging = dct;
+            _filename = filename;
+            _database = dct;
 
             TBLogin.GotFocus += (obj, e) =>
             {
@@ -73,9 +69,13 @@ namespace Terminal_XP.Frames
             CreateAndSetGrid();
 
             TBLogin.Focus();
+            OpenHackPageCommand.InputGestures.Add(new KeyGesture(Key.R, ModifierKeys.Control));
 
-            TBPassword.Text = "pas";
-            TBLogin.Text = "log";
+            if (IsDebugMod)
+            {
+                TBLogin.Text = "login";
+                TBPassword.Text = "password";
+            }
         }
 
         public void Closing()
@@ -89,7 +89,19 @@ namespace Terminal_XP.Frames
         private void GoToBack()
         {
             Closing();
-            _NavigationService.GoBack();
+            Addition.NavigationService.GoBack();
+        }
+
+        private void GoToHackPage()
+        {
+            Closing();
+            Addition.NavigationService?.Navigate(new HackPage(_filename, _theme, true));
+        }
+
+        private void GoToNextPage()
+        {
+            Closing();
+            Addition.NavigationService?.Navigate(Addition.GetPageByFilename(_filename, _theme, true));
         }
 
         public void Relaod()
@@ -188,17 +200,28 @@ namespace Terminal_XP.Frames
             switch (e.Key)
             {
                 case Key.Escape:
-                    Closing();
-                    NavigationService?.GoBack();
+                    GoToBack();
                     break;
                 case Key.Enter:
-                    // Check right login and password
-                    CheckLogin();
+                    if (CheckLoginAndPassword())
+                    {
+                        GoToNextPage();
+                    }
                     break;
             }
         }
 
-        private void CheckLogin()
+        private bool CheckLogin()
+        {
+            var login = TBLogin.Text;
+
+            if (login.EndsWith(Caret))
+                login = login.Remove(login.Length - 1);
+
+            return _database.ContainsKey(login);
+        }
+
+        private bool CheckLoginAndPassword()
         {
             var login = TBLogin.Text;
             var password = TBPassword.Text;
@@ -209,17 +232,7 @@ namespace Terminal_XP.Frames
             if (password.EndsWith(Caret))
                 password = password.Remove(password.Length - 1);
 
-            if (_loging.ContainsKey(login) && _loging[login] == password)
-            {
-                //GoToBack();
-                Closing();
-                GC.Collect();
-                LogingIn?.Invoke(true);
-                return;
-            }
-            Closing();
-            GC.Collect();
-            LogingIn?.Invoke(false);
+            return _database.ContainsKey(login) && _database[login] == password;
         }
 
         private void UpdateCarriage(TextBox textBox)
@@ -279,7 +292,7 @@ namespace Terminal_XP.Frames
             _haveCaretPassword = val;
         }
 
-        private static Size GetSizeLbl(Label lbl) => MeasureString(lbl.Content.ToString(), lbl.FontFamily, lbl.FontStyle,
+        private static Size GetSizeLbl(ContentControl lbl) => MeasureString(lbl.Content.ToString(), lbl.FontFamily, lbl.FontStyle,
             lbl.FontWeight, lbl.FontStretch, lbl.FontSize);
 
         private static Size MeasureString(string candidate, FontFamily font, FontStyle style, FontWeight weight, FontStretch stretch, double fontsize)
@@ -295,10 +308,12 @@ namespace Terminal_XP.Frames
             return new Size(formattedText.Width, formattedText.Height);
         }
 
-        private void OpenHuckPage(object sender, ExecutedRoutedEventArgs e)
+        private void OpenHackPage(object sender, ExecutedRoutedEventArgs e)
         {
-            GoToBack();
-            StartHuch();
+            if (CheckLogin())
+            {
+                GoToHackPage();
+            }
         }
     }
 }

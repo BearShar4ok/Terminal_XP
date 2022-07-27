@@ -248,27 +248,7 @@ namespace Terminal_XP.Frames
             
             _prevkeyState = e.KeyStates;
         }
-        
-        private void OpenFile(string directory, bool hachResult)
-        {
-            if (hachResult)
-            {
-                _NavigationService.GoBack();
-                _NavigationService.Navigate(Addition.GetPageByFilename(directory, _theme));
-            }
-            else
-            {
-                _NavigationService.GoBack();
-            }
-        }
-        
-        private void StartHacking(string directory)
-        {
-            var hp = new HackPage(_theme);
-            _NavigationService.Navigate(hp);
-            hp.SuccessfullyHacking += result => OpenFile(directory, result);
-        }
-        
+
         private void ExecuteFile(string directory)
         {
             if (Directory.GetFiles(directory.RemoveLast(@"\")).Contains(directory + ".config"))
@@ -281,15 +261,13 @@ namespace Terminal_XP.Frames
                 }
                 else
                 {
-                    var lp = new LoginPage(_theme, content.LoginsAndPasswords);
-
-                    _NavigationService.Navigate(lp);
-                    lp.LogingIn += result => OpenFile(directory, result);
-                    lp.StartHuch += () => StartHacking(directory);
+                    _NavigationService.Navigate(new LoginPage(directory, _theme, content.LoginsAndPasswords));
                 }
             }
             else
             {
+                // TODO: Generate config file for this file
+                
                 var nextPage = Addition.GetPageByFilename(directory, _theme);
                 
                 if (nextPage != default)

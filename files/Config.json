@@ -8,7 +8,7 @@
     "DelayUpdateCarriage": 500,
     "SpecialSymbol": "❚",
     "WordsForHacking": [ "привет", "дорогой", "друг", "мир", "дружба", "встреча", "ненависть" ],
-    "RatioSpawnWords": 500,
+    "RatioSpawnWords": 5,
     "LengthHackString": 500,
     "CountLivesForHacking": 6
 }
