@@ -20,7 +20,9 @@ namespace Terminal_XP
 {
     public partial class MainWindow : Window
     {
-        private string _theme;
+        private const bool IsDebugMod = true;
+        
+        private readonly string _theme;
 
         public MainWindow()
         {
@@ -29,14 +31,14 @@ namespace Terminal_XP
 
             _theme = ConfigManager.Config.Theme;
 
-            //Topmost = true;     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////      ВЕРНУТЬ
-
-            //Cursor = Cursors.None;
+            if (!IsDebugMod)
+            {
+                Topmost = true;
+                Cursor = Cursors.None;
+            }
 
             LoadTheme(_theme);
             LoadParams();
-            
-            //ExecuteFile(Addition.Local + "/Test.flac");
         }
 
         private void LoadTheme(string name)
@@ -51,33 +53,19 @@ namespace Terminal_XP
             ResizeMode = ResizeMode.NoResize;
             AllowsTransparency = true;
 
-            KeyDown += (obj, e) =>
-            {
-                switch (e.Key)
-                {
-                    case Key.R: //DEBUG
-                        TryExcuteMethod(Frame.NavigationService.Content.GetType(), "Reload");
-                        break;
-                }
-            };
+            Closing += (obj, e) => DevicesManager.StopListening();
             
-            Closing += (obj, e) => DevicesManager.StopLisining();
-
-           // Frame.NavigationService.Navigate(new LoginPage(_theme, new Dictionary<string, string>() { { "admin", "admin" } }));
-             Frame.NavigationService.Navigate(new LoadingPage(Path.GetFullPath("Local/"), _theme));//G:\\TERMINAL TEST DIRECTORIES\\E\\йцу G:\\TERMINAL TEST DIRECTORIES\\E\\папка\\Новая папка
-            // Frame.NavigationService.Navigate(new HackPage(Path.GetFullPath("Local/Test.jpg"), _theme));
+             Frame.NavigationService.Navigate(new LoadingPage(_theme));
         }
 
-        
-
-        private void TryExcuteMethod(Type type, string name)
+        private void TryExecuteMethod(object obj, Type type, string name)
         {
             try
             {
                 foreach (var item in type.GetMethods())
                 {
                     if (item.Name == name)
-                        item.Invoke(Frame.NavigationService.Content, default);
+                        item.Invoke(obj, default);
                 }
             }
             catch { }

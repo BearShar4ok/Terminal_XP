@@ -11,74 +11,58 @@ namespace Terminal_XP.Classes
     {
         public static event Action<string> AddDisk;
         public static event Action<string> RemoveDisk;
-        public static Action ClearAllDisks;
-
-        private static List<string> disks = new List<string>();
-
-        private static bool isActive;
 
         private const int Delay = 1000;
-        private static Thread thread;
+
+        private static List<string> _disks = new List<string>();
         
-        public static void StartLisining()
+        private static bool _isActive;
+        private static Thread _thread;
+        
+        public static void StartListening()
         {
-            isActive = true;
-            ClearAllDisks += DisksClear;
-            thread = new Thread(Update);
-            thread.Start();
+            _isActive = true;
+            new Thread(Update).Start();
         }
 
-        public static void StopLisining()
-        {
-            isActive = false;
-        }
-        private static void DisksClear()
-        {
-            disks.Clear();
-        }
+        public static void StopListening() => _isActive = false;
+
+        public static void ClearDisks() => _disks.Clear();
 
         private static void Update()
         {
             try
             {
-                while (isActive)
-            {
-                var drives = DriveInfo.GetDrives();
+                while (_isActive)
+                {
+                    var drives = DriveInfo.GetDrives();
                     var tempDisks = new List<string>();
 
-                foreach (var disk in drives)
-                {
+                    foreach (var disk in drives)
+                    {
                         tempDisks.Add(disk.Name);
 
-                        if (!disks.Contains(disk.Name))
-                        {
-                            if (AddDisk != null)
-                            {
-                                AddDisk.Invoke(disk.Name);
-                }
-                            disks.Add(disk.Name);
-                        }
+                        if (_disks.Contains(disk.Name)) continue;
+                        
+                        AddDisk?.Invoke(disk.Name);
+                        _disks.Add(disk.Name);
                     }
 
-                    for (int i = 0; i < disks.Count; i++)
+                    for (var i = 0; i < _disks.Count; i++)
                     {
-                        if (!tempDisks.Contains(disks[i]))
-                        {
-                            if (RemoveDisk!=null)
-                {
-                                RemoveDisk.Invoke(disks[i]);
-                            }
-                            disks.RemoveAt(i);
-                    i--;
-                }
+                        if (tempDisks.Contains(_disks[i])) continue;
+
+                        RemoveDisk?.Invoke(_disks[i]);
+                        _disks.RemoveAt(i);
+                        i--;
                     }
 
-                Thread.Sleep(Delay);
-            }
+                    Thread.Sleep(Delay);
+                }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine(ex.Message);
+                Logger.Error(ex);
             }
             
         }

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Navigation;
 using System.Windows.Threading;
@@ -15,10 +17,21 @@ namespace Terminal_XP.Classes
     {
         // Path to directory with themes 
         public const string Themes = "Assets/Themes/";
+        // Path to icons folder in theme
+        public const string Icons = "Icons";
         // Path to directory with assets 
         public const string Assets = "Assets";
         // Path to directory with error.log file 
         public const string ErrorFile = "files/Error.log";
+        
+        // NavigationService
+        public static NavigationService NavigationService { get; } = (Application.Current.MainWindow as MainWindow)?.Frame.NavigationService;
+        
+        // Get files types
+        public static readonly string[] Audio = { "wav", "m4a", "mp3", "aac", "flac" };
+        public static readonly string[] Image = { "jpeg", "png", "jpg", "tiff", "bmp" };
+        public static readonly string[] Video = { "mp4", "gif", "wmv", "avi" };
+        public static readonly string[] Text = { "txt" };
         
         public static void ForEach<T>(this IEnumerable<T> lst, Action<T> action)
         {
@@ -30,6 +43,22 @@ namespace Terminal_XP.Classes
                 action.Invoke(item);
             }
         }
+
+        public static J Pop<T, J>(this Dictionary<T, J> dct, T key)
+        {
+            if (!dct.ContainsKey(key))
+                return default;
+
+            var item = dct[key];
+            dct.Remove(key);
+
+            return item;
+        }
+
+        public static T FindKey<T, J>(this Dictionary<T, J> dct, J val) =>
+            dct.Keys.FirstOrDefault(key => dct[key].Equals(val));
+
+        public static string RemoveLast(this string str, string key) => str.Remove(str.LastIndexOf(key, StringComparison.Ordinal));
 
         // Method to print list string to textblock with delay
         public static void PrintLines<T>(T element, Dispatcher dispatcher, ref bool working, Mutex mutex = default, params FragmentText[] TextArray) where T : TextBlock
@@ -65,22 +94,17 @@ namespace Terminal_XP.Classes
         {
             var exct = Path.GetExtension(filename).Remove(0, 1);
 
-            var audio = new[] { "wav", "m4a", "mp3", "flac" };
-            var picture = new[] { "jpeg", "png", "jpg", "tiff", "bmp" };
-            var video = new[] { "mp4", "gif", "wmv", "avi" };
-            var text = new[] { "txt" };
-
-            if (audio.Contains(exct))
+            if (Audio.Contains(exct))
                 return new AudioViewPage(filename, theme);
+            
+            if (Video.Contains(exct))
+                return new VideoViewPage(filename, theme);
 
-            if (picture.Contains(exct))
+            if (Image.Contains(exct))
                 return new PictureViewPage(filename, theme);
 
-            if (text.Contains(exct))
+            if (Text.Contains(exct))
                 return new TextViewPage(filename, theme);
-
-            if (video.Contains(exct))
-                return new VideoViewPage(filename, theme);
 
             return default;
         }
