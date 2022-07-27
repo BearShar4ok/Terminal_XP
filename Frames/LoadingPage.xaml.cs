@@ -303,28 +303,47 @@ namespace Terminal_XP.Frames
                     break;
             }
         }
-        private void OpenFile(bool hachResult)
+        private void OpenFileAfterlogining(bool hachResult)
         {
-            if (hachResult)
+            if (hachResult) // Success in huch
             {
-                // Success in huch
-                //MessageBox.Show("Success login");
                 _NavigationService.GoBack();
+                //MessageBox.Show("Success login");
+                //Thread.Sleep(5000);
                 _NavigationService.Navigate(Addition.GetPageByFilename(directory, theme));
+               //var a= _NavigationService.RemoveBackEntry();
             }
-            else
+            else // Fail in huch
             {
-                // Fail in huch
                 //MessageBox.Show("Fail login");
                 _NavigationService.GoBack();
             }
+        }
+        private void OpenFileAfterHuck(bool hachResult)
+        {
+            if (hachResult) // Success in huch
+            {
+                _NavigationService.GoBack();
+                //MessageBox.Show("Success login");
+                //Thread.Sleep(5000);
+                _NavigationService.Navigate(Addition.GetPageByFilename(directory, theme));
+                //var a = _NavigationService.RemoveBackEntry();
+            }
+            else // Fail in huch
+            {
+                //MessageBox.Show("Fail login");
+                _NavigationService.GoBack();
+            }
+            
         }
         private void StartHucking()
         {
             //MessageBox.Show("start huck");
             HackPage hp = new HackPage(theme);
+            //var a = _NavigationService.RemoveBackEntry();
             _NavigationService.Navigate(hp);
-            hp.SuccessfullyHacking += OpenFile;
+            hp.SuccessfullyHacking += OpenFileAfterHuck;
+            
         }
         private void ExecuteFile()
         {
@@ -343,7 +362,7 @@ namespace Terminal_XP.Frames
                         LoginPage lp = new LoginPage(theme, content.LoginsAndPasswords);
 
                         _NavigationService.Navigate(lp);
-                        lp.LogingIn += OpenFile;
+                        lp.LogingIn += OpenFileAfterlogining;
                         lp.StartHuch += StartHucking;
                     }
                 }

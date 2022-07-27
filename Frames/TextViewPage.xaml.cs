@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Navigation;
 using System.Windows.Threading;
 using Terminal_XP.Classes;
 
@@ -59,9 +60,9 @@ namespace Terminal_XP.Frames
         {
             if (!File.Exists(_filename))
                 return;
-            
+
             _update = true;
-            
+
             new Thread(() =>
             {
                 using (var stream = File.OpenText(_filename))
@@ -111,14 +112,16 @@ namespace Terminal_XP.Frames
                 }
             }).Start();
         }
-        
+
         private void AdditionalKeys(object sender, KeyEventArgs e)
         {
             switch (e.Key)
             {
                 case Key.Escape:
                     Closing();
+                    //NavigationService.RemoveBackEntry();//this is a fix of bad going back(delete loginPage)
                     NavigationService?.GoBack();
+
                     break;
             }
         }
