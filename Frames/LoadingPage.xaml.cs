@@ -31,6 +31,7 @@ namespace Terminal_XP.Frames
         private int _deepOfPath;
         private int _selectedIndex;
         private KeyStates _prevkeyState;
+        private string _currDisk;
         
         private Dictionary<string, ListBoxItem> _disks = new Dictionary<string, ListBoxItem>();
 
@@ -91,7 +92,7 @@ namespace Terminal_XP.Frames
                         DataContext = new BitmapImage(new Uri(Icons[IconType.Folder])),
                         Content = diskName,
                         Tag = fullPath,
-                        Style = (Style)Resources["ImageText"],
+                        Style = (Style)Resources["ImageText"]
                     };
 
                     if (_deepOfPath == 0)
@@ -103,11 +104,20 @@ namespace Terminal_XP.Frames
             }));
         }
         
-        private void RemoveDisk(string text)
+        private void RemoveDisk(string disk)
         {
             Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
             {
-                LB.Items.Remove(_disks.Pop(text));
+                LB.Items.Remove(_disks.Pop(disk));
+
+                if (_currDisk == disk)
+                {
+                    LB.SelectedIndex = 0;
+                    _selectedIndex = 0;
+                    _currDisk = null;
+                    LB.Items.Clear();
+                    _disks.Clear();
+                }
             }));
         }
         
@@ -115,6 +125,9 @@ namespace Terminal_XP.Frames
         {
             var lbi = (ListBoxItem) LB.SelectedItem;
             var directory = lbi.Tag.ToString();
+            
+            if (_currDisk == null)
+                _currDisk = _disks.FindKey(lbi);
             
             if (directory.EndsWith(PrevDirText))
             {
@@ -127,9 +140,10 @@ namespace Terminal_XP.Frames
                     return;
                 }
 
-                LB.Items.Clear();
                 LB.SelectedIndex = 0;
                 _selectedIndex = 0;
+                _currDisk = null;
+                LB.Items.Clear();
                 _disks.Keys.ForEach(x => AddDisk(x, false));
                 return;
             }
@@ -244,8 +258,7 @@ namespace Terminal_XP.Frames
                     lstB_MouseDoubleClick(null, null);
                     break;
             }
-            
-            
+
             _prevkeyState = e.KeyStates;
         }
 

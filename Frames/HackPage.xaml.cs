@@ -19,7 +19,6 @@ namespace Terminal_XP.Frames
 
     // TODO: сделать количество букв в строке адаптивным к размеру экрана (это параметр CountCharInLine)
     // TODO: Мб переделать генератор, чтобы он в текст вставлял радномное число слов, в не с какой-то верноятностью добавлял слова
-    // TODO: Чтобы слова не повторялись надо раскомментировать трочку 148
     // TODO: Переделать распеределение слов, т. к. может получиться, что из-за слова предыдущая строка будет идти не до конца(см. метод AddToField)
     // TODO: И ещё мб сделать, чтобы все символы были одного размера
 
@@ -44,7 +43,7 @@ namespace Terminal_XP.Frames
         private int _lineNumber;
         private List<List<Span>> _spans = new List<List<Span>>();
 
-        public HackPage(string filename, string theme, bool clearPage = false)
+        public HackPage(string filename, string theme, string rightWord, bool clearPage = false)
         {
             InitializeComponent();
 
@@ -52,9 +51,9 @@ namespace Terminal_XP.Frames
                 Addition.NavigationService.Navigated += RemoveLast;
 
             // Get all words for generate
-            _words = ConfigManager.Config.WordsForHacking;
+            _words = LingvoNET.Nouns.GetAll().Select(x => x.Word).Where(x => x.Length == rightWord.Length).ToArray();
             // Choose right word
-            _rightWord = _words[new Random().Next(_words.Length)];
+            _rightWord = rightWord;
             // Get count lives
             _lives = (int)ConfigManager.Config.CountLivesForHacking;
             _theme = theme;
@@ -71,6 +70,23 @@ namespace Terminal_XP.Frames
             if (Addition.IsDebugMod)
             {
                 AddTextToConsole(_rightWord);
+
+                var exit = false;
+                foreach (var column in _spans)
+                {
+                    foreach (var row in column)
+                    {
+                        if (((Run) row.Inlines.FirstInline).Text == rightWord)
+                        {
+                            SetHighlight(row, true);
+                            exit = true;
+                            break;
+                        }
+                    }
+                    
+                    if (exit)
+                        break;
+                }
             }
         }
 
@@ -145,7 +161,7 @@ namespace Terminal_XP.Frames
                 {
                     var ind = inds[random.Next(inds.Count)];
                     currSymb += _words[ind];
-                    // inds.Remove(ind);
+                    inds.Remove(ind);
                     lstWord = true;
                 }
                 else
@@ -263,11 +279,14 @@ namespace Terminal_XP.Frames
         }
 
         // Highlight current span
-        private static void SetHighlight(Span span)
+        private static void SetHighlight(Span span, bool isDebugMod = false)
         {
             var run = (Run)span.Inlines.FirstInline;
 
-            span.Background = new SolidColorBrush(Colors.DarkGreen);
+            if (isDebugMod)
+                span.Background = new SolidColorBrush(Colors.Red);
+            else
+                span.Background = new SolidColorBrush(Colors.DarkGreen);
             run.Foreground = new SolidColorBrush(Colors.Azure);
         }
 
@@ -376,7 +395,7 @@ namespace Terminal_XP.Frames
 
             _lives--;
 
-            if (_lives >= 0)
+            if (_lives >= 0 && ConfigManager.Config.DifficultyInfo)
                 return ">" + HowManyCorrectSymbols(text) + " из " + _rightWord.Distinct().Count() + " верно!\n>DENIED";
 
             var alert = new AlertWindow("Уведомление", "Влом провален.", "Закрыть", _theme);

@@ -8,9 +8,9 @@
       Title="AudioViewPage"
       Focusable="False">
     <Grid>
-        <TextBlock x:Name="ProgressBar" FontSize="32" 
+        <TextBlock x:Name="ProgressBar"
                    HorizontalAlignment="Center" VerticalAlignment="Center" 
-                   Foreground="White" Focusable="False">
+                   Focusable="False">
             <TextBlock.Style>
                 <Style TargetType="TextBlock">
                     <Setter Property="FocusVisualStyle" Value="{x:Null}"/>

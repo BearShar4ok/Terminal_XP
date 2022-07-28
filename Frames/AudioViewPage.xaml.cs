@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,10 +13,11 @@ namespace Terminal_XP.Frames
 {
     public partial class AudioViewPage : Page
     {
-        // Count 
-        public const int CntSymbol = 64;
+        public const int MarginLine = 100;
         public const char CharAllLen = '=';
         public const char CharCurrLen = '>';
+        
+        public int CntSymbol = 64;
         
         private string _filename;
         private string _theme;
@@ -66,6 +68,7 @@ namespace Terminal_XP.Frames
             Application.Current.MainWindow.KeyDown += AdditionalKeys;
 
             LoadTheme(theme);
+            LoadParams();
             LoadAudio();
         }
         
@@ -90,12 +93,25 @@ namespace Terminal_XP.Frames
         public void Reload()
         {
             LoadTheme(_theme);
+            LoadParams();
             LoadAudio();
         }
         
-        private void LoadTheme(string name)
+        private void LoadTheme(string theme)
         {
+            ProgressBar.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), Addition.Themes + theme + "/#Fallout Regular");
+        }
 
+        private void LoadParams()
+        {
+            ProgressBar.FontSize = ConfigManager.Config.FontSize;
+            ProgressBar.Opacity = ConfigManager.Config.Opacity;
+            ProgressBar.Foreground = (Brush)new BrushConverter().ConvertFromString(ConfigManager.Config.TerminalColor);
+
+            var width = SystemParameters.PrimaryScreenWidth - 2 * MarginLine - 2 * GetSizeContent(ProgressBar, "").Width;
+            var widthChar = Math.Max(GetSizeContent(ProgressBar, CharAllLen.ToString()).Width,
+                GetSizeContent(ProgressBar, CharCurrLen.ToString()).Width);
+            CntSymbol = (int)(width / widthChar);
         }
         
         public void Play() => _player.Play();
@@ -164,6 +180,22 @@ namespace Terminal_XP.Frames
                     break;
             }
 
+        }
+        
+        private static Size GetSizeContent(TextBlock tb, string content) => MeasureString(content, tb.FontFamily, tb.FontStyle,
+            tb.FontWeight, tb.FontStretch, tb.FontSize);
+
+        private static Size MeasureString(string candidate, FontFamily font, FontStyle style, FontWeight weight, FontStretch stretch, double fontsize)
+        {
+            var formattedText = new FormattedText(
+                candidate,
+                CultureInfo.CurrentCulture,
+                FlowDirection.LeftToRight,
+                new Typeface(font, style, weight, stretch),
+                fontsize,
+                Brushes.Black);
+
+            return new Size(formattedText.Width, formattedText.Height);
         }
     }
 }
