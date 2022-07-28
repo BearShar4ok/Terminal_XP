@@ -17,7 +17,7 @@ using System.Threading;
 namespace Terminal_XP.Frames
 {
     public enum IconType { Default, Folder, Image, Text, Audio, Video }
-    
+
     //  🖹🖻🖺
 
     public partial class LoadingPage : Page
@@ -27,35 +27,35 @@ namespace Terminal_XP.Frames
         private const string SystemFolder = "System Volume Information";
         private const string ExtensionConfig = ".config";
         private readonly Dictionary<IconType, string> Icons;
-        
+
         private string _theme;
         private int _deepOfPath;
         private int _selectedIndex;
         private KeyStates _prevkeyState;
         private string _currDisk;
-        
+
         private Dictionary<string, ListBoxItem> _disks = new Dictionary<string, ListBoxItem>();
 
 
         public LoadingPage(string theme)
         {
             InitializeComponent();
-            
+
             // Add actions to devices
             DevicesManager.AddDisk += disk => AddDisk(disk);
             DevicesManager.RemoveDisk += RemoveDisk;
-            
+
             _theme = theme;
 
             KeepAlive = true;
-            
+
             LB.SelectionMode = SelectionMode.Single;
             LB.SelectedIndex = 0;
             LB.FocusVisualStyle = null;
             LB.Focus();
 
             KeyDown += AdditionalKeys;
-            
+
             Icons = new Dictionary<IconType, string>()
             {
                 { IconType.Default, Path.GetFullPath(Addition.Themes + theme +  $@"/{Addition.Icons}/default.png") },
@@ -80,21 +80,23 @@ namespace Terminal_XP.Frames
                         LB.Items.Add(_disks[disk]);
                         return;
                     }
-                    
+
                     var allFiles = Directory.GetFiles(disk).Select(Path.GetFileName).ToArray();
-                    
+
                     if (!allFiles.Contains(AccessFileToReadDisk)) return;
 
                     var fullPath = File.ReadAllText(disk + AccessFileToReadDisk);
-                    var diskName = Path.GetFileNameWithoutExtension(fullPath);
-                
-                    var lbi = new ListBoxItem()
+                    if (Directory.Exists(fullPath))
                     {
-                        DataContext = new BitmapImage(new Uri(Icons[IconType.Folder])),
-                        Content = diskName,
-                        Tag = fullPath,
-                        Style = (Style)Resources["ImageText"]
-                    };
+                        var diskName = Path.GetFileNameWithoutExtension(fullPath);
+
+                        var lbi = new ListBoxItem()
+                        {
+                            DataContext = new BitmapImage(new Uri(Icons[IconType.Folder])),
+                            Content = diskName,
+                            Tag = fullPath,
+                            Style = (Style)Resources["ImageText"]
+                        };
 
                         if (_deepOfPath == 0)
                             LB.Items.Add(lbi);
@@ -106,7 +108,7 @@ namespace Terminal_XP.Frames
                 catch { }
             }));
         }
-        
+
         private void RemoveDisk(string disk)
         {
             Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
@@ -123,15 +125,15 @@ namespace Terminal_XP.Frames
                 }
             }));
         }
-        
+
         private void lstB_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            var lbi = (ListBoxItem) LB.SelectedItem;
+            var lbi = (ListBoxItem)LB.SelectedItem;
             var directory = lbi.Tag.ToString();
-            
+
             if (_currDisk == null)
                 _currDisk = _disks.FindKey(lbi);
-            
+
             if (directory.EndsWith(PrevDirText))
             {
                 if (_deepOfPath == 0) return;
@@ -161,17 +163,17 @@ namespace Terminal_XP.Frames
                 ExecuteFile(directory);
             }
         }
-        
+
         private void OpenFolder(string directory)
         {
             FindFolders(directory);
             FindFiles(directory);
-            
+
             LB.SelectedIndex = 0;
             _selectedIndex = 0;
             LB.Focus();
         }
-        
+
         // Look for all files in directory
         private void FindFiles(string directory)
         {
@@ -185,7 +187,7 @@ namespace Terminal_XP.Frames
                     i--;
                 }
             }
-            
+
             foreach (var file in files)
             {
                 var filename = Path.GetFileName(file);
@@ -209,11 +211,11 @@ namespace Terminal_XP.Frames
                     lbi.DataContext = new BitmapImage(new Uri(Icons[IconType.Video]));
                 else
                     lbi.DataContext = new BitmapImage(new Uri(Icons[IconType.Default]));
-                
+
                 LB.Items.Add(lbi);
             }
         }
-        
+
         // Look for all folders in directory
         private void FindFolders(string directory)
         {
@@ -229,10 +231,10 @@ namespace Terminal_XP.Frames
                     Tag = $@"{directory}\{PrevDirText}",
                     Style = (Style)Resources["ImageText"]
                 };
-                
+
                 LB.Items.Add(lbi);
             }
-            
+
             foreach (var dir in allDirectories)
             {
                 var name = Path.GetFileNameWithoutExtension(dir);
@@ -249,7 +251,7 @@ namespace Terminal_XP.Frames
                 LB.Items.Add(lbi);
             }
         }
-        
+
         // All additional keys, which cant be used in System hotkeys
         private void AdditionalKeys(object sender, KeyEventArgs e)
         {
@@ -268,7 +270,7 @@ namespace Terminal_XP.Frames
         private void GoToFilePage(string directory)
         {
             var nextPage = Addition.GetPageByFilename(directory, _theme);
-                
+
             if (nextPage != default)
                 Addition.NavigationService.Navigate(nextPage);
         }
@@ -280,7 +282,7 @@ namespace Terminal_XP.Frames
                 try
                 {
                     var content = JsonConvert.DeserializeObject<ConfigDeserializer>(File.ReadAllText(directory + ".config"));
-                
+
                     if (!content.HasPassword)
                     {
                         Addition.NavigationService.Navigate(Addition.GetPageByFilename(directory, _theme));
@@ -301,7 +303,7 @@ namespace Terminal_XP.Frames
 
                 GoToFilePage(directory);
             }
-            
+
             LB.SelectedIndex = _selectedIndex;
             LB.Focus();
         }
