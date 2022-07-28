@@ -10,5 +10,6 @@
     "WordsForHacking": [ "привет", "дорогой", "друг", "мир", "дружба", "встреча", "ненависть" ],
     "RatioSpawnWords": 5,
     "LengthHackString": 500,
-    "CountLivesForHacking": 6
+    "CountLivesForHacking": 6,
+    "DifficultyInfo": true
 }

@@ -62,6 +62,8 @@ namespace Terminal_XP.Frames
             };
 
             Application.Current.MainWindow.KeyDown += KeyPress;
+            TBLogin.PreviewKeyDown += ChangeFocus;
+            TBPassword.PreviewKeyDown += ChangeFocus;
 
             LoadTheme(theme);
             LoadParams();
@@ -81,6 +83,8 @@ namespace Terminal_XP.Frames
         public void Closing()
         {
             Application.Current.MainWindow.KeyDown -= KeyPress;
+            TBLogin.PreviewKeyDown -= ChangeFocus;
+            TBPassword.PreviewKeyDown -= ChangeFocus;
             _updateLogin = false;
             _updatePassword = false;
         }
@@ -92,10 +96,10 @@ namespace Terminal_XP.Frames
             Addition.NavigationService.GoBack();
         }
 
-        private void GoToHackPage()
+        private void GoToHackPage(string password)
         {
             Closing();
-            Addition.NavigationService?.Navigate(new HackPage(_filename, _theme, true));
+            Addition.NavigationService?.Navigate(new HackPage(_filename, _theme, password, true));
         }
 
         private void GoToFilePage()
@@ -195,12 +199,27 @@ namespace Terminal_XP.Frames
             Grid.SetColumn(TBPassword, 2);
         }
 
+        private void ChangeFocus(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Up || e.Key == Key.Down)
+            {
+                if (TBLogin.IsFocused)
+                    TBPassword.Focus();
+                else
+                    TBLogin.Focus();
+            }
+        }
+
         private void KeyPress(object sender, KeyEventArgs e)
         {
             switch (e.Key)
             {
                 case Key.Escape:
                     GoToBack();
+                    break;
+                case Key.Down:
+                case Key.Up:
+                    
                     break;
                 case Key.Enter:
                     if (CheckLoginAndPassword())
@@ -224,6 +243,16 @@ namespace Terminal_XP.Frames
                 login = login.Remove(login.Length - 1);
 
             return _database.ContainsKey(login);
+        }
+        
+        private string GetPassword()
+        {
+            var login = TBLogin.Text;
+
+            if (login.EndsWith(Caret))
+                login = login.Remove(login.Length - 1);
+
+            return _database[login];
         }
 
         private bool CheckLoginAndPassword()
@@ -317,7 +346,7 @@ namespace Terminal_XP.Frames
         {
             if (CheckLogin())
             {
-                GoToHackPage();
+                GoToHackPage(GetPassword());
             }
             else
             {
