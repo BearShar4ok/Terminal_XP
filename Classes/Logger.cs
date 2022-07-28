@@ -26,7 +26,18 @@ namespace Terminal_XP.Classes
             Debug(JsonConvert.SerializeObject(obj));
         }
         
-        public static void Error(string log) => Error(log);
+        public static void Error(string log)
+        {
+            if (!File.Exists(Addition.ErrorFile))
+                File.Create(Addition.ErrorFile);
+
+            using (var stream = File.AppendText(Addition.ErrorFile))
+            {
+                stream.WriteLine(log);
+            }
+
+            Debug(log);
+        }
 
         public static void Information<T>(T obj) => Debug(JsonConvert.SerializeObject(obj));
         

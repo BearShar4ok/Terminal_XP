@@ -111,7 +111,7 @@ namespace Terminal_XP.Frames
                             DataContext = new BitmapImage(new Uri(Icons[IconType.Folder])),
                             Content = diskName,
                             Tag = fullPath,
-                            Style = (Style)Resources["ImageText"]
+                            Style = (Style)App.Current.FindResource("ImageText")
                         };
 
                         if (_deepOfPath == 0)
@@ -222,7 +222,7 @@ namespace Terminal_XP.Frames
                 {
                     Content = name,
                     Tag = $@"{directory}\{filename}",
-                    Style = (Style)Resources["ImageText"]
+                    Style = (Style)App.Current.FindResource("ImageText")
                 };
 
                 if (Addition.Text.Contains(extension))
@@ -253,7 +253,7 @@ namespace Terminal_XP.Frames
                     DataContext = new BitmapImage(new Uri(Icons[IconType.Folder])),
                     Content = PrevDirText,
                     Tag = $@"{directory}\{PrevDirText}",
-                    Style = (Style)Resources["ImageText"]
+                    Style = (Style)App.Current.FindResource("ImageText")
                 };
 
                 LB.Items.Add(lbi);
@@ -269,7 +269,7 @@ namespace Terminal_XP.Frames
                     DataContext = new BitmapImage(new Uri(Icons[IconType.Folder])),
                     Content = name,
                     Tag = $@"{directory}\{name}",
-                    Style = (Style)Resources["ImageText"]
+                    Style = (Style)App.Current.FindResource("ImageText")
                 };
 
                 LB.Items.Add(lbi);
