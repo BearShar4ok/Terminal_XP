@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -47,8 +48,6 @@ namespace Terminal_XP.Windows
 
         private void LoadParams(string title, string message, string button)
         {
-            // TODO: Change to more flexible
-            
             Left = SystemParameters.PrimaryScreenWidth / 2 - Width / 2;
             Top = SystemParameters.PrimaryScreenHeight / 2 - Height / 2;
 

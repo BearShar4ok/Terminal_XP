@@ -20,7 +20,7 @@ namespace Terminal_XP
 {
     public partial class MainWindow : Window
     {
-        private const bool IsDebugMod = false;
+        private const bool IsDebugMod = true;
 
         private readonly string _theme;
 

@@ -11,17 +11,18 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Navigation;
 using Terminal_XP.Classes;
+using Terminal_XP.Windows;
 
 namespace Terminal_XP.Frames
 {
     public enum Direction { Left, Right, Up, Down, JustNext }
-    
+
     // TODO: сделать количество букв в строке адаптивным к размеру экрана (это параметр CountCharInLine)
     // TODO: Мб переделать генератор, чтобы он в текст вставлял радномное число слов, в не с какой-то верноятностью добавлял слова
     // TODO: Чтобы слова не повторялись надо раскомментировать трочку 121
     // TODO: Переделать распеределение слов, т. к. может получиться, что из-за слова предыдущая строка будет идти не до конца(см. метод AddToField)
     // TODO: И ещё мб сделать, чтобы все символы были одного размера
-    
+
     public partial class HackPage : Page
     {
         private const string Symbols = "~!@#$%^&*()_-=+{}|?/\"\';:<>";
@@ -62,7 +63,7 @@ namespace Terminal_XP.Frames
 
             LoadTheme(_theme);
 
-           // KeepAlive = true;
+            // KeepAlive = true;
 
             Application.Current.MainWindow.KeyDown += KeyPress;
 
@@ -73,7 +74,7 @@ namespace Terminal_XP.Frames
                 AddTextToConsole(_rightWord);
             }
         }
-        
+
         private void RemoveLast(object obj, NavigationEventArgs e)
         {
             Addition.NavigationService?.RemoveBackEntry();
@@ -113,20 +114,20 @@ namespace Terminal_XP.Frames
         private string GenerateRandomString(int length)
         {
             var random = new Random();
-            
+
             // Init position right word
             var pos = random.Next(length - _rightWord.Length - 1);
-            
+
             // Result string
             var result = "";
             var lstWord = false;
             var currSymb = "";
-            
+
             // Get list indexes for words
             var inds = Enumerable.Range(0, _words.Length).ToList();
             // Remove index right word
             inds.Remove(Array.IndexOf(_words, _rightWord));
- 
+
             for (var i = 0; i < length; i++)
             {
                 // Check pos right word and set that
@@ -134,12 +135,12 @@ namespace Terminal_XP.Frames
                 {
                     if (!Symbols.Contains(result[result.Length - 1]))
                         result = result.Remove(result.Length - currSymb.Length - 1);
-                    
+
                     result += _rightWord;
                     pos = -1;
                     lstWord = true;
                 }
-                
+
                 // Add word if last not word :) or and symbol
                 if (!lstWord && random.Next(0, (int)ConfigManager.Config.RatioSpawnWords) == 0 && inds.Count > 0)
                 {
@@ -157,7 +158,7 @@ namespace Terminal_XP.Frames
                 if ((result + currSymb).Length > length) continue;
                 // Check about position right word
                 if ((result + currSymb).Length > pos && pos != -1) continue;
-                
+
                 result += currSymb;
             }
 
@@ -174,11 +175,11 @@ namespace Terminal_XP.Frames
             {
                 if (i % CountCharInLine == 0)
                     leftP.Inlines.Add(new LineBreak());
-                
+
                 if (char.IsLetter(str[i]))
                     word += str[i].ToString();
                 else
-                {   
+                {
                     if (word != "" && (i + 1 == str.Length || char.IsLetter(str[i + 1])))
                     {
                         leftP.Inlines.Add(new Span(new Run(word)
@@ -187,10 +188,10 @@ namespace Terminal_XP.Frames
                             Foreground = (Brush)new BrushConverter().ConvertFromString(ConfigManager.Config.TerminalColor),
                             FontFamily = _localFontFamily
                         }));
-                        
+
                         word = "";
                     }
-                    
+
                     leftP.Inlines.Add(new Run(str[i].ToString())
                     {
                         FontSize = ConfigManager.Config.FontSize,
@@ -221,7 +222,7 @@ namespace Terminal_XP.Frames
                 if (_spans[i].Count > 0)
                     return i;
             }
-            
+
             for (var i = 0; i <= column; i++)
             {
                 if (_spans[i].Count > 0)
@@ -230,7 +231,7 @@ namespace Terminal_XP.Frames
 
             return -1;
         }
-        
+
         // Find prev index column where contains words
         private int FindPrevColumn(int column)
         {
@@ -239,7 +240,7 @@ namespace Terminal_XP.Frames
                 if (_spans[i].Count > 0)
                     return i;
             }
-            
+
             for (var i = _spans.Count - 1; i >= column; i--)
             {
                 if (_spans[i].Count > 0)
@@ -248,7 +249,7 @@ namespace Terminal_XP.Frames
 
             return -1;
         }
-        
+
         // Find last index column where contains words
         private int FindLastColumn()
         {
@@ -265,11 +266,11 @@ namespace Terminal_XP.Frames
         private static void SetHighlight(Span span)
         {
             var run = (Run)span.Inlines.FirstInline;
-            
+
             span.Background = new SolidColorBrush(Colors.DarkGreen);
             run.Foreground = new SolidColorBrush(Colors.Azure);
         }
-        
+
         // Method for initializing
         private void Initialize()
         {
@@ -277,20 +278,20 @@ namespace Terminal_XP.Frames
             // Get size char of @
             var size = MeasureString(test.Text, test.FontFamily, test.FontStyle, test.FontWeight, test.FontStretch, test.FontSize);
 
-            HeightConsole = (int) Math.Ceiling(size.Height);
+            HeightConsole = (int)Math.Ceiling(size.Height);
 
             AddToField();
-            
+
             var inlines = leftP.Inlines.ToList();
             var oneSpan = new List<Span>();
-            
+
             foreach (var item in inlines)
             {
                 switch (item)
                 {
                     case LineBreak _:
                         _spans.Add(oneSpan);
-                        
+
                         oneSpan = new List<Span>();
                         break;
                     case Span span:
@@ -309,7 +310,7 @@ namespace Terminal_XP.Frames
             // Highlight first word
             SetHighlight(_spans[_columnSpon][_rowSpon]);
         }
-        
+
         private void KeyPress(object sender, KeyEventArgs e)
         {
             switch (e.Key)
@@ -340,12 +341,12 @@ namespace Terminal_XP.Frames
 
         // And text of correct/uncorrent to console
         private void FillConsole() => CheckTheWord().Split('\n').ForEach(AddTextToConsole);
-        
+
         // Get the number of identical characters in strings
         private int HowManyCorrectSymbols(string word)
         {
             var set = new HashSet<char>();
-            
+
             foreach (var symbW in word)
             {
                 foreach (var symbRW in _rightWord)
@@ -354,33 +355,40 @@ namespace Terminal_XP.Frames
                         set.Add(symbW);
                 }
             }
-            
+
             return set.Count;
         }
 
         // Check word to correct
         private string CheckTheWord()
         {
-            var text = ((Run) _spans[_columnSpon][_rowSpon].Inlines.FirstInline).Text;
-            
+            var text = ((Run)_spans[_columnSpon][_rowSpon].Inlines.FirstInline).Text;
+
             if (text == _rightWord)
             {
                 GoToFilePage();
                 return ">ACESS";
             }
-            
+
             _lives--;
 
             if (_lives >= 0)
                 return ">" + HowManyCorrectSymbols(text) + " из " + _rightWord.Distinct().Count() + " верно!\n>DENIED";
-            
-            GoToBack();
-            // TODO: Вызывать AlertWindow с текстом, что файл заблокан
+
+
+
+            AlertWindow a = new AlertWindow("Уведомление", "Влом провален.", "Закрыть", _theme);
+            if (a.ShowDialog() == false)
+            {
+                GoToBack();
+            }
+
             return ">DENIED";
         }
-        
+
         // Get Textblock
-        private TextBlock GetTextBlock(string message) => new TextBlock() {
+        private TextBlock GetTextBlock(string message) => new TextBlock()
+        {
             FontSize = ConfigManager.Config.FontSize,
             Opacity = ConfigManager.Config.Opacity,
             Foreground = (Brush)new BrushConverter().ConvertFromString(ConfigManager.Config.TerminalColor),
@@ -411,12 +419,12 @@ namespace Terminal_XP.Frames
 
                 Grid.SetRow(border, _lineNumber);
                 Grid.SetRow(border.Child, _lineNumber);
-                
+
                 Output.Children.Add(border);
                 _lineNumber++;
             }));
         }
-        
+
         // Clear background for all spans 
         private void ClearBackgroundSpans()
         {
@@ -425,14 +433,14 @@ namespace Terminal_XP.Frames
                     span =>
                     {
                         var run = (Run)span.Inlines.FirstInline;
-                        
+
                         span.Background = new SolidColorBrush(Colors.Transparent);
                         run.Foreground = (Brush)new BrushConverter().ConvertFromString(ConfigManager.Config.TerminalColor);
                     }
                 )
             );
         }
-        
+
         // Correcting position next span
         private void CorrectSpanPos(bool isItArrow, bool up)
         {
@@ -440,11 +448,11 @@ namespace Terminal_XP.Frames
             {
                 if (_columnSpon >= _spans.Count)
                     _columnSpon = _spans.Count - 1;
-                
+
                 if (_columnSpon < 0)
                     _columnSpon = 0;
-                
-                if (_spans[_columnSpon].Count == 0) 
+
+                if (_spans[_columnSpon].Count == 0)
                     _columnSpon = up ? FindPrevColumn(_columnSpon) : FindNextColumn(_columnSpon);
 
                 if (_rowSpon >= _spans[_columnSpon].Count)
@@ -460,13 +468,13 @@ namespace Terminal_XP.Frames
                     _columnSpon = FindNextColumn(_columnSpon);
                     _rowSpon = 0;
                 }
-                
+
                 if (_rowSpon < 0)
                 {
                     _columnSpon = FindPrevColumn(_columnSpon);
                     _rowSpon = _spans[_columnSpon].Count - 1;
                 }
-                
+
                 if (_columnSpon >= _spans.Count)
                 {
                     _columnSpon = _startColumnSpon;
@@ -515,7 +523,7 @@ namespace Terminal_XP.Frames
 
             SetHighlight(_spans[_columnSpon][_rowSpon]);
         }
-        
+
         // Get size of string
         private static Size MeasureString(string candidate, FontFamily font, FontStyle style, FontWeight weight, FontStretch stretch, double fontsize)
         {

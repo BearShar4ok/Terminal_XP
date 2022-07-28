@@ -65,9 +65,6 @@ namespace Terminal_XP.Frames
             };
 
             DevicesManager.StartListening();
-
-            AlertWindow a = new AlertWindow("Уведомление", "Данные введены некоректно. Попробуйте еще раз.", "Закрыть", _theme);
-            a.Show();
         }
 
         private void AddDisk(string disk, bool addToList = true)
