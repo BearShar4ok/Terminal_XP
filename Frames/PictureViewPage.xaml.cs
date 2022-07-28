@@ -4,6 +4,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using Terminal_XP.Classes;
 
 namespace Terminal_XP.Frames
 {
@@ -12,9 +14,12 @@ namespace Terminal_XP.Frames
         private string _filename;
         private string _theme;
 
-        public PictureViewPage(string filename, string theme)
+        public PictureViewPage(string filename, string theme, bool clearPage = false)
         {
             InitializeComponent();
+
+            if (clearPage)
+                Addition.NavigationService.Navigated += RemoveLast;
 
             _filename = filename;
             _theme = theme;
@@ -24,9 +29,15 @@ namespace Terminal_XP.Frames
             LoadTheme(theme);
             LoadImage();
         }
+        
+        private void RemoveLast(object obj, NavigationEventArgs e)
+        {
+            Addition.NavigationService?.RemoveBackEntry();
+        }
 
         public void Closing()
         {
+            Addition.NavigationService.Navigated -= RemoveLast;
             Application.Current.MainWindow.KeyDown -= AdditionalKeys;
         }
 
@@ -55,7 +66,7 @@ namespace Terminal_XP.Frames
             {
                 case Key.Escape:
                     Closing();
-                    NavigationService?.GoBack();
+                    Addition.NavigationService?.GoBack();
                     break;
             }
 

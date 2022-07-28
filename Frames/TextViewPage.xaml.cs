@@ -20,9 +20,13 @@ namespace Terminal_XP.Frames
         private Mutex _mutex = new Mutex();
 
 
-        public TextViewPage(string filename, string theme)
+        public TextViewPage(string filename, string theme, bool clearPage = false)
         {
             InitializeComponent();
+
+            if (clearPage)
+                Addition.NavigationService.Navigated += RemoveLast;
+
             LoadTheme(theme);
             LoadParams();
 
@@ -34,10 +38,16 @@ namespace Terminal_XP.Frames
 
             LoadText();
         }
+        
+        private void RemoveLast(object obj, NavigationEventArgs e)
+        {
+            Addition.NavigationService?.RemoveBackEntry();
+        }
 
         public void Closing()
         {
             _update = false;
+            Addition.NavigationService.Navigated -= RemoveLast;
             Application.Current.MainWindow.KeyDown -= AdditionalKeys;
         }
 
@@ -119,9 +129,7 @@ namespace Terminal_XP.Frames
             {
                 case Key.Escape:
                     Closing();
-                    //NavigationService.RemoveBackEntry();//this is a fix of bad going back(delete loginPage)
-                    NavigationService?.GoBack();
-
+                    Addition.NavigationService.GoBack();
                     break;
             }
         }

@@ -73,9 +73,9 @@
                                         <ColumnDefinition Width="20"/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
-                                    <Label Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Content="{TemplateBinding Tag}" FontSize="20" FontFamily="{TemplateBinding FontFamily}" Background="Transparent" Foreground="{TemplateBinding Foreground}" >
+                                    <!--<Label Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Content="{TemplateBinding Tag}" FontSize="20" FontFamily="{TemplateBinding FontFamily}" Background="Transparent" Foreground="{TemplateBinding Foreground}" >
 
-                                    </Label>
+                                    </Label>-->
                                     <Image Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Source="{Binding Path=.}">
                                         <!--{TemplateBinding Property=Tag}
                                         <Image.Source>
@@ -112,9 +112,9 @@
             <RowDefinition Height="30"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Label x:Name="lblDirectory" Focusable="False" Grid.Row="0" Background="LightCoral" Visibility="Hidden"/>
+        <Label x:Name="LblDirectory" Focusable="False" Grid.Row="0" Background="LightCoral" Visibility="Hidden"/>
         <!-- <TextBlock TextWrapping="Wrap" x:Name="Print" Background="Transparent"/> -->
-        <ListBox x:Name="lstB" Grid.Row="1" KeyboardNavigation.TabNavigation="Cycle" ItemContainerStyle="{StaticResource ImageText}" MouseDoubleClick="lstB_MouseDoubleClick" 
+        <ListBox x:Name="LB" Grid.Row="1" KeyboardNavigation.TabNavigation="Cycle" ItemContainerStyle="{StaticResource ImageText}" MouseDoubleClick="lstB_MouseDoubleClick" 
                  Background="Transparent" Margin="50" Foreground="Wheat" BorderThickness="0" BorderBrush="Transparent" ScrollViewer.VerticalScrollBarVisibility="Disabled">
             
             <!--   📂🖹🖻🖺🖾 🖼  G:/Coding/MyProjects/Terminal_XP/Terminal_XP/Assets/Themes/Fallout/folder.png -->

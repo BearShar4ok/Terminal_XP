@@ -25,15 +25,14 @@ namespace Terminal_XP.Frames
     public partial class HackPage : Page
     {
         private const string Symbols = "~!@#$%^&*()_-=+{}|?/\"\';:<>";
-        private const bool IsDebugMod = false;
-        
-        public event Action<bool> SuccessfullyHacking;
+        private const bool IsDebugMod = true;
 
         private int HeightConsole = 35;
         private int CountCharInLine = 50;
 
         private string[] _words;
-        private string _theme;
+        private readonly string _theme;
+        private readonly string _filename;
         private FontFamily _localFontFamily;
 
         private string _rightWord;
@@ -45,11 +44,12 @@ namespace Terminal_XP.Frames
         private int _lineNumber;
         private List<List<Span>> _spans = new List<List<Span>>();
 
-        private static NavigationService _NavigationService { get; } = (System.Windows.Application.Current.MainWindow as MainWindow).Frame.NavigationService;
-
-        public HackPage(string theme)
+        public HackPage(string filename, string theme, bool clearPage = false)
         {
             InitializeComponent();
+
+            if (clearPage)
+                Addition.NavigationService.Navigated += RemoveLast;
 
             // Get all words for generate
             _words = ConfigManager.Config.WordsForHacking;
@@ -58,6 +58,7 @@ namespace Terminal_XP.Frames
             // Get count lives
             _lives = (int)ConfigManager.Config.CountLivesForHacking;
             _theme = theme;
+            _filename = filename;
 
             LoadTheme(_theme);
 
@@ -66,9 +67,16 @@ namespace Terminal_XP.Frames
             Application.Current.MainWindow.KeyDown += KeyPress;
 
             Initialize();
-            /// dedub
-            AddTextToConsole(_rightWord);
-            ///
+
+            if (IsDebugMod)
+            {
+                AddTextToConsole(_rightWord);
+            }
+        }
+        
+        private void RemoveLast(object obj, NavigationEventArgs e)
+        {
+            Addition.NavigationService?.RemoveBackEntry();
         }
 
         // Method to reload page
@@ -84,6 +92,7 @@ namespace Terminal_XP.Frames
 
         private void Closing()
         {
+            Addition.NavigationService.Navigated -= RemoveLast;
             Application.Current.MainWindow.KeyDown -= KeyPress;
         }
 
@@ -91,7 +100,13 @@ namespace Terminal_XP.Frames
         private void GoToBack()
         {
             Closing();
-            _NavigationService.GoBack();
+            Addition.NavigationService?.GoBack();
+        }
+
+        private void GoToNextPage()
+        {
+            Closing();
+            Addition.NavigationService?.Navigate(Addition.GetPageByFilename(_filename, _theme, true));
         }
 
         // Method to generate string with words
@@ -247,7 +262,7 @@ namespace Terminal_XP.Frames
         }
 
         // Highlight current span
-        private void SetHighlight(Span span)
+        private static void SetHighlight(Span span)
         {
             var run = (Run)span.Inlines.FirstInline;
             
@@ -350,13 +365,7 @@ namespace Terminal_XP.Frames
             
             if (text == _rightWord)
             {
-                GC.Collect();
-                //Closing();
-                //Focus();
-                //GoToBack();
-
-                SuccessfullyHacking?.Invoke(true);
-                
+                GoToNextPage();
                 return ">ACESS";
             }
             
@@ -364,13 +373,9 @@ namespace Terminal_XP.Frames
 
             if (_lives >= 0)
                 return ">" + HowManyCorrectSymbols(text) + " из " + _rightWord.Distinct().Count() + " верно!\n>DENIED";
-            //Focus();
-            GC.Collect();
-            //Closing();
-            //GoToBack();
-                
-            SuccessfullyHacking?.Invoke(false);
-        
+            
+            GoToBack();
+            // TODO: Вызывать AlertWindow с текстом, что файл заблокан
             return ">DENIED";
         }
         

@@ -3,6 +3,8 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Navigation;
+using Terminal_XP.Classes;
 
 namespace Terminal_XP.Frames
 {
@@ -21,9 +23,12 @@ namespace Terminal_XP.Frames
             }
         }
 
-        public VideoViewPage(string filename, string theme)
+        public VideoViewPage(string filename, string theme, bool clearPage = false)
         {
             InitializeComponent();
+
+            if (clearPage)
+                Addition.NavigationService.Navigated += RemoveLast;
             
             _filename = filename;
             _theme = theme;
@@ -40,9 +45,15 @@ namespace Terminal_XP.Frames
             LoadVideo();
         }
 
+        private void RemoveLast(object obj, NavigationEventArgs e)
+        {
+            Addition.NavigationService?.RemoveBackEntry();
+        }
+
         public void Closing()
         {
             Stop();
+            Addition.NavigationService.Navigated -= RemoveLast;
             Application.Current.MainWindow.KeyDown -= AdditionalKeys;
         }
         
@@ -83,7 +94,7 @@ namespace Terminal_XP.Frames
             {
                 case Key.Escape:
                     Closing();
-                    NavigationService?.GoBack();
+                    Addition.NavigationService?.GoBack();
                     break;
                 case Key.Space:
                     if (_stop)
