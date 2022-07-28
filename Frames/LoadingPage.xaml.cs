@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Windows.Media.Imaging;
 using Path = System.IO.Path;
 using Terminal_XP.Windows;
+using System.Threading;
 
 namespace Terminal_XP.Frames
 {
@@ -102,6 +103,7 @@ namespace Terminal_XP.Frames
 
                         _disks.Add(disk, lbi);
                     }
+                    Focus();
                 }
                 catch { }
             }));

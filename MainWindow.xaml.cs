@@ -34,6 +34,7 @@ namespace Terminal_XP
                 Topmost = true;
                 Cursor = Cursors.None;
             }
+            
 
             LoadTheme(_theme);
             LoadParams();
