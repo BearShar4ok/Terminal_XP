@@ -84,20 +84,24 @@ namespace Terminal_XP.Frames
                     if (!allFiles.Contains(AccessFileToReadDisk)) return;
 
                     var fullPath = File.ReadAllText(disk + AccessFileToReadDisk);
-                    var diskName = Path.GetFileNameWithoutExtension(fullPath);
-                
-                    var lbi = new ListBoxItem()
-                    {
-                        DataContext = new BitmapImage(new Uri(Icons[IconType.Folder])),
-                        Content = diskName,
-                        Tag = fullPath,
-                        Style = (Style)Resources["ImageText"],
-                    };
 
-                    if (_deepOfPath == 0)
-                        LB.Items.Add(lbi);
-                    
-                    _disks.Add(disk, lbi);
+                    if (Directory.Exists(fullPath))
+                    {
+                        var diskName = Path.GetFileNameWithoutExtension(fullPath);
+
+                        var lbi = new ListBoxItem()
+                        {
+                            DataContext = new BitmapImage(new Uri(Icons[IconType.Folder])),
+                            Content = diskName,
+                            Tag = fullPath,
+                            Style = (Style)Resources["ImageText"],
+                        };
+
+                        if (_deepOfPath == 0)
+                            LB.Items.Add(lbi);
+
+                        _disks.Add(disk, lbi);
+                    }
                 }
                 catch { }
             }));
