@@ -121,7 +121,7 @@ namespace Terminal_XP.Frames
                     _selectedIndex = 0;
                     _currDisk = null;
                     LB.Items.Clear();
-                    _disks.Clear();
+                    DevicesManager.ClearDisks();
                 }
             }));
         }

@@ -8,7 +8,7 @@
     "DelayUpdateCarriage": 500,
     "SpecialSymbol": "❚",
     "RatioSpawnWords": 5,
-    "LengthHackString": 500,
+    "LengthHackString": 300,
     "CountLivesForHacking": 6,
     "DifficultyInfo": true
 }
