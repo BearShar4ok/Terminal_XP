@@ -109,19 +109,22 @@ namespace Terminal_XP.Frames
             }));
         }
 
-        private void RemoveDisk(string disk)
+        private void RemoveDisk(string diskName)
         {
             Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
             {
-                LB.Items.Remove(_disks.Pop(disk));
-
-                if (_currDisk == disk)
+                var disk = _disks.Pop(diskName);
+                
+                if (LB.Items.Contains(disk))
+                    LB.Items.Remove(disk);
+                
+                if (_currDisk == diskName)
                 {
                     LB.SelectedIndex = 0;
                     _selectedIndex = 0;
                     _currDisk = null;
                     LB.Items.Clear();
-                    _disks.Clear();
+                    _disks.Keys.ForEach(x => AddDisk(x, false));
                 }
             }));
         }
