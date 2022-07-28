@@ -368,18 +368,20 @@ namespace Terminal_XP.Frames
         // Get the number of identical characters in strings
         private int HowManyCorrectSymbols(string word)
         {
-            var set = new HashSet<char>();
+            var lstw = word.ToList();
+            var lstrw = _rightWord.ToList();
+            var result = 0;
 
-            foreach (var symbW in word)
+            foreach (var charw in lstw)
             {
-                foreach (var symbRW in _rightWord)
+                if (lstrw.Contains(charw))
                 {
-                    if (symbRW == symbW)
-                        set.Add(symbW);
+                    result++;
+                    lstrw.Remove(charw);
                 }
             }
 
-            return set.Count;
+            return result;
         }
 
         // Check word to correct
@@ -396,7 +398,7 @@ namespace Terminal_XP.Frames
             _lives--;
 
             if (_lives >= 0 && ConfigManager.Config.DifficultyInfo)
-                return ">" + HowManyCorrectSymbols(text) + " из " + _rightWord.Distinct().Count() + " верно!\n>DENIED";
+                return ">" + HowManyCorrectSymbols(text) + " из " + _rightWord.Length + " верно!\n>DENIED";
 
             var alert = new AlertWindow("Уведомление", "Влом провален.", "Закрыть", _theme);
             
