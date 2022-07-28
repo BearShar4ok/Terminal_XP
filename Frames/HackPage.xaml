@@ -12,9 +12,9 @@
             <ColumnDefinition Width="0.5*"/>
         </Grid.ColumnDefinitions>
 
-        <RichTextBox Focusable="False" x:Name="LeftRTB" Grid.Column="0" IsReadOnly="True" BorderBrush="Transparent" Background="Transparent">
-            <FlowDocument Focusable="False" PageWidth="{Binding ElementName=LeftRTB, Path=ActualWidth}">
-                <Paragraph Focusable="False" Name="leftP" BorderBrush="White" />
+        <RichTextBox Focusable="False" x:Name="LeftRTB" Grid.Column="0" Cursor="None" IsReadOnly="True" BorderBrush="Transparent" BorderThickness="0" Background="Transparent">
+            <FlowDocument Focusable="False" Cursor="None" PageWidth="{Binding ElementName=LeftRTB, Path=ActualWidth}">
+                <Paragraph Focusable="False" Name="leftP" Cursor="None" BorderBrush="White" BorderThickness="0" />
             </FlowDocument>
         </RichTextBox>
 

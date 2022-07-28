@@ -209,8 +209,8 @@ namespace Terminal_XP.Frames
                     }
                     else
                     {
-                        AlertWindow a = new AlertWindow("Уведомление", "Данные введены некоректно. Попробуйте еще раз.", "Закрыть", _theme);
-                        a.Show();
+                        var alert = new AlertWindow("Уведомление", "Данные введены некоректно. Попробуйте еще раз.", "Закрыть", _theme);
+                        alert.Show();
                     }
                     break;
             }
@@ -321,8 +321,8 @@ namespace Terminal_XP.Frames
             }
             else
             {
-                AlertWindow a = new AlertWindow("Уведомление", "Логин не найден в базе. Попробуйте еще раз.", "Закрыть", _theme);
-                a.Show();
+                var alert = new AlertWindow("Уведомление", "Логин не найден в базе. Попробуйте еще раз.", "Закрыть", _theme);
+                alert.Show();
             }
         }
     }

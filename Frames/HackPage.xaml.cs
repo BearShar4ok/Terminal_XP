@@ -19,7 +19,7 @@ namespace Terminal_XP.Frames
 
     // TODO: сделать количество букв в строке адаптивным к размеру экрана (это параметр CountCharInLine)
     // TODO: Мб переделать генератор, чтобы он в текст вставлял радномное число слов, в не с какой-то верноятностью добавлял слова
-    // TODO: Чтобы слова не повторялись надо раскомментировать трочку 121
+    // TODO: Чтобы слова не повторялись надо раскомментировать трочку 148
     // TODO: Переделать распеределение слов, т. к. может получиться, что из-за слова предыдущая строка будет идти не до конца(см. метод AddToField)
     // TODO: И ещё мб сделать, чтобы все символы были одного размера
 
@@ -145,6 +145,7 @@ namespace Terminal_XP.Frames
                 {
                     var ind = inds[random.Next(inds.Count)];
                     currSymb += _words[ind];
+                    // inds.Remove(ind);
                     lstWord = true;
                 }
                 else
@@ -317,15 +318,19 @@ namespace Terminal_XP.Frames
                 case Key.Escape:
                     GoToBack();
                     break;
+                case Key.D:
                 case Key.Right:
                     HighlightWord(Direction.Right);
                     break;
+                case Key.A:
                 case Key.Left:
                     HighlightWord(Direction.Left);
                     break;
+                case Key.S:
                 case Key.Down:
                     HighlightWord(Direction.Down);
                     break;
+                case Key.W:
                 case Key.Up:
                     HighlightWord(Direction.Up);
                     break;
@@ -374,13 +379,10 @@ namespace Terminal_XP.Frames
             if (_lives >= 0)
                 return ">" + HowManyCorrectSymbols(text) + " из " + _rightWord.Distinct().Count() + " верно!\n>DENIED";
 
-
-
-            AlertWindow a = new AlertWindow("Уведомление", "Влом провален.", "Закрыть", _theme);
-            if (a.ShowDialog() == false)
-            {
+            var alert = new AlertWindow("Уведомление", "Влом провален.", "Закрыть", _theme);
+            
+            if (alert.ShowDialog() == false)
                 GoToBack();
-            }
 
             return ">DENIED";
         }

@@ -249,29 +249,41 @@ namespace Terminal_XP.Frames
             _prevkeyState = e.KeyStates;
         }
 
+        private void GoToFilePage(string directory)
+        {
+            var nextPage = Addition.GetPageByFilename(directory, _theme);
+                
+            if (nextPage != default)
+                Addition.NavigationService.Navigate(nextPage);
+        }
+
         private void ExecuteFile(string directory)
         {
             if (Directory.GetFiles(directory.RemoveLast(@"\")).Contains(directory + ".config"))
             {
-                var content = JsonConvert.DeserializeObject<ConfigDeserializer>(File.ReadAllText(directory + ".config"));
+                try
+                {
+                    var content = JsonConvert.DeserializeObject<ConfigDeserializer>(File.ReadAllText(directory + ".config"));
                 
-                if (!content.HasPassword)
-                {
-                    Addition.NavigationService.Navigate(Addition.GetPageByFilename(directory, _theme));
+                    if (!content.HasPassword)
+                    {
+                        Addition.NavigationService.Navigate(Addition.GetPageByFilename(directory, _theme));
+                    }
+                    else
+                    {
+                        Addition.NavigationService.Navigate(new LoginPage(directory, _theme, content.LoginsAndPasswords));
+                    }
                 }
-                else
+                catch
                 {
-                    Addition.NavigationService.Navigate(new LoginPage(directory, _theme, content.LoginsAndPasswords));
+                    GoToFilePage(directory);
                 }
             }
             else
             {
                 // TODO: Generate config file for this file
-                
-                var nextPage = Addition.GetPageByFilename(directory, _theme);
-                
-                if (nextPage != default)
-                    Addition.NavigationService.Navigate(nextPage);
+
+                GoToFilePage(directory);
             }
             
             LB.SelectedIndex = _selectedIndex;
