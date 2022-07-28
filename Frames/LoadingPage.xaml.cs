@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using Path = System.IO.Path;
 using Terminal_XP.Windows;
 using System.Threading;
+using System.Windows.Media;
 
 namespace Terminal_XP.Frames
 {
@@ -49,6 +50,8 @@ namespace Terminal_XP.Frames
 
             KeepAlive = true;
 
+            LblInfo.Content = "Доступных дисков нет...";
+
             LB.SelectionMode = SelectionMode.Single;
             LB.SelectedIndex = 0;
             LB.FocusVisualStyle = null;
@@ -65,10 +68,21 @@ namespace Terminal_XP.Frames
                 { IconType.Audio, Path.GetFullPath(Addition.Themes + theme +  $@"/{Addition.Icons}/audio.png") },
                 { IconType.Video, Path.GetFullPath(Addition.Themes + theme +  $@"/{Addition.Icons}/video.png") }
             };
-
+            LoadParams();
+            LoadTheme();
             DevicesManager.StartListening();
         }
+        private void LoadTheme()
+        {
+            LblInfo.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), Addition.Themes + _theme + "/#Fallout Regular");
+        }
 
+        private void LoadParams()
+        {
+            LblInfo.FontSize = ConfigManager.Config.FontSize;
+            LblInfo.Opacity = ConfigManager.Config.Opacity;
+            LblInfo.Foreground = (Brush)new BrushConverter().ConvertFromString(ConfigManager.Config.TerminalColor);
+        }
         private void AddDisk(string disk, bool addToList = true)
         {
             Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
@@ -88,6 +102,8 @@ namespace Terminal_XP.Frames
                     var fullPath = File.ReadAllText(disk + AccessFileToReadDisk);
                     if (Directory.Exists(fullPath))
                     {
+                        LblInfo.Content = "";
+                        LblInfo.Visibility = Visibility.Hidden;
                         var diskName = Path.GetFileNameWithoutExtension(fullPath);
 
                         var lbi = new ListBoxItem()
@@ -125,6 +141,11 @@ namespace Terminal_XP.Frames
                     _currDisk = null;
                     LB.Items.Clear();
                     _disks.Keys.ForEach(x => AddDisk(x, false));
+                }
+                if (LB.Items.Count==0)
+                {
+                    LblInfo.Content = "Доступных дисков нет...";
+                    LblInfo.Visibility = Visibility.Visible;
                 }
             }));
         }

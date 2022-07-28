@@ -29,18 +29,18 @@ namespace Terminal_XP.Classes
 
         // NavigationService
         public static NavigationService NavigationService { get; } = (Application.Current.MainWindow as MainWindow)?.Frame.NavigationService;
-        
+
         // Get files types
         public static readonly string[] Audio = { "wav", "m4a", "mp3", "aac", "flac" };
         public static readonly string[] Image = { "jpeg", "png", "jpg", "tiff", "bmp" };
         public static readonly string[] Video = { "mp4", "gif", "wmv", "avi" };
         public static readonly string[] Text = { "txt" };
-        
+
         public static void ForEach<T>(this IEnumerable<T> lst, Action<T> action)
         {
             if (action == null)
                 return;
-            
+
             foreach (var item in lst)
             {
                 action.Invoke(item);
@@ -72,9 +72,9 @@ namespace Terminal_XP.Classes
                 {
                     if (!working)
                         return;
-                    
+
                     mutex?.WaitOne();
-                    
+
                     dispatcher.BeginInvoke(DispatcherPriority.Background,
                     new Action(() =>
                     {
@@ -83,7 +83,7 @@ namespace Terminal_XP.Classes
                         else
                             element.Text += symbol.ToString();
                     }));
-                    
+
                     mutex?.ReleaseMutex();
 
                     if (fragmentText.Delay > 0)
@@ -99,7 +99,7 @@ namespace Terminal_XP.Classes
 
             if (Audio.Contains(exct))
                 return new AudioViewPage(filename, theme, clearPage);
-            
+
             if (Video.Contains(exct))
                 return new VideoViewPage(filename, theme, clearPage);
 

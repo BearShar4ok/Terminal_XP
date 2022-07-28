@@ -36,6 +36,7 @@ namespace Terminal_XP.Frames
 
         private string _rightWord;
         private int _lives;
+        private int _startLives;
         private int _startColumnSpon;
         private int _lastColumnSpon;
         private int _rowSpon;
@@ -56,6 +57,7 @@ namespace Terminal_XP.Frames
             _rightWord = rightWord;
             // Get count lives
             _lives = (int)ConfigManager.Config.CountLivesForHacking;
+            _startLives = (int)ConfigManager.Config.CountLivesForHacking;
             _theme = theme;
             _filename = filename;
 
@@ -397,8 +399,8 @@ namespace Terminal_XP.Frames
 
             _lives--;
 
-            if (_lives >= 0 && ConfigManager.Config.DifficultyInfo)
-                return ">" + HowManyCorrectSymbols(text) + " из " + _rightWord.Length + " верно!\n>DENIED";
+            if (_lives > 0 && ConfigManager.Config.DifficultyInfo)
+                return ">" + HowManyCorrectSymbols(text) + " из " + _rightWord.Length + " верно!\n>Осталось " + _lives +" из "+ _startLives + " попыток!\n>DENIED";
 
             var alert = new AlertWindow("Уведомление", "Влом провален.", "Закрыть", _theme);
             

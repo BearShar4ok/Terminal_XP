@@ -56,6 +56,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Frames\TechnicalViewPage.xaml.cs">
+      <DependentUpon>TechnicalViewPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\AlertWindow.xaml.cs">
       <DependentUpon>AlertWindow.xaml</DependentUpon>
     </Compile>
@@ -63,6 +66,9 @@
     <Page Include="Frames\HackPage.xaml" />
     <Page Include="Frames\LoginPage.xaml" />
     <Page Include="Frames\PictureViewPage.xaml" />
+    <Page Include="Frames\TechnicalViewPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Frames\TextViewPage.xaml" />
     <Page Include="Frames\VideoViewPage.xaml" />
     <Page Include="MainWindow.xaml">

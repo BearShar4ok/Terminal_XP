@@ -109,10 +109,10 @@
     </Page.Resources>
     <Grid x:Name="MainFild" Background="Transparent" >
         <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Label x:Name="LblDirectory" Focusable="False" Grid.Row="0" Background="LightCoral" Visibility="Hidden"/>
+        <Label x:Name="LblInfo" Focusable="False" Grid.Row="0" Background="Transparent"/>
         <!-- <TextBlock TextWrapping="Wrap" x:Name="Print" Background="Transparent"/> -->
         <ListBox x:Name="LB" Grid.Row="1" KeyboardNavigation.TabNavigation="Cycle" ItemContainerStyle="{StaticResource ImageText}" MouseDoubleClick="lstB_MouseDoubleClick" 
                  Background="Transparent" Margin="50" Foreground="Wheat" BorderThickness="0" BorderBrush="Transparent" ScrollViewer.VerticalScrollBarVisibility="Disabled">
