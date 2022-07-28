@@ -20,8 +20,8 @@ namespace Terminal_XP
 {
     public partial class MainWindow : Window
     {
-        private const bool IsDebugMod = true;
-        
+        private const bool IsDebugMod = false;
+
         private readonly string _theme;
 
         public MainWindow()
@@ -52,10 +52,9 @@ namespace Terminal_XP
             WindowState = WindowState.Maximized;
             ResizeMode = ResizeMode.NoResize;
             AllowsTransparency = true;
-
             Closing += (obj, e) => DevicesManager.StopListening();
-            
-             Frame.NavigationService.Navigate(new LoadingPage(_theme));
+
+            Frame.NavigationService.Navigate(new LoadingPage(_theme));
         }
 
         private void TryExecuteMethod(object obj, Type type, string name)

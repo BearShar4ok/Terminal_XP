@@ -103,7 +103,7 @@ namespace Terminal_XP.Frames
             Addition.NavigationService?.GoBack();
         }
 
-        private void GoToNextPage()
+        private void GoToFilePage()
         {
             Closing();
             Addition.NavigationService?.Navigate(Addition.GetPageByFilename(_filename, _theme, true));
@@ -365,7 +365,7 @@ namespace Terminal_XP.Frames
             
             if (text == _rightWord)
             {
-                GoToNextPage();
+                GoToFilePage();
                 return ">ACESS";
             }
             

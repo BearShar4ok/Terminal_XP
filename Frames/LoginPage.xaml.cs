@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Navigation;
 using System.Windows.Threading;
 using Terminal_XP.Classes;
+using Terminal_XP.Windows;
 
 namespace Terminal_XP.Frames
 {
@@ -98,7 +99,7 @@ namespace Terminal_XP.Frames
             Addition.NavigationService?.Navigate(new HackPage(_filename, _theme, true));
         }
 
-        private void GoToNextPage()
+        private void GoToFilePage()
         {
             Closing();
             Addition.NavigationService?.Navigate(Addition.GetPageByFilename(_filename, _theme, true));
@@ -205,7 +206,12 @@ namespace Terminal_XP.Frames
                 case Key.Enter:
                     if (CheckLoginAndPassword())
                     {
-                        GoToNextPage();
+                        GoToFilePage();
+                    }
+                    else
+                    {
+                        AlertWindow a = new AlertWindow("Уведомление", "Данные введены некоректно. Попробуйте еще раз.", "Закрыть", _theme);
+                        a.Show();
                     }
                     break;
             }

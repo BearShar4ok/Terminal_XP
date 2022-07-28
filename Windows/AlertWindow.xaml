@@ -25,13 +25,13 @@
             </Grid.ColumnDefinitions>
             
             <StackPanel Grid.ColumnSpan="3" Grid.Row="0">
-                <Label x:Name="LblTitle" Background="Transparent"  FontSize="20" />
+                <Label x:Name="LblTitle" Background="Transparent"  FontSize="20" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center"/>
                 <Separator Background="Black" />
             </StackPanel>
             
-            <Label x:Name="LblMessage" Background="Transparent" Grid.ColumnSpan="3" Grid.Row="1" HorizontalContentAlignment="Center" FontSize="20" />
+            <TextBlock x:Name="TbMessage" Background="Transparent" Grid.ColumnSpan="3" Grid.Row="1" TextAlignment="Center" FontSize="20" TextWrapping="Wrap"/>
             <Border BorderBrush="Black" BorderThickness="3" Grid.Row="2" Grid.Column="1" Background="#dddddd" Margin="0,0,0,5">
-                <Label x:Name="LblButton" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <Label x:Name="LblButton" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
             </Border>
         </Grid>
     </Border>

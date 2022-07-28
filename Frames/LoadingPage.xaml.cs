@@ -11,6 +11,7 @@ using System.Windows.Navigation;
 using System.Collections.Generic;
 using System.Windows.Media.Imaging;
 using Path = System.IO.Path;
+using Terminal_XP.Windows;
 
 namespace Terminal_XP.Frames
 {
@@ -64,6 +65,9 @@ namespace Terminal_XP.Frames
             };
 
             DevicesManager.StartListening();
+
+            AlertWindow a = new AlertWindow("Уведомление", "Данные введены некоректно. Попробуйте еще раз.", "Закрыть", _theme);
+            a.Show();
         }
 
         private void AddDisk(string disk, bool addToList = true)
@@ -256,11 +260,11 @@ namespace Terminal_XP.Frames
                 
                 if (!content.HasPassword)
                 {
-                    _NavigationService.Navigate(Addition.GetPageByFilename(directory, _theme));
+                    Addition.NavigationService.Navigate(Addition.GetPageByFilename(directory, _theme));
                 }
                 else
                 {
-                    _NavigationService.Navigate(new LoginPage(directory, _theme, content.LoginsAndPasswords));
+                    Addition.NavigationService.Navigate(new LoginPage(directory, _theme, content.LoginsAndPasswords));
                 }
             }
             else
@@ -270,13 +274,13 @@ namespace Terminal_XP.Frames
                 var nextPage = Addition.GetPageByFilename(directory, _theme);
                 
                 if (nextPage != default)
-                    _NavigationService.Navigate(nextPage);
+                    Addition.NavigationService.Navigate(nextPage);
             }
             
             LB.SelectedIndex = _selectedIndex;
             LB.Focus();
         }
 
-        private static bool IsFolder(string path) => !(path.Contains("."));
+        private static bool IsFolder(string path) => Directory.Exists(path);
     }
 }

@@ -19,12 +19,11 @@ namespace Terminal_XP.Windows
     /// </summary>
     public partial class AlertWindow : Window
     {
-        
         public AlertWindow()
         {
             InitializeComponent();
         }
-        
+
         public AlertWindow(string title, string message, string button, string theme) : this()
         {
             LoadTheme(theme);
@@ -40,24 +39,31 @@ namespace Terminal_XP.Windows
         private void LoadTheme(string theme)
         {
             LblTitle.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), Addition.Themes + theme + "/#Fallout Regular");
-            LblMessage.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), Addition.Themes + theme + "/#Fallout Regular");
+            TbMessage.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), Addition.Themes + theme + "/#Fallout Regular");
             LblButton.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), Addition.Themes + theme + "/#Fallout Regular");
-            
+
             Background = new ImageBrush() { ImageSource = new BitmapImage(new Uri(Addition.Themes + theme + "/Alert_background.png", UriKind.Relative)) };
         }
 
         private void LoadParams(string title, string message, string button)
         {
-            LblTitle.Content = title;
-            LblMessage.Content = message;
-            LblButton.Content = button;
+            // TODO: Change to more flexible
             
+            Left = SystemParameters.PrimaryScreenWidth / 2 - Width / 2;
+            Top = SystemParameters.PrimaryScreenHeight / 2 - Height / 2;
+
+            Topmost = true;
+
+            LblTitle.Content = title;
+            TbMessage.Text = message;
+            LblButton.Content = button;
+
             LblTitle.FontSize = ConfigManager.Config.FontSize;
             LblTitle.Foreground = (Brush)new BrushConverter().ConvertFromString(ConfigManager.Config.TerminalColor);
-            
-            LblMessage.FontSize = ConfigManager.Config.FontSize;
-            LblMessage.Foreground = (Brush)new BrushConverter().ConvertFromString(ConfigManager.Config.TerminalColor);
-            
+
+            TbMessage.FontSize = ConfigManager.Config.FontSize;
+            TbMessage.Foreground = (Brush)new BrushConverter().ConvertFromString(ConfigManager.Config.TerminalColor);
+
             LblButton.FontSize = ConfigManager.Config.FontSize;
             LblButton.Foreground = (Brush)new BrushConverter().ConvertFromString(ConfigManager.Config.TerminalColor);
         }
