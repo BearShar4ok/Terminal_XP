@@ -18,7 +18,6 @@ namespace Terminal_XP.Frames
     {
         private const int TbWidth = 400;
         private const string Caret = "_";
-        private const bool IsDebugMod = true;
 
         private readonly string _theme;
         private readonly string _filename;
@@ -72,7 +71,7 @@ namespace Terminal_XP.Frames
             TBLogin.Focus();
             OpenHackPageCommand.InputGestures.Add(new KeyGesture(Key.R, ModifierKeys.Control));
 
-            if (IsDebugMod)
+            if (Addition.IsDebugMod)
             {
                 TBLogin.Text = "login";
                 TBPassword.Text = "password";
@@ -161,7 +160,7 @@ namespace Terminal_XP.Frames
             TBLogin.Width = TbWidth;
             TBPassword.Width = TbWidth;
 
-            if (IsDebugMod)
+            if (Addition.IsDebugMod)
             {
                 TBLogin.BorderThickness = new Thickness(1);
                 LblLogin.BorderThickness = new Thickness(1);
@@ -319,6 +318,11 @@ namespace Terminal_XP.Frames
             if (CheckLogin())
             {
                 GoToHackPage();
+            }
+            else
+            {
+                AlertWindow a = new AlertWindow("Уведомление", "Логин не найден в базе. Попробуйте еще раз.", "Закрыть", _theme);
+                a.Show();
             }
         }
     }

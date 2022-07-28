@@ -26,7 +26,6 @@ namespace Terminal_XP.Frames
     public partial class HackPage : Page
     {
         private const string Symbols = "~!@#$%^&*()_-=+{}|?/\"\';:<>";
-        private const bool IsDebugMod = true;
 
         private int HeightConsole = 35;
         private int CountCharInLine = 50;
@@ -69,7 +68,7 @@ namespace Terminal_XP.Frames
 
             Initialize();
 
-            if (IsDebugMod)
+            if (Addition.IsDebugMod)
             {
                 AddTextToConsole(_rightWord);
             }
@@ -414,7 +413,7 @@ namespace Terminal_XP.Frames
                     Focusable = false
                 };
 
-                if (IsDebugMod)
+                if (Addition.IsDebugMod)
                     border.BorderBrush = Brushes.Aqua;
 
                 Grid.SetRow(border, _lineNumber);

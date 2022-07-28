@@ -20,8 +20,6 @@ namespace Terminal_XP
 {
     public partial class MainWindow : Window
     {
-        private const bool IsDebugMod = true;
-
         private readonly string _theme;
 
         public MainWindow()
@@ -31,7 +29,7 @@ namespace Terminal_XP
 
             _theme = ConfigManager.Config.Theme;
 
-            if (!IsDebugMod)
+            if (!Addition.IsDebugMod)
             {
                 Topmost = true;
                 Cursor = Cursors.None;
