@@ -105,7 +105,7 @@ namespace Terminal_XP.Frames
 
         private void LoadTheme(string theme)
         {
-            _localFontFamily = new FontFamily(new Uri("pack://application:,,,/"), "Assets/Themes/Fallout/#Fallout Regular");
+            _localFontFamily = new FontFamily(new Uri("pack://application:,,,/"), Addition.Themes + _theme + "/#" + ConfigManager.Config.FontName);
         }
 
         private void Closing()
@@ -213,7 +213,8 @@ namespace Terminal_XP.Frames
                     leftP.Inlines.Add(new Run(str[i].ToString())
                     {
                         FontSize = ConfigManager.Config.FontSize,
-                        Foreground = (Brush)new BrushConverter().ConvertFromString(ConfigManager.Config.TerminalColor)
+                        Foreground = (Brush)new BrushConverter().ConvertFromString(ConfigManager.Config.TerminalColor),
+                        FontFamily = _localFontFamily
                     });
                 }
 

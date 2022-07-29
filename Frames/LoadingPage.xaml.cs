@@ -74,7 +74,7 @@ namespace Terminal_XP.Frames
         }
         private void LoadTheme()
         {
-            LblInfo.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), Addition.Themes + _theme + "/#" + ConfigManager.Config.FontName);//"/#" + ConfigManager.Config.FontName
+            LblInfo.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), Addition.Themes + _theme + "/#" + ConfigManager.Config.FontName);
         }
 
         private void LoadParams()
