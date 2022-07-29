@@ -74,7 +74,7 @@ namespace Terminal_XP.Frames
         }
         private void LoadTheme()
         {
-            LblInfo.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), Addition.Themes + _theme + "/#Fallout Regular");
+            LblInfo.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), Addition.Themes + _theme + "/#" + ConfigManager.Config.FontName);//"/#" + ConfigManager.Config.FontName
         }
 
         private void LoadParams()
@@ -111,7 +111,9 @@ namespace Terminal_XP.Frames
                             DataContext = new BitmapImage(new Uri(Icons[IconType.Folder])),
                             Content = diskName,
                             Tag = fullPath,
-                            Style = (Style)App.Current.FindResource("ImageText")
+                            Style = (Style)App.Current.FindResource("ImageText"),
+                            Foreground = (Brush)new BrushConverter().ConvertFrom(ConfigManager.Config.TerminalColor),
+                            FontFamily = LblInfo.FontFamily
                         };
 
                         if (_deepOfPath == 0)
@@ -225,7 +227,9 @@ namespace Terminal_XP.Frames
                 {
                     Content = name,
                     Tag = $@"{directory}\{filename}",
-                    Style = (Style)App.Current.FindResource("ImageText")
+                    Style = (Style)App.Current.FindResource("ImageText"),
+                    Foreground = (Brush)new BrushConverter().ConvertFrom(ConfigManager.Config.TerminalColor),
+                    FontFamily = LblInfo.FontFamily
                 };
 
                 if (Addition.Text.Contains(extension))
@@ -256,7 +260,9 @@ namespace Terminal_XP.Frames
                     DataContext = new BitmapImage(new Uri(Icons[IconType.Folder])),
                     Content = PrevDirText,
                     Tag = $@"{directory}\{PrevDirText}",
-                    Style = (Style)App.Current.FindResource("ImageText")
+                    Style = (Style)App.Current.FindResource("ImageText"),
+                    Foreground = (Brush)new BrushConverter().ConvertFrom(ConfigManager.Config.TerminalColor),
+                    FontFamily = LblInfo.FontFamily
                 };
 
                 LB.Items.Add(lbi);
@@ -272,7 +278,9 @@ namespace Terminal_XP.Frames
                     DataContext = new BitmapImage(new Uri(Icons[IconType.Folder])),
                     Content = name,
                     Tag = $@"{directory}\{name}",
-                    Style = (Style)App.Current.FindResource("ImageText")
+                    Style = (Style)App.Current.FindResource("ImageText"),
+                    Foreground = (Brush)new BrushConverter().ConvertFrom(ConfigManager.Config.TerminalColor),
+                    FontFamily = LblInfo.FontFamily
                 };
 
                 LB.Items.Add(lbi);

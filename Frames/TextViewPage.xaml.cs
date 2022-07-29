@@ -89,7 +89,7 @@ namespace Terminal_XP.Frames
 
         private void LoadTheme(string theme)
         {
-            Output.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), Addition.Themes + theme + "/#Fallout Regular");
+            Output.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), Addition.Themes + theme + "/#" + ConfigManager.Config.FontName);
         }
 
         private void LoadParams()

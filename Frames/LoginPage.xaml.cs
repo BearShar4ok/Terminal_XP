@@ -121,7 +121,7 @@ namespace Terminal_XP.Frames
 
         private void LoadTheme(string theme)
         {
-            var fontFamily = new FontFamily(new Uri("pack://application:,,,/"), Addition.Themes + theme + "/#Fallout Regular");
+            var fontFamily = new FontFamily(new Uri("pack://application:,,,/"), Addition.Themes + theme + "/#" + ConfigManager.Config.FontName);
 
             TBLogin.FontFamily = fontFamily;
             LblLogin.FontFamily = fontFamily;

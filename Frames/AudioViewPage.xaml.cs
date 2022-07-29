@@ -99,7 +99,7 @@ namespace Terminal_XP.Frames
         
         private void LoadTheme(string theme)
         {
-            ProgressBar.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), Addition.Themes + theme + "/#Fallout Regular");
+            ProgressBar.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), Addition.Themes + theme + "/#" + ConfigManager.Config.FontName);
         }
 
         private void LoadParams()
