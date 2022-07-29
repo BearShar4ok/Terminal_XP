@@ -59,7 +59,7 @@
 
                         <Border x:Name="brd" Background="{TemplateBinding Background}" 
                                          BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
-                            <Grid ShowGridLines="True">
+                            <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="40"/>
                                     <ColumnDefinition/>

@@ -54,7 +54,9 @@ namespace Terminal_XP
             Closing += (obj, e) => DevicesManager.StopListening();
 
             Addition.NavigationService?.Navigate(new TechnicalViewPage(_theme, new LoadingPage(_theme)));
-            
+            //Addition.NavigationService.Navigate(new LoadingPage(_theme));
+
+
         }
 
         private void TryExecuteMethod(object obj, Type type, string name)
