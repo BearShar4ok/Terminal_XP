@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -24,8 +25,17 @@ namespace Terminal_XP.Classes
         // Path to directory with error.log file 
         public const string ErrorFile = "files/Error.log";
 
+        public static LoadingPage LoadingPage = new LoadingPage();
+        public static LoginPage LoginPage = new LoginPage();
+        public static HackPage HackPage = new HackPage();
+        public static TechnicalViewPage TechnicalViewPage = new TechnicalViewPage();
+        public static TextViewPage TextViewPage = new TextViewPage();
+        public static AudioViewPage AudioViewPage = new AudioViewPage();
+        public static VideoViewPage VideoViewPage = new VideoViewPage();
+        public static PictureViewPage PictureViewPage = new PictureViewPage();
+
         // Dubug Mode
-        public const bool IsDebugMod = true;
+        public const bool IsDebugMod = false;
 
         // NavigationService
         public static NavigationService NavigationService { get; } = (Application.Current.MainWindow as MainWindow)?.Frame.NavigationService;
@@ -58,10 +68,15 @@ namespace Terminal_XP.Classes
             return item;
         }
 
+        public static ListBoxItem GetFirst(this ListBox listBox) => (ListBoxItem)listBox.SelectedItem;
+
         public static T FindKey<T, J>(this Dictionary<T, J> dct, J val) =>
             dct.Keys.FirstOrDefault(key => dct[key].Equals(val));
 
-        public static string RemoveLast(this string str, string key) => str.Remove(str.LastIndexOf(key, StringComparison.Ordinal));
+        public static string RemoveLast(this string str, string key)
+        {
+            return str.Contains(key) ? str.Remove(str.LastIndexOf(key, StringComparison.Ordinal)) : str;
+        }
 
         // Method to print list string to textblock with delay
         public static void PrintLines<T>(T element, Dispatcher dispatcher, ref bool working, Mutex mutex = default, params FragmentText[] TextArray) where T : TextBlock
@@ -92,22 +107,49 @@ namespace Terminal_XP.Classes
             }
         }
 
-        // Get page file by filename
-        public static Page GetPageByFilename(string filename, string theme, bool clearPage = false)
+        public static void GoBack(string filename, string theme)
         {
-            var exct = Path.GetExtension(filename).Remove(0, 1);
+            Addition.LoadingPage.SetParams(filename.Replace($"{Path.GetFileName(filename)}", "").RemoveLast("\\").RemoveLast("/"), theme);
+            Addition.NavigationService?.Navigate(Addition.LoadingPage);
+        }
 
-            if (Audio.Contains(exct))
-                return new AudioViewPage(filename, theme, clearPage);
+        // Get page file by filename
+        public static Page GetPageByFilename(string filename, string theme)
+        {
+            if (File.Exists(filename))
+            {
+                var exct = Path.GetExtension(filename).Remove(0, 1);
+                
+                if (Audio.Contains(exct))
+                {
+                    AudioViewPage.SetParams(filename, theme);
+                    return AudioViewPage;
+                }
 
-            if (Video.Contains(exct))
-                return new VideoViewPage(filename, theme, clearPage);
+                if (Video.Contains(exct))
+                {
+                    VideoViewPage.SetParams(filename, theme);
+                    return VideoViewPage;
+                }
 
-            if (Image.Contains(exct))
-                return new PictureViewPage(filename, theme, clearPage);
+                if (Image.Contains(exct))
+                {
+                    PictureViewPage.SetParams(filename, theme);
+                    return PictureViewPage;
+                }
 
-            if (Text.Contains(exct))
-                return new TextViewPage(filename, theme, clearPage);
+                if (Text.Contains(exct))
+                {
+                    TextViewPage.SetParams(filename, theme);
+                    return TextViewPage;
+                }
+            }
+
+            if (Directory.Exists(filename))
+            {
+                LoadingPage.SetParams(filename, theme);
+                return LoadingPage;
+            }
 
             return default;
         }

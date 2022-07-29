@@ -17,7 +17,7 @@
         <Label x:Name="LblInfo" Focusable="False" Grid.Row="0" Background="Transparent"/>
         <!-- <TextBlock TextWrapping="Wrap" x:Name="Print" Background="Transparent"/> -->
         <ListBox x:Name="LB" Grid.Row="1" KeyboardNavigation.TabNavigation="Cycle" ItemContainerStyle="{StaticResource ImageText}" MouseDoubleClick="lstB_MouseDoubleClick" 
-                 Background="Transparent" Margin="50" Foreground="Wheat" BorderThickness="0" BorderBrush="Transparent" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                 Background="Transparent" Margin="0" Foreground="Wheat" BorderThickness="0" BorderBrush="Transparent" ScrollViewer.VerticalScrollBarVisibility="Disabled">
             
             <!--   📂🖹🖻🖺🖾 🖼  G:/Coding/MyProjects/Terminal_XP/Terminal_XP/Assets/Themes/Fallout/folder.png -->
         </ListBox>

@@ -5,7 +5,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Navigation;
 using System.Windows.Threading;
 using Terminal_XP.Classes;
 
@@ -36,21 +35,23 @@ namespace Terminal_XP.Frames
             }
         }
 
-        public AudioViewPage(string filename, string theme, bool clearPage = false)
+        public AudioViewPage()
         {
             InitializeComponent();
-
-            if (clearPage)
-                Addition.NavigationService.Navigated += RemoveLast;
-
-            _filename = filename;
-            _theme = theme;
 
             // Init timer to update progress bar
             _timer.Interval = TimeSpan.FromMilliseconds(100);
             _timer.Tick += UpdateProgressBar;
-            _timer.Start();
+        }
 
+        public void SetParams(string filename, string theme)
+        {
+            _theme = theme;
+            _filename = filename;
+            
+            Application.Current.MainWindow.KeyDown += AdditionalKeys;
+
+            _player = new MediaPlayer();
             // Event to restart playing audio
             _player.MediaEnded += (obj, e) =>
             {
@@ -64,23 +65,18 @@ namespace Terminal_XP.Frames
                 ProgressBar.Text = $"[{new string(CharAllLen, CntSymbol)}]";
                 _loaded = true;
             };
-
-            Application.Current.MainWindow.KeyDown += AdditionalKeys;
-
+            
+            _timer.Start();
+            
             LoadTheme(theme);
             LoadParams();
             LoadAudio();
         }
         
-        private void RemoveLast(object obj, NavigationEventArgs e)
-        {
-            Addition.NavigationService?.RemoveBackEntry();
-        }
 
         // Method to invoke when page closing
         public void Closing()
         {
-            Addition.NavigationService.Navigated -= RemoveLast;
             Application.Current.MainWindow.KeyDown -= AdditionalKeys;
             _loaded = false;
 
@@ -161,7 +157,7 @@ namespace Terminal_XP.Frames
                 case Key.Escape:
                     // Closing page and go to loading page
                     Closing();
-                    Addition.NavigationService?.GoBack();
+                    Addition.GoBack(_filename, _theme);
                     break;
                 case Key.Space:
                     if (_stop)

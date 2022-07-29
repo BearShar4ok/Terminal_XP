@@ -52,8 +52,9 @@ namespace Terminal_XP
             ResizeMode = ResizeMode.NoResize;
             AllowsTransparency = true;
             Closing += (obj, e) => DevicesManager.StopListening();
-
-            Addition.NavigationService?.Navigate(new TechnicalViewPage(_theme, new LoadingPage(_theme)));
+            
+            Addition.TechnicalViewPage.SetParams(Addition.LoadingPage, () => { Addition.LoadingPage.SetParams("", _theme); }, _theme);
+            Addition.NavigationService?.Navigate(Addition.TechnicalViewPage);
             //Addition.NavigationService.Navigate(new LoadingPage(_theme));
 
 

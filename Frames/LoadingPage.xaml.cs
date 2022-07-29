@@ -27,7 +27,7 @@ namespace Terminal_XP.Frames
         private const string PrevDirText = "..";
         private const string SystemFolder = "System Volume Information";
         private const string ExtensionConfig = ".config";
-        private readonly Dictionary<IconType, string> Icons;
+        private Dictionary<IconType, string> Icons;
 
         private string _theme;
         private int _deepOfPath;
@@ -37,27 +37,26 @@ namespace Terminal_XP.Frames
 
         private Dictionary<string, ListBoxItem> _disks = new Dictionary<string, ListBoxItem>();
 
-
-        public LoadingPage(string theme)
+        public LoadingPage()
         {
             InitializeComponent();
 
             // Add actions to devices
             DevicesManager.AddDisk += disk => AddDisk(disk);
             DevicesManager.RemoveDisk += RemoveDisk;
-
-            _theme = theme;
-
-            KeepAlive = true;
-
-            LblInfo.Content = "Доступных дисков нет...";
-
+            
             LB.SelectionMode = SelectionMode.Single;
             LB.SelectedIndex = 0;
             LB.FocusVisualStyle = null;
-            LB.Focus();
 
-            KeyDown += AdditionalKeys;
+            KeepAlive = true;
+        }
+
+        public void SetParams(string directory, string theme)
+        {
+            _theme = theme;
+
+            LblInfo.Content = "Доступных дисков нет...";
 
             Icons = new Dictionary<IconType, string>()
             {
@@ -68,10 +67,24 @@ namespace Terminal_XP.Frames
                 { IconType.Audio, Path.GetFullPath(Addition.Themes + theme +  $@"/{Addition.Icons}/audio.png") },
                 { IconType.Video, Path.GetFullPath(Addition.Themes + theme +  $@"/{Addition.Icons}/video.png") }
             };
+
             LoadParams();
             LoadTheme();
+            
+            if (!string.IsNullOrEmpty(directory))
+                OpenCurrFolder(directory);
+            
+            Application.Current.MainWindow.KeyDown += AdditionalKeys;
+            
             DevicesManager.StartListening();
         }
+
+        public void Closing()
+        {
+            Application.Current.MainWindow.KeyDown -= AdditionalKeys;
+            DevicesManager.StopListening();
+        }
+        
         private void LoadTheme()
         {
             LblInfo.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), Addition.Themes + _theme + "/#" + ConfigManager.Config.FontName);
@@ -83,6 +96,7 @@ namespace Terminal_XP.Frames
             LblInfo.Opacity = ConfigManager.Config.Opacity;
             LblInfo.Foreground = (Brush)new BrushConverter().ConvertFromString(ConfigManager.Config.TerminalColor);
         }
+        
         private void AddDisk(string disk, bool addToList = true)
         {
             Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
@@ -123,7 +137,6 @@ namespace Terminal_XP.Frames
 
                         _disks.Add(disk, lbi);
                     }
-                    Focus();
                 }
                 catch { }
             }));
@@ -140,12 +153,13 @@ namespace Terminal_XP.Frames
                 
                 if (_currDisk == diskName)
                 {
-                    LB.SelectedIndex = 0;
+                    LB.SelectedItem = LB.Items.GetItemAt(0);
                     _selectedIndex = 0;
                     _currDisk = null;
                     LB.Items.Clear();
                     _disks.Keys.ForEach(x => AddDisk(x, false));
                 }
+                
                 if (LB.Items.Count==0)
                 {
                     LblInfo.Content = "Доступных дисков нет...";
@@ -176,7 +190,7 @@ namespace Terminal_XP.Frames
                     return;
                 }
 
-                LB.SelectedIndex = 0;
+                LB.SelectedItem = LB.Items.GetItemAt(0);
                 _selectedIndex = 0;
                 _currDisk = null;
                 LB.Items.Clear();
@@ -197,11 +211,46 @@ namespace Terminal_XP.Frames
 
         private void OpenFolder(string directory)
         {
+            if (Directory.GetFiles(directory.RemoveLast(@"\")).Select(Path.GetFileName).Contains(Path.GetFileName(directory) + ExtensionConfig))
+            {
+                try
+                {
+                    var content = JsonConvert.DeserializeObject<ConfigDeserializer>(File.ReadAllText(directory + ExtensionConfig));
+
+                    if (!content.HasPassword)
+                    {
+                        Closing();
+                        Addition.LoadingPage.SetParams(directory, _theme);
+                        Addition.NavigationService?.Navigate(Addition.LoadingPage);
+                    }
+                    else
+                    {
+                        Closing();
+                        Addition.LoginPage.SetParams(directory, _theme, content.LoginsAndPasswords);
+                        Addition.NavigationService.Navigate(Addition.LoginPage);
+                    }
+                }
+                catch
+                {
+                    _selectedIndex = 0;
+                    OpenCurrFolder(directory);
+                }
+            }
+            else
+            {
+                // TODO: Generate config file for this file
+                _selectedIndex = 0;
+                OpenCurrFolder(directory);
+            }
+        }
+
+        private void OpenCurrFolder(string directory)
+        {
             FindFolders(directory);
             FindFiles(directory);
 
-            LB.SelectedIndex = 0;
             _selectedIndex = 0;
+            LB.SelectedValue = 0;
             LB.Focus();
         }
 
@@ -209,13 +258,17 @@ namespace Terminal_XP.Frames
         private void FindFiles(string directory)
         {
             var files = Directory.GetFiles(directory).ToList();
+            var directories = Directory.GetDirectories(directory).Select(Path.GetFileName).ToList();
 
             for (var i = 0; i < files.Count; i++)
             {
-                if (files[i].Contains(ExtensionConfig) && files.Contains(files[i].RemoveLast(ExtensionConfig)))
+                if (files[i].Contains(ExtensionConfig))
                 {
-                    files.RemoveAt(i);
-                    i--;
+                    if (files.Select(Path.GetFileName).Contains(Path.GetFileName(files[i]).RemoveLast(ExtensionConfig)) || directories.Contains(Path.GetFileName(files[i]).RemoveLast(ExtensionConfig)))
+                    {
+                        files.RemoveAt(i);
+                        i--;
+                    }
                 }
             }
 
@@ -312,6 +365,7 @@ namespace Terminal_XP.Frames
 
         private void GoToFilePage(string directory)
         {
+            Closing();
             var nextPage = Addition.GetPageByFilename(directory, _theme);
 
             if (nextPage != default)
@@ -320,19 +374,22 @@ namespace Terminal_XP.Frames
 
         private void ExecuteFile(string directory)
         {
-            if (Directory.GetFiles(directory.RemoveLast(@"\")).Contains(directory + ".config"))
+            if (Directory.GetFiles(directory.RemoveLast(@"\")).Select(Path.GetFileName).Contains(Path.GetFileName(directory) + ExtensionConfig))
             {
                 try
                 {
-                    var content = JsonConvert.DeserializeObject<ConfigDeserializer>(File.ReadAllText(directory + ".config"));
+                    var content = JsonConvert.DeserializeObject<ConfigDeserializer>(File.ReadAllText(directory + ExtensionConfig));
 
                     if (!content.HasPassword)
                     {
+                        Closing();
                         Addition.NavigationService.Navigate(Addition.GetPageByFilename(directory, _theme));
                     }
                     else
                     {
-                        Addition.NavigationService.Navigate(new LoginPage(directory, _theme, content.LoginsAndPasswords));
+                        Closing();
+                        Addition.LoginPage.SetParams(directory, _theme, content.LoginsAndPasswords);
+                        Addition.NavigationService.Navigate(Addition.LoginPage);
                     }
                 }
                 catch
@@ -347,7 +404,7 @@ namespace Terminal_XP.Frames
                 GoToFilePage(directory);
             }
 
-            LB.SelectedIndex = _selectedIndex;
+            _selectedIndex = LB.SelectedIndex;
             LB.Focus();
         }
 

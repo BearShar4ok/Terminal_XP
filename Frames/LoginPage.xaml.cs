@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
@@ -19,9 +20,11 @@ namespace Terminal_XP.Frames
         private const int TbWidth = 400;
         private const string Caret = "_";
 
-        private readonly string _theme;
-        private readonly string _filename;
-        private readonly Dictionary<string, string> _database;
+        private bool _firstLoad = true;
+
+        private string _theme;
+        private string _filename;
+        private Dictionary<string, string> _database;
 
         private bool _haveCaretLogin;
         private bool _haveCaretPassword;
@@ -31,13 +34,9 @@ namespace Terminal_XP.Frames
 
         public static RoutedCommand OpenHackPageCommand = new RoutedCommand();
 
-        public LoginPage(string filename, string theme, Dictionary<string, string> dct)
+        public LoginPage()
         {
             InitializeComponent();
-
-            _theme = theme;
-            _filename = filename;
-            _database = dct;
 
             TBLogin.GotFocus += (obj, e) =>
             {
@@ -60,17 +59,10 @@ namespace Terminal_XP.Frames
             {
                 _updatePassword = false;
             };
-
-            Application.Current.MainWindow.KeyDown += KeyPress;
+            
             TBLogin.PreviewKeyDown += ChangeFocus;
             TBPassword.PreviewKeyDown += ChangeFocus;
 
-            LoadTheme(theme);
-            LoadParams();
-
-            CreateAndSetGrid();
-
-            TBLogin.Focus();
             OpenHackPageCommand.InputGestures.Add(new KeyGesture(Key.R, ModifierKeys.Control));
 
             if (Addition.IsDebugMod)
@@ -80,11 +72,38 @@ namespace Terminal_XP.Frames
             }
         }
 
+        public void SetParams(string filename, string theme, Dictionary<string, string> dct)
+        {
+            _theme = theme;
+            _filename = filename;
+            _database = dct;
+
+            TBLogin.Text = "";
+            TBPassword.Text = "";
+            
+            Application.Current.MainWindow.KeyDown += KeyPress;
+            
+            LoadTheme(theme);
+            LoadParams();
+
+            if (_firstLoad)
+            {
+                _firstLoad = false;
+                CreateAndSetGrid();
+            }
+            
+            TBLogin.Focus();
+            
+            if (Addition.IsDebugMod)
+            {
+                TBLogin.Text = "login";
+                TBPassword.Text = "жаба";
+            }
+        }
+
         public void Closing()
         {
             Application.Current.MainWindow.KeyDown -= KeyPress;
-            TBLogin.PreviewKeyDown -= ChangeFocus;
-            TBPassword.PreviewKeyDown -= ChangeFocus;
             _updateLogin = false;
             _updatePassword = false;
         }
@@ -93,19 +112,20 @@ namespace Terminal_XP.Frames
         private void GoToBack()
         {
             Closing();
-            Addition.NavigationService.GoBack();
+            Addition.GoBack(_filename, _theme);
         }
 
         private void GoToHackPage(string password)
         {
             Closing();
-            Addition.NavigationService?.Navigate(new HackPage(_filename, _theme, password, true));
+            Addition.HackPage.SetParams(_filename, _theme, password);
+            Addition.NavigationService?.Navigate(Addition.HackPage);
         }
 
         private void GoToFilePage()
         {
             Closing();
-            Addition.NavigationService?.Navigate(Addition.GetPageByFilename(_filename, _theme, true));
+            Addition.NavigationService?.Navigate(Addition.GetPageByFilename(_filename, _theme));
         }
 
         public void Relaod()

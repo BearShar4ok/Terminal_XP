@@ -30,8 +30,8 @@ namespace Terminal_XP.Frames
         private int CountCharInLine = 50;
 
         private string[] _words;
-        private readonly string _theme;
-        private readonly string _filename;
+        private string _theme;
+        private string _filename;
         private FontFamily _localFontFamily;
 
         private string _rightWord;
@@ -44,13 +44,13 @@ namespace Terminal_XP.Frames
         private int _lineNumber;
         private List<List<Span>> _spans = new List<List<Span>>();
 
-        public HackPage(string filename, string theme, string rightWord, bool clearPage = false)
+        public HackPage()
         {
             InitializeComponent();
+        }
 
-            if (clearPage)
-                Addition.NavigationService.Navigated += RemoveLast;
-
+        public void SetParams(string filename, string theme, string rightWord)
+        {
             // Get all words for generate
             _words = LingvoNET.Nouns.GetAll().Select(x => x.Word).Where(x => x.Length == rightWord.Length).ToArray();
             // Choose right word
@@ -60,11 +60,11 @@ namespace Terminal_XP.Frames
             _startLives = (int)ConfigManager.Config.CountLivesForHacking;
             _theme = theme;
             _filename = filename;
+            _spans = new List<List<Span>>();
+            leftP.Inlines.Clear();
 
             LoadTheme(_theme);
-
-            // KeepAlive = true;
-
+ 
             Application.Current.MainWindow.KeyDown += KeyPress;
 
             Initialize();
@@ -92,11 +92,6 @@ namespace Terminal_XP.Frames
             }
         }
 
-        private void RemoveLast(object obj, NavigationEventArgs e)
-        {
-            Addition.NavigationService?.RemoveBackEntry();
-        }
-
         // Method to reload page
         public void Reload()
         {
@@ -110,7 +105,6 @@ namespace Terminal_XP.Frames
 
         private void Closing()
         {
-            Addition.NavigationService.Navigated -= RemoveLast;
             Application.Current.MainWindow.KeyDown -= KeyPress;
         }
 
@@ -118,13 +112,13 @@ namespace Terminal_XP.Frames
         private void GoToBack()
         {
             Closing();
-            Addition.NavigationService?.GoBack();
+            Addition.GoBack(_filename, _theme);
         }
 
         private void GoToFilePage()
         {
             Closing();
-            Addition.NavigationService?.Navigate(Addition.GetPageByFilename(_filename, _theme, true));
+            Addition.NavigationService?.Navigate(Addition.GetPageByFilename(_filename, _theme));
         }
 
         // Method to generate string with words

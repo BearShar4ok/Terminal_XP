@@ -20,34 +20,30 @@ namespace Terminal_XP.Frames
         private Mutex _mutex = new Mutex();
 
 
-        public TextViewPage(string filename, string theme, bool clearPage = false)
+        public TextViewPage()
         {
             InitializeComponent();
+            
+            
+        }
 
-            if (clearPage)
-                Addition.NavigationService.Navigated += RemoveLast;
-
-            LoadTheme(theme);
-            LoadParams();
-
+        public void SetParams(string filename, string theme)
+        {
             _filename = filename;
             _theme = theme;
             Output.Text = ConfigManager.Config.SpecialSymbol;
-
+            
             Application.Current.MainWindow.KeyDown += AdditionalKeys;
+            
+            LoadTheme(theme);
+            LoadParams();
 
             LoadText();
-        }
-        
-        private void RemoveLast(object obj, NavigationEventArgs e)
-        {
-            Addition.NavigationService?.RemoveBackEntry();
         }
 
         public void Closing()
         {
             _update = false;
-            Addition.NavigationService.Navigated -= RemoveLast;
             Application.Current.MainWindow.KeyDown -= AdditionalKeys;
         }
 
@@ -129,7 +125,7 @@ namespace Terminal_XP.Frames
             {
                 case Key.Escape:
                     Closing();
-                    Addition.NavigationService.GoBack();
+                    Addition.GoBack(_filename, _theme);
                     break;
             }
         }

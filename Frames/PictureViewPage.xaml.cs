@@ -14,30 +14,24 @@ namespace Terminal_XP.Frames
         private string _filename;
         private string _theme;
 
-        public PictureViewPage(string filename, string theme, bool clearPage = false)
+        public PictureViewPage()
         {
             InitializeComponent();
+        }
 
-            if (clearPage)
-                Addition.NavigationService.Navigated += RemoveLast;
-
+        public void SetParams(string filename, string theme)
+        {
             _filename = filename;
             _theme = theme;
-
+            
             Application.Current.MainWindow.KeyDown += AdditionalKeys;
-
+            
             LoadTheme(theme);
             LoadImage();
-        }
-        
-        private void RemoveLast(object obj, NavigationEventArgs e)
-        {
-            Addition.NavigationService?.RemoveBackEntry();
         }
 
         public void Closing()
         {
-            Addition.NavigationService.Navigated -= RemoveLast;
             Application.Current.MainWindow.KeyDown -= AdditionalKeys;
         }
 
@@ -66,7 +60,7 @@ namespace Terminal_XP.Frames
             {
                 case Key.Escape:
                     Closing();
-                    Addition.NavigationService?.GoBack();
+                    Addition.GoBack(_filename, _theme);
                     break;
             }
 

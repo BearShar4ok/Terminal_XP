@@ -16,38 +16,31 @@ namespace Terminal_XP.Frames
     {
         private string _theme;
         private bool _update;
-        private Page nextPage;
+        private Page _nextPage;
+        private Action _setParams;
         private Mutex _mutex = new Mutex();
 
-
-        public TechnicalViewPage(string theme, Page nextPage, bool clearPage = false)
+        public TechnicalViewPage()
         {
             InitializeComponent();
+        }
 
-            if (clearPage)
-                Addition.NavigationService.Navigated += RemoveLast;
-
-            this.nextPage = nextPage;
-
-            LoadTheme(theme);
-            LoadParams();
-
+        public void SetParams(Page nextPage, Action setParams, string theme)
+        {
+            _nextPage = nextPage;
+            _setParams = setParams;
             Output.Text = ConfigManager.Config.SpecialSymbol;
 
             Application.Current.MainWindow.KeyDown += AdditionalKeys;
 
+            LoadTheme(theme);
+            LoadParams();
             LoadText();
-        }
-        
-        private void RemoveLast(object obj, NavigationEventArgs e)
-        {
-            Addition.NavigationService?.RemoveBackEntry();
         }
 
         public void Closing()
         {
             _update = false;
-            Addition.NavigationService.Navigated -= RemoveLast;
             Application.Current.MainWindow.KeyDown -= AdditionalKeys;
         }
 
@@ -76,16 +69,9 @@ namespace Terminal_XP.Frames
                 {
                     var text = stream.ReadToEnd();
 
-                    FragmentText fr = new FragmentText(text,
+                    var fr = new FragmentText(text,
                             ConfigManager.Config.UsingDelayFastOutput ? (uint)40 : 0);
-                    try
-                    {
-                        Addition.PrintLines(Output, Dispatcher, ref _update, _mutex, fr);
-                    }
-                    catch (Exception ex)
-                    {
-                        string a = ex.Message.ToString();
-                    }
+                    Addition.PrintLines(Output, Dispatcher, ref _update, _mutex, fr);
                    
                     UpdateCarriage();
                 }
@@ -135,7 +121,8 @@ namespace Terminal_XP.Frames
             {
                 case Key.Enter:
                     Closing();
-                    Addition.NavigationService.Navigate(nextPage);
+                    _setParams?.Invoke();
+                    Addition.NavigationService.Navigate(_nextPage);
                     break;
             }
         }

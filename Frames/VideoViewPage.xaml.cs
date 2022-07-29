@@ -23,16 +23,15 @@ namespace Terminal_XP.Frames
             }
         }
 
-        public VideoViewPage(string filename, string theme, bool clearPage = false)
+        public VideoViewPage()
         {
             InitializeComponent();
+        }
 
-            if (clearPage)
-                Addition.NavigationService.Navigated += RemoveLast;
-            
+        public void SetParams(string filename, string theme)
+        {
             _filename = filename;
             _theme = theme;
-
             
             MediaPlayer.MediaEnded += (obj, e) => { 
                 MediaPlayer.Position = new TimeSpan(0, 0, 0);
@@ -45,15 +44,9 @@ namespace Terminal_XP.Frames
             LoadVideo();
         }
 
-        private void RemoveLast(object obj, NavigationEventArgs e)
-        {
-            Addition.NavigationService?.RemoveBackEntry();
-        }
-
         public void Closing()
         {
             Stop();
-            Addition.NavigationService.Navigated -= RemoveLast;
             Application.Current.MainWindow.KeyDown -= AdditionalKeys;
         }
         
@@ -94,7 +87,7 @@ namespace Terminal_XP.Frames
             {
                 case Key.Escape:
                     Closing();
-                    Addition.NavigationService?.GoBack();
+                    Addition.GoBack(_filename, _theme);
                     break;
                 case Key.Space:
                     if (_stop)
