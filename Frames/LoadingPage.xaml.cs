@@ -113,7 +113,9 @@ namespace Terminal_XP.Frames
                             Tag = fullPath,
                             Style = (Style)App.Current.FindResource("ImageText"),
                             Foreground = (Brush)new BrushConverter().ConvertFrom(ConfigManager.Config.TerminalColor),
-                            FontFamily = LblInfo.FontFamily
+                            FontFamily = LblInfo.FontFamily,
+                            FontSize = LblInfo.FontSize,
+                             
                         };
 
                         if (_deepOfPath == 0)
@@ -229,7 +231,9 @@ namespace Terminal_XP.Frames
                     Tag = $@"{directory}\{filename}",
                     Style = (Style)App.Current.FindResource("ImageText"),
                     Foreground = (Brush)new BrushConverter().ConvertFrom(ConfigManager.Config.TerminalColor),
-                    FontFamily = LblInfo.FontFamily
+                    FontFamily = LblInfo.FontFamily,
+                    FontSize = LblInfo.FontSize,
+                     
                 };
 
                 if (Addition.Text.Contains(extension))
@@ -262,7 +266,9 @@ namespace Terminal_XP.Frames
                     Tag = $@"{directory}\{PrevDirText}",
                     Style = (Style)App.Current.FindResource("ImageText"),
                     Foreground = (Brush)new BrushConverter().ConvertFrom(ConfigManager.Config.TerminalColor),
-                    FontFamily = LblInfo.FontFamily
+                    FontFamily = LblInfo.FontFamily,
+                    FontSize = LblInfo.FontSize,
+                     
                 };
 
                 LB.Items.Add(lbi);
@@ -280,7 +286,9 @@ namespace Terminal_XP.Frames
                     Tag = $@"{directory}\{name}",
                     Style = (Style)App.Current.FindResource("ImageText"),
                     Foreground = (Brush)new BrushConverter().ConvertFrom(ConfigManager.Config.TerminalColor),
-                    FontFamily = LblInfo.FontFamily
+                    FontFamily = LblInfo.FontFamily,
+                    FontSize = LblInfo.FontSize,
+                     
                 };
 
                 LB.Items.Add(lbi);
