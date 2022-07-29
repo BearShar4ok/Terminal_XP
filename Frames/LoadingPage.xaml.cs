@@ -153,6 +153,9 @@ namespace Terminal_XP.Frames
         private void lstB_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             var lbi = (ListBoxItem)LB.SelectedItem;
+            if (lbi == null)
+                return;
+
             var directory = lbi.Tag.ToString();
 
             if (_currDisk == null)
