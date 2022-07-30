@@ -203,7 +203,7 @@ namespace Terminal_XP.Frames
 
             for (var i = 0; i < files.Count; i++)
             {
-                if (files[i].Contains(ExtensionConfig) && (files.Contains(files[i].RemoveLast(ExtensionConfig)) || directories.Contains(files[i].RemoveLast(ExtensionConfig))))// || files.Contains(directories[i].RemoveLast(ExtensionConfig))))
+                if (files[i].Contains(ExtensionConfig) && (files.Contains(files[i].RemoveLast(ExtensionConfig)) || directories.Contains(files[i].RemoveLast(ExtensionConfig))))
                 {
                     files.RemoveAt(i);
                     i--;

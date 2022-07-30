@@ -87,6 +87,7 @@ namespace Terminal_XP.Windows
             else
             {
                 Topmost = true;
+                Cursor = Cursors.None;
             }
         }
         private void LoadTheme(string theme)

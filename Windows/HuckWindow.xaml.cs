@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -87,6 +88,9 @@ namespace Terminal_XP.Windows
             else
             {
                 Topmost = true;
+                Cursor = Cursors.None;
+                LeftRTB.Cursor = Cursors.None;
+                leftP.Cursor = Cursors.None;
             }
         }
         private void RemoveLast(object obj, NavigationEventArgs e)
