@@ -108,6 +108,9 @@ namespace Terminal_XP.Windows
             WindowState = WindowState.Maximized;
             ResizeMode = ResizeMode.NoResize;
 
+            TBLogin.CharacterCasing = CharacterCasing.Lower;
+            TBPassword.CharacterCasing= CharacterCasing.Lower;
+
             TBLogin.Text = "";
             TBPassword.Text = "";
 

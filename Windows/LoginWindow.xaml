@@ -21,7 +21,7 @@
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <Label x:Name="LblLogin"  Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left" Content="Логин:" Background="Transparent" BorderThickness="0" Focusable="False" />
-        <TextBox x:Name="TBLogin" Text="login" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Left" Background="Transparent" BorderThickness="0" VerticalContentAlignment="Center" />
+        <TextBox x:Name="TBLogin" Text="LOgin" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Left" Background="Transparent" BorderThickness="0" VerticalContentAlignment="Center"/>
 
         <Label x:Name="LblPassword" Grid.Column="0" Grid.Row="2" HorizontalAlignment="Left" Content="Пароль:" Background="Transparent" BorderThickness="0" Focusable="False" />
         <TextBox x:Name="TBPassword" Text="password" Grid.Column="2" Grid.Row="2" HorizontalAlignment="Left" Background="Transparent" BorderThickness="0"/>
