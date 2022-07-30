@@ -219,7 +219,7 @@ namespace Terminal_XP.Frames
                     break;
                 case Key.Down:
                 case Key.Up:
-                    
+
                     break;
                 case Key.Enter:
                     if (CheckLoginAndPassword())
@@ -244,7 +244,7 @@ namespace Terminal_XP.Frames
 
             return _database.ContainsKey(login);
         }
-        
+
         private string GetPassword()
         {
             var login = TBLogin.Text;

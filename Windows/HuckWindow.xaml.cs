@@ -1,28 +1,27 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Threading;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using System.Windows.Shapes;
 using Terminal_XP.Classes;
-using Terminal_XP.Windows;
+using static System.Net.WebRequestMethods;
 
-namespace Terminal_XP.Frames
+namespace Terminal_XP.Windows
 {
+    /// <summary>
+    /// Логика взаимодействия для HuckWindow.xaml
+    /// </summary>
     
-
-    // TODO: сделать количество букв в строке адаптивным к размеру экрана (это параметр CountCharInLine)
-    // TODO: Мб переделать генератор, чтобы он в текст вставлял радномное число слов, в не с какой-то верноятностью добавлял слова
-    // TODO: Переделать распеределение слов, т. к. может получиться, что из-за слова предыдущая строка будет идти не до конца(см. метод AddToField)
-    // TODO: И ещё мб сделать, чтобы все символы были одного размера
-
-    public partial class HackPage : Page
+    public partial class HuckWindow : Window
     {
         private const string Symbols = "~!@#$%^&*()_-=+{}|?/\"\';:<>";
 
@@ -31,7 +30,6 @@ namespace Terminal_XP.Frames
 
         private string[] _words;
         private readonly string _theme;
-        private readonly string _filename;
         private FontFamily _localFontFamily;
 
         private string _rightWord;
@@ -43,13 +41,10 @@ namespace Terminal_XP.Frames
         private int _columnSpon;
         private int _lineNumber;
         private List<List<Span>> _spans = new List<List<Span>>();
-
-        public HackPage(string filename, string theme, string rightWord, bool clearPage = false)
+        public State ReternedState { get; private set; } = State.None;
+        public HuckWindow(string theme, string rightWord)
         {
             InitializeComponent();
-
-            if (clearPage)
-                Addition.NavigationService.Navigated += RemoveLast;
 
             // Get all words for generate
             _words = LingvoNET.Nouns.GetAll().Select(x => x.Word).Where(x => x.Length == rightWord.Length).ToArray();
@@ -59,13 +54,12 @@ namespace Terminal_XP.Frames
             _lives = (int)ConfigManager.Config.CountLivesForHacking;
             _startLives = (int)ConfigManager.Config.CountLivesForHacking;
             _theme = theme;
-            _filename = filename;
 
             LoadTheme(_theme);
 
             // KeepAlive = true;
 
-            Application.Current.MainWindow.KeyDown += KeyPress;
+            KeyDown += KeyPress;
 
             Initialize();
 
@@ -78,20 +72,23 @@ namespace Terminal_XP.Frames
                 {
                     foreach (var row in column)
                     {
-                        if (((Run) row.Inlines.FirstInline).Text == rightWord)
+                        if (((Run)row.Inlines.FirstInline).Text == rightWord)
                         {
                             SetHighlight(row, true);
                             exit = true;
                             break;
                         }
                     }
-                    
+
                     if (exit)
                         break;
                 }
             }
+            else
+            {
+                Topmost = true;
+            }
         }
-
         private void RemoveLast(object obj, NavigationEventArgs e)
         {
             Addition.NavigationService?.RemoveBackEntry();
@@ -105,26 +102,12 @@ namespace Terminal_XP.Frames
 
         private void LoadTheme(string theme)
         {
+            Background = new ImageBrush() { ImageSource = new BitmapImage(new Uri(Addition.Themes + theme + "/Background.png", UriKind.Relative)) };
             _localFontFamily = new FontFamily(new Uri("pack://application:,,,/"), Addition.Themes + _theme + "/#" + ConfigManager.Config.FontName);
-        }
 
-        private void Closing()
-        {
-            Addition.NavigationService.Navigated -= RemoveLast;
-            Application.Current.MainWindow.KeyDown -= KeyPress;
-        }
-
-        // Method to return back to LoadPage
-        private void GoToBack()
-        {
-            Closing();
-            Addition.NavigationService?.GoBack();
-        }
-
-        private void GoToFilePage()
-        {
-            Closing();
-            Addition.NavigationService?.Navigate(Addition.GetPageByFilename(_filename, _theme, true));
+            WindowStyle = WindowStyle.None;
+            WindowState = WindowState.Maximized;
+            ResizeMode = ResizeMode.NoResize;
         }
 
         // Method to generate string with words
@@ -338,7 +321,8 @@ namespace Terminal_XP.Frames
             switch (e.Key)
             {
                 case Key.Escape:
-                    GoToBack();
+                    ReternedState = State.Cancel;
+                    Close();
                     break;
                 case Key.D:
                 case Key.Right:
@@ -394,21 +378,26 @@ namespace Terminal_XP.Frames
 
             if (text == _rightWord)
             {
-                GoToFilePage();
+                ReternedState = State.Access;
+                Close();
                 return ">ACESS";
             }
 
             _lives--;
 
             if (_lives > 0 && ConfigManager.Config.DifficultyInfo)
-                return ">" + HowManyCorrectSymbols(text) + " из " + _rightWord.Length + " верно!\n>Осталось " + _lives +" из "+ _startLives + " попыток!\n>DENIED";
+                return ">" + HowManyCorrectSymbols(text) + " из " + _rightWord.Length + " верно!\n>Осталось " + _lives + " из " + _startLives + " попыток!\n>DENIED";
 
             var alert = new AlertWindow("Уведомление", "Влом провален.", "Закрыть", _theme);
-            
-            if (alert.ShowDialog() == false)
-                GoToBack();
 
-            return ">DENIED";
+            if (alert.ShowDialog() == false)
+            {
+
+                ReternedState = State.Fail;
+                Close();
+                return ">DENIED";
+            }
+            return default;
         }
 
         // Get Textblock

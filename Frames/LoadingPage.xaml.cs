@@ -195,16 +195,6 @@ namespace Terminal_XP.Frames
             }
         }
 
-        private void OpenFolder(string directory)
-        {
-            FindFolders(directory);
-            FindFiles(directory);
-
-            LB.SelectedIndex = 0;
-            _selectedIndex = 0;
-            LB.Focus();
-        }
-
         // Look for all files in directory
         private void FindFiles(string directory)
         {
@@ -317,6 +307,60 @@ namespace Terminal_XP.Frames
             if (nextPage != default)
                 Addition.NavigationService.Navigate(nextPage);
         }
+        private void OpenFolder(string directory)
+        {
+            if (Directory.GetFiles(directory.RemoveLast(@"\")).Contains(directory + ".config"))
+            {
+                try
+                {
+                    var content = JsonConvert.DeserializeObject<ConfigDeserializer>(File.ReadAllText(directory + ".config"));
+
+                    if (!content.HasPassword)
+                    {
+                        AccessInFolderOpen(directory);
+                    }
+                    else
+                    {
+                        //Addition.NavigationService.Navigate(new LoginPage(directory, _theme, content.LoginsAndPasswords));
+                        var lw = new LoginWindow(_theme, content.LoginsAndPasswords);
+                        if (lw.ShowDialog() == false)
+                        {
+                            if (lw.ReternedState == State.Access)
+                                AccessInFolderOpen(directory);
+
+                            if (lw.ReternedState == State.Huck)
+                            {
+                                var hw = new HuckWindow(_theme, lw.Password);
+                                if (hw.ShowDialog() == false)
+                                {
+                                    if (hw.ReternedState == State.Access)
+                                        AccessInFolderOpen(directory);
+
+                                }
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    AccessInFolderOpen(directory);
+                }
+            }
+            else
+            {
+                AccessInFolderOpen(directory);
+            }
+        }
+
+        private void AccessInFolderOpen(string directory)
+        {
+            FindFolders(directory);
+            FindFiles(directory);
+
+            LB.SelectedIndex = 0;
+            _selectedIndex = 0;
+            LB.Focus();
+        }
 
         private void ExecuteFile(string directory)
         {
@@ -332,7 +376,24 @@ namespace Terminal_XP.Frames
                     }
                     else
                     {
-                        Addition.NavigationService.Navigate(new LoginPage(directory, _theme, content.LoginsAndPasswords));
+                        //Addition.NavigationService.Navigate(new LoginPage(directory, _theme, content.LoginsAndPasswords));
+                        var lw = new LoginWindow(_theme, content.LoginsAndPasswords);
+                        if (lw.ShowDialog() == false)
+                        {
+                            if (lw.ReternedState==State.Access)
+                                Addition.NavigationService.Navigate(Addition.GetPageByFilename(directory, _theme));
+
+                            if (lw.ReternedState == State.Huck)
+                            {
+                                var hw = new HuckWindow(_theme,lw.Password);
+                                if (hw.ShowDialog()==false)
+                                {
+                                    if (hw.ReternedState==State.Access)
+                                        Addition.NavigationService.Navigate(Addition.GetPageByFilename(directory, _theme));
+
+                                }
+                            }
+                        }
                     }
                 }
                 catch
@@ -343,12 +404,8 @@ namespace Terminal_XP.Frames
             else
             {
                 // TODO: Generate config file for this file
-
                 GoToFilePage(directory);
             }
-
-            LB.SelectedIndex = _selectedIndex;
-            LB.Focus();
         }
 
         private static bool IsFolder(string path) => Directory.Exists(path);

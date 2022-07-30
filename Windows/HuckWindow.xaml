@@ -1,0 +1,23 @@
+﻿<Window x:Class="Terminal_XP.Windows.HuckWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Terminal_XP.Windows"
+        mc:Ignorable="d"
+        Title="HuckWindow" Height="450" Width="800">
+    <Grid x:Name="MainGrid" Margin="50">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="0.5*"/>
+        </Grid.ColumnDefinitions>
+
+        <RichTextBox Focusable="False" x:Name="LeftRTB" Grid.Column="0"  IsReadOnly="True" BorderBrush="Transparent" BorderThickness="0" Background="Transparent">
+            <FlowDocument Focusable="False"  PageWidth="{Binding ElementName=LeftRTB, Path=ActualWidth}">
+                <Paragraph Focusable="False" Name="leftP"  BorderBrush="White" BorderThickness="0" />
+            </FlowDocument>
+        </RichTextBox>
+
+        <Grid Margin="10 0 0 0" Focusable="False" x:Name="Output" Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+    </Grid>
+</Window>

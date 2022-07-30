@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.ComponentModel;
 using Terminal_XP.Windows;
 using Path = System.IO.Path;
+using Newtonsoft.Json;
 
 namespace Terminal_XP
 {
@@ -34,7 +35,6 @@ namespace Terminal_XP
                 Topmost = true;
                 Cursor = Cursors.None;
             }
-            
 
             LoadTheme(_theme);
             LoadParams();
@@ -53,10 +53,9 @@ namespace Terminal_XP
             AllowsTransparency = true;
             Closing += (obj, e) => DevicesManager.StopListening();
 
-            Addition.NavigationService?.Navigate(new TechnicalViewPage(_theme, new LoadingPage(_theme)));
-            //Addition.NavigationService.Navigate(new LoadingPage(_theme));
-
-
+             Addition.NavigationService?.Navigate(new TechnicalViewPage(_theme, new LoadingPage(_theme)));
+            //var hw = new HuckWindow(_theme, "pas");
+            //hw.Show();
         }
 
         private void TryExecuteMethod(object obj, Type type, string name)

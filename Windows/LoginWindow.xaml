@@ -1,0 +1,29 @@
+﻿<Window x:Class="Terminal_XP.Windows.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Terminal_XP.Windows"
+        mc:Ignorable="d"
+        Title="LoginWindow" Height="450" Width="800">
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static local:LoginWindow.OpenHackPageCommand}" Executed="OpenHackPage"/>
+    </Window.CommandBindings>
+    <Grid x:Name="Main" Margin="50">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Label x:Name="LblLogin"  Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left" Content="Логин:" Background="Transparent" BorderThickness="0" Focusable="False" />
+        <TextBox x:Name="TBLogin" Text="login" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Left" Background="Transparent" BorderThickness="0" VerticalContentAlignment="Center" />
+
+        <Label x:Name="LblPassword" Grid.Column="0" Grid.Row="2" HorizontalAlignment="Left" Content="Пароль:" Background="Transparent" BorderThickness="0" Focusable="False" />
+        <TextBox x:Name="TBPassword" Text="password" Grid.Column="2" Grid.Row="2" HorizontalAlignment="Left" Background="Transparent" BorderThickness="0"/>
+    </Grid>
+</Window>
