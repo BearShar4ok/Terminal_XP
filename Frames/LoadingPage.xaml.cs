@@ -115,7 +115,7 @@ namespace Terminal_XP.Frames
                             Foreground = (Brush)new BrushConverter().ConvertFrom(ConfigManager.Config.TerminalColor),
                             FontFamily = LblInfo.FontFamily,
                             FontSize = LblInfo.FontSize,
-                             
+
                         };
 
                         if (_deepOfPath == 0)
@@ -134,10 +134,10 @@ namespace Terminal_XP.Frames
             Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
             {
                 var disk = _disks.Pop(diskName);
-                
+
                 if (LB.Items.Contains(disk))
                     LB.Items.Remove(disk);
-                
+
                 if (_currDisk == diskName)
                 {
                     LB.SelectedIndex = 0;
@@ -146,7 +146,7 @@ namespace Terminal_XP.Frames
                     LB.Items.Clear();
                     _disks.Keys.ForEach(x => AddDisk(x, false));
                 }
-                if (LB.Items.Count==0)
+                if (LB.Items.Count == 0)
                 {
                     LblInfo.Content = "Доступных дисков нет...";
                     LblInfo.Visibility = Visibility.Visible;
@@ -199,10 +199,11 @@ namespace Terminal_XP.Frames
         private void FindFiles(string directory)
         {
             var files = Directory.GetFiles(directory).ToList();
+            var directories = Directory.GetDirectories(directory);
 
             for (var i = 0; i < files.Count; i++)
             {
-                if (files[i].Contains(ExtensionConfig) && files.Contains(files[i].RemoveLast(ExtensionConfig)))
+                if (files[i].Contains(ExtensionConfig) && (files.Contains(files[i].RemoveLast(ExtensionConfig)) || directories.Contains(files[i].RemoveLast(ExtensionConfig))))// || files.Contains(directories[i].RemoveLast(ExtensionConfig))))
                 {
                     files.RemoveAt(i);
                     i--;
@@ -223,7 +224,7 @@ namespace Terminal_XP.Frames
                     Foreground = (Brush)new BrushConverter().ConvertFrom(ConfigManager.Config.TerminalColor),
                     FontFamily = LblInfo.FontFamily,
                     FontSize = LblInfo.FontSize,
-                     
+
                 };
 
                 if (Addition.Text.Contains(extension))
@@ -258,7 +259,7 @@ namespace Terminal_XP.Frames
                     Foreground = (Brush)new BrushConverter().ConvertFrom(ConfigManager.Config.TerminalColor),
                     FontFamily = LblInfo.FontFamily,
                     FontSize = LblInfo.FontSize,
-                     
+
                 };
 
                 LB.Items.Add(lbi);
@@ -278,7 +279,7 @@ namespace Terminal_XP.Frames
                     Foreground = (Brush)new BrushConverter().ConvertFrom(ConfigManager.Config.TerminalColor),
                     FontFamily = LblInfo.FontFamily,
                     FontSize = LblInfo.FontSize,
-                     
+
                 };
 
                 LB.Items.Add(lbi);
@@ -380,15 +381,15 @@ namespace Terminal_XP.Frames
                         var lw = new LoginWindow(_theme, content.LoginsAndPasswords);
                         if (lw.ShowDialog() == false)
                         {
-                            if (lw.ReternedState==State.Access)
+                            if (lw.ReternedState == State.Access)
                                 Addition.NavigationService.Navigate(Addition.GetPageByFilename(directory, _theme));
 
                             if (lw.ReternedState == State.Huck)
                             {
-                                var hw = new HuckWindow(_theme,lw.Password);
-                                if (hw.ShowDialog()==false)
+                                var hw = new HuckWindow(_theme, lw.Password);
+                                if (hw.ShowDialog() == false)
                                 {
-                                    if (hw.ReternedState==State.Access)
+                                    if (hw.ReternedState == State.Access)
                                         Addition.NavigationService.Navigate(Addition.GetPageByFilename(directory, _theme));
 
                                 }
