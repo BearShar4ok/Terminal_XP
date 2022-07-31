@@ -36,12 +36,6 @@ namespace Terminal_XP
                 Cursor = Cursors.None;
             }
 
-            KeyDown += (obj, e) =>
-            {
-                if (e.Key == Key.Escape)
-                    Close();
-            };
-
             LoadTheme(_theme);
             LoadParams();
         }
