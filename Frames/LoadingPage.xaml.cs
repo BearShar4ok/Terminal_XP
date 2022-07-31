@@ -323,7 +323,7 @@ namespace Terminal_XP.Frames
                     else
                     {
                         //Addition.NavigationService.Navigate(new LoginPage(directory, _theme, content.LoginsAndPasswords));
-                        var lw = new LoginWindow(_theme, content.LoginsAndPasswords);
+                        var lw = new LoginWindow(_theme, NormalizeLoginANdPassword(content.LoginsAndPasswords));
                         if (lw.ShowDialog() == false)
                         {
                             if (lw.ReternedState == State.Access)
@@ -378,7 +378,7 @@ namespace Terminal_XP.Frames
                     else
                     {
                         //Addition.NavigationService.Navigate(new LoginPage(directory, _theme, content.LoginsAndPasswords));
-                        var lw = new LoginWindow(_theme, content.LoginsAndPasswords);
+                        var lw = new LoginWindow(_theme, NormalizeLoginANdPassword(content.LoginsAndPasswords));
                         if (lw.ShowDialog() == false)
                         {
                             if (lw.ReternedState == State.Access)
@@ -408,7 +408,15 @@ namespace Terminal_XP.Frames
                 GoToFilePage(directory);
             }
         }
-
+        private Dictionary<string, string> NormalizeLoginANdPassword(Dictionary<string, string> dct)
+        {
+            Dictionary<string, string> result = new Dictionary<string, string>();
+            foreach (var log in dct)
+            {
+                result.Add(log.Key.ToLower(), log.Value.ToLower());
+            }
+            return result;
+        }
         private static bool IsFolder(string path) => Directory.Exists(path);
     }
 }

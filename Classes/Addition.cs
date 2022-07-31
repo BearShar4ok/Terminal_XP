@@ -25,7 +25,7 @@ namespace Terminal_XP.Classes
         public const string ErrorFile = "files/Error.log";
 
         // Dubug Mode
-        public const bool IsDebugMod = false;
+        public const bool IsDebugMod = true;
 
         // NavigationService
         public static NavigationService NavigationService { get; } = (Application.Current.MainWindow as MainWindow)?.Frame.NavigationService;
