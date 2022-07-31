@@ -70,8 +70,6 @@
       <DependentUpon>LoginWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="Frames\AudioViewPage.xaml" />
-    <Page Include="Frames\HackPage.xaml" />
-    <Page Include="Frames\LoginPage.xaml" />
     <Page Include="Frames\PictureViewPage.xaml" />
     <Page Include="Frames\TechnicalViewPage.xaml">
       <SubType>Designer</SubType>
@@ -96,12 +94,6 @@
     <Compile Include="Classes\Manager.cs" />
     <Compile Include="Frames\AudioViewPage.xaml.cs">
       <DependentUpon>AudioViewPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Frames\HackPage.xaml.cs">
-      <DependentUpon>HackPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Frames\LoginPage.xaml.cs">
-      <DependentUpon>LoginPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Frames\PictureViewPage.xaml.cs">
       <DependentUpon>PictureViewPage.xaml</DependentUpon>
