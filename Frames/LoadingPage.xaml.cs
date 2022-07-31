@@ -296,6 +296,9 @@ namespace Terminal_XP.Frames
                 case Key.Enter:
                     lstB_MouseDoubleClick(null, null);
                     break;
+                case Key.Escape:
+                    App.Current.MainWindow.Close();
+                    break;
             }
 
             _prevkeyState = e.KeyStates;
