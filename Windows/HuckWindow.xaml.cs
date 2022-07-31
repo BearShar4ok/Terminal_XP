@@ -50,7 +50,7 @@ namespace Terminal_XP.Windows
             // Get all words for generate
             _words = LingvoNET.Nouns.GetAll().Select(x => x.Word).Where(x => x.Length == rightWord.Length).ToArray();
             // Choose right word
-            _rightWord = rightWord;
+            _rightWord = rightWord.ToLower();
             // Get count lives
             _lives = (int)ConfigManager.Config.CountLivesForHacking;
             _startLives = (int)ConfigManager.Config.CountLivesForHacking;
