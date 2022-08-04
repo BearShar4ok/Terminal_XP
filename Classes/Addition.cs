@@ -25,7 +25,7 @@ namespace Terminal_XP.Classes
         public const string ErrorFile = "files/Error.log";
 
         // Dubug Mode
-        public const bool IsDebugMod = true;
+        public const bool IsDebugMod = false;
 
         // NavigationService
         public static NavigationService NavigationService { get; } = (Application.Current.MainWindow as MainWindow)?.Frame.NavigationService;
@@ -64,7 +64,7 @@ namespace Terminal_XP.Classes
         public static string RemoveLast(this string str, string key) => str.Remove(str.LastIndexOf(key, StringComparison.Ordinal));
 
         // Method to print list string to textblock with delay
-        public static void PrintLines<T>(T element, Dispatcher dispatcher, ref bool working, Mutex mutex = default, params FragmentText[] TextArray) where T : TextBlock
+        public static void PrintLines(TextBlock element, ScrollViewer scroller, Dispatcher dispatcher, ref bool working, Mutex mutex = default, params FragmentText[] TextArray)
         {
             foreach (var fragmentText in TextArray)
             {
@@ -83,6 +83,12 @@ namespace Terminal_XP.Classes
                         else
                             element.Text += symbol.ToString();
                     }));
+
+                   scroller.Dispatcher.BeginInvoke(
+                   new Action(() =>
+                   {
+                       scroller.ScrollToBottom();
+                   }));
 
                     mutex?.ReleaseMutex();
 

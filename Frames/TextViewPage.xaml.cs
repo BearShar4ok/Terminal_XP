@@ -35,10 +35,10 @@ namespace Terminal_XP.Frames
             Output.Text = ConfigManager.Config.SpecialSymbol;
 
             Application.Current.MainWindow.KeyDown += AdditionalKeys;
-
+            Scroller.Focus();
             LoadText();
         }
-        
+
         private void RemoveLast(object obj, NavigationEventArgs e)
         {
             Addition.NavigationService?.RemoveBackEntry();
@@ -79,7 +79,7 @@ namespace Terminal_XP.Frames
                 {
                     var text = stream.ReadToEnd();
 
-                    Addition.PrintLines(Output, Dispatcher, ref _update, _mutex,
+                    Addition.PrintLines(Output, Scroller, Dispatcher, ref _update, _mutex,
                         new FragmentText(text,
                             ConfigManager.Config.UsingDelayFastOutput ? ConfigManager.Config.DelayFastOutput : 0));
                     UpdateCarriage();
@@ -119,6 +119,7 @@ namespace Terminal_XP.Frames
                     _mutex?.ReleaseMutex();
 
                     Thread.Sleep((int)ConfigManager.Config.DelayUpdateCarriage);
+
                 }
             }).Start();
         }
@@ -130,6 +131,9 @@ namespace Terminal_XP.Frames
                 case Key.Escape:
                     Closing();
                     Addition.NavigationService.GoBack();
+                    break;
+                case Key.Enter:
+                    Scroller.Focus();
                     break;
             }
         }

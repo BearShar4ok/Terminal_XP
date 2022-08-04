@@ -80,7 +80,7 @@ namespace Terminal_XP.Frames
                             ConfigManager.Config.UsingDelayFastOutput ? (uint)40 : 0);
                     try
                     {
-                        Addition.PrintLines(Output, Dispatcher, ref _update, _mutex, fr);
+                        Addition.PrintLines(Output, Scroller, Dispatcher, ref _update, _mutex, fr);
                     }
                     catch (Exception ex)
                     {

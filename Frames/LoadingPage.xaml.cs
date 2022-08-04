@@ -14,6 +14,7 @@ using Path = System.IO.Path;
 using Terminal_XP.Windows;
 using System.Threading;
 using System.Windows.Media;
+using LingvoNET;
 
 namespace Terminal_XP.Frames
 {
@@ -36,6 +37,7 @@ namespace Terminal_XP.Frames
         private string _currDisk;
 
         private Dictionary<string, ListBoxItem> _disks = new Dictionary<string, ListBoxItem>();
+        private Dictionary<string, int> _huckAttempts = new Dictionary<string, int>();
 
 
         public LoadingPage(string theme)
@@ -172,7 +174,7 @@ namespace Terminal_XP.Frames
 
                 if (_deepOfPath > 0)
                 {
-                    OpenFolder(directory.RemoveLast("\\").RemoveLast("\\"));
+                    Open(directory.RemoveLast("\\").RemoveLast("\\"), true, true);
                     return;
                 }
 
@@ -187,11 +189,11 @@ namespace Terminal_XP.Frames
             if (IsFolder(directory))
             {
                 _deepOfPath++;
-                OpenFolder(directory);
+                Open(directory, true);
             }
             else
             {
-                ExecuteFile(directory);
+                Open(directory, false);
             }
         }
 
@@ -311,50 +313,6 @@ namespace Terminal_XP.Frames
             if (nextPage != default)
                 Addition.NavigationService.Navigate(nextPage);
         }
-        private void OpenFolder(string directory)
-        {
-            if (Directory.GetFiles(directory.RemoveLast(@"\")).Contains(directory + ".config"))
-            {
-                try
-                {
-                    var content = JsonConvert.DeserializeObject<ConfigDeserializer>(File.ReadAllText(directory + ".config"));
-
-                    if (!content.HasPassword)
-                    {
-                        AccessInFolderOpen(directory);
-                    }
-                    else
-                    {
-                        //Addition.NavigationService.Navigate(new LoginPage(directory, _theme, content.LoginsAndPasswords));
-                        var lw = new LoginWindow(_theme, NormalizeLoginANdPassword(content.LoginsAndPasswords));
-                        if (lw.ShowDialog() == false)
-                        {
-                            if (lw.ReternedState == State.Access)
-                                AccessInFolderOpen(directory);
-
-                            if (lw.ReternedState == State.Huck)
-                            {
-                                var hw = new HuckWindow(_theme, lw.Password);
-                                if (hw.ShowDialog() == false)
-                                {
-                                    if (hw.ReternedState == State.Access)
-                                        AccessInFolderOpen(directory);
-
-                                }
-                            }
-                        }
-                    }
-                }
-                catch
-                {
-                    AccessInFolderOpen(directory);
-                }
-            }
-            else
-            {
-                AccessInFolderOpen(directory);
-            }
-        }
 
         private void AccessInFolderOpen(string directory)
         {
@@ -366,9 +324,9 @@ namespace Terminal_XP.Frames
             LB.Focus();
         }
 
-        private void ExecuteFile(string directory)
+        private void Open(string directory, bool isFolder, bool isGoBack = false)
         {
-            if (Directory.GetFiles(directory.RemoveLast(@"\")).Contains(directory + ".config"))
+            if (Directory.GetFiles(directory.RemoveLast(@"\")).Contains(directory + ".config") && !isGoBack)
             {
                 try
                 {
@@ -376,25 +334,51 @@ namespace Terminal_XP.Frames
 
                     if (!content.HasPassword)
                     {
-                        Addition.NavigationService.Navigate(Addition.GetPageByFilename(directory, _theme));
+                        if (isFolder)
+                            AccessInFolderOpen(directory);
+                        else
+                            GoToFilePage(directory);
                     }
                     else
                     {
-                        //Addition.NavigationService.Navigate(new LoginPage(directory, _theme, content.LoginsAndPasswords));
                         var lw = new LoginWindow(_theme, NormalizeLoginANdPassword(content.LoginsAndPasswords));
                         if (lw.ShowDialog() == false)
                         {
                             if (lw.ReternedState == State.Access)
-                                Addition.NavigationService.Navigate(Addition.GetPageByFilename(directory, _theme));
+                            {
+                                if (isFolder)
+                                    AccessInFolderOpen(directory);
+                                else
+                                    GoToFilePage(directory);
+                            }
 
                             if (lw.ReternedState == State.Huck)
                             {
-                                var hw = new HuckWindow(_theme, lw.Password);
-                                if (hw.ShowDialog() == false)
+                                if (content.CanBeHucked)
                                 {
-                                    if (hw.ReternedState == State.Access)
-                                        Addition.NavigationService.Navigate(Addition.GetPageByFilename(directory, _theme));
+                                    var hw = new HuckWindow(_theme, lw.Password, content.HuckAttempts);
+                                    if (hw.ShowDialog() == false)
+                                    {
+                                        if (hw.ReternedState == State.Access)
+                                        {
+                                            if (isFolder)
+                                                AccessInFolderOpen(directory);
+                                            else
+                                                GoToFilePage(directory);
+                                        }
+                                        content.CanBeHucked = false;
+                                        File.WriteAllText(directory + ".config", JsonConvert.SerializeObject(content));
 
+                                    }
+
+                                }
+                                else
+                                {
+                                    var alert = new AlertWindow("Уведомление", "Оставшиеся попытки взлома: 0", "Закрыть", _theme);
+                                    if (alert.ShowDialog() == false)
+                                    {
+
+                                    }
                                 }
                             }
                         }
@@ -402,15 +386,21 @@ namespace Terminal_XP.Frames
                 }
                 catch
                 {
-                    GoToFilePage(directory);
+                    if (isFolder)
+                        AccessInFolderOpen(directory);
+                    else
+                        GoToFilePage(directory);
                 }
             }
             else
             {
-                // TODO: Generate config file for this file
-                GoToFilePage(directory);
+                if (isFolder)
+                    AccessInFolderOpen(directory);
+                else
+                    GoToFilePage(directory);
             }
         }
+
         private Dictionary<string, string> NormalizeLoginANdPassword(Dictionary<string, string> dct)
         {
             Dictionary<string, string> result = new Dictionary<string, string>();

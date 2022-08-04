@@ -13,7 +13,6 @@ namespace Terminal_XP.Classes
         public string SpecialSymbol { get; set; }
         public uint RatioSpawnWords { get; set; }
         public uint LengthHackString { get; set; }
-        public uint CountLivesForHacking { get; set; }
         public bool DifficultyInfo { get; set; }
     }
 }

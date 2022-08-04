@@ -43,7 +43,7 @@ namespace Terminal_XP.Windows
         private int _lineNumber;
         private List<List<Span>> _spans = new List<List<Span>>();
         public State ReternedState { get; private set; } = State.None;
-        public HuckWindow(string theme, string rightWord)
+        public HuckWindow(string theme, string rightWord,int attempts)
         {
             InitializeComponent();
 
@@ -52,8 +52,8 @@ namespace Terminal_XP.Windows
             // Choose right word
             _rightWord = rightWord.ToLower();
             // Get count lives
-            _lives = (int)ConfigManager.Config.CountLivesForHacking;
-            _startLives = (int)ConfigManager.Config.CountLivesForHacking;
+            _lives = attempts;
+            _startLives = attempts;
             _theme = theme;
 
             LoadTheme(_theme);
@@ -138,7 +138,7 @@ namespace Terminal_XP.Windows
                 if (result.Length >= pos && pos != -1)
                 {
                     if (!Symbols.Contains(result[result.Length - 1]))
-                        result = result.Remove(result.Length - currSymb.Length - 1);
+                        result = result.Remove(result.Length - currSymb.Length);
 
                     result += _rightWord;
                     pos = -1;

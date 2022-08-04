@@ -6,15 +6,15 @@
       xmlns:local="clr-namespace:Terminal_XP.Frames"
       mc:Ignorable="d"
       Title="TechnicalViewPage"
-      Focusable="False">
+      Focusable="True">
     <Grid>
-        <ScrollViewer x:Name="Scroller" Focusable="False" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
+        <ScrollViewer x:Name="Scroller" Focusable="True" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
             <ScrollViewer.Style>
                 <Style TargetType="ScrollViewer">
                     <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
                 </Style>
             </ScrollViewer.Style>
-            <TextBlock x:Name="Output" Focusable="False" TextWrapping="Wrap">
+            <TextBlock x:Name="Output" Focusable="True" TextWrapping="Wrap">
                 <TextBlock.Style>
                     <Style TargetType="TextBlock">
                         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
