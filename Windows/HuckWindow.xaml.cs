@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Terminal_XP.Classes;
+using static System.Net.Mime.MediaTypeNames;
 using static System.Net.WebRequestMethods;
 
 namespace Terminal_XP.Windows
@@ -21,7 +22,7 @@ namespace Terminal_XP.Windows
     /// <summary>
     /// Логика взаимодействия для HuckWindow.xaml
     /// </summary>
-    
+
     public partial class HuckWindow : Window
     {
         private const string Symbols = "~!@#$%^&*()_-=+{}|?/\"\';:<>";
@@ -43,7 +44,7 @@ namespace Terminal_XP.Windows
         private int _lineNumber;
         private List<List<Span>> _spans = new List<List<Span>>();
         public State ReternedState { get; private set; } = State.None;
-        public HuckWindow(string theme, string rightWord,int attempts)
+        public HuckWindow(string theme, string rightWord, int attempts)
         {
             InitializeComponent();
 
@@ -61,7 +62,6 @@ namespace Terminal_XP.Windows
             // KeepAlive = true;
 
             KeyDown += KeyPress;
-
             Initialize();
 
             if (Addition.IsDebugMod)
@@ -318,6 +318,9 @@ namespace Terminal_XP.Windows
 
             // Highlight first word
             SetHighlight(_spans[_columnSpon][_rowSpon]);
+
+            string st = ">Количество попыток: " + _lives;
+            st.Split('\n').ForEach(AddTextToConsole);
         }
 
         private void KeyPress(object sender, KeyEventArgs e)
@@ -348,13 +351,11 @@ namespace Terminal_XP.Windows
                     HighlightWord(Direction.JustNext);
                     break;
                 case Key.Enter:
-                    FillConsole();
+                    CheckTheWord();
                     break;
             }
         }
 
-        // And text of correct/uncorrent to console
-        private void FillConsole() => CheckTheWord().Split('\n').ForEach(AddTextToConsole);
 
         // Get the number of identical characters in strings
         private int HowManyCorrectSymbols(string word)
@@ -376,32 +377,38 @@ namespace Terminal_XP.Windows
         }
 
         // Check word to correct
-        private string CheckTheWord()
+        private void CheckTheWord()
         {
             var text = ((Run)_spans[_columnSpon][_rowSpon].Inlines.FirstInline).Text;
+            string res;
 
             if (text == _rightWord)
             {
+                res = ">ACESS";
+                res.Split('\n').ForEach(AddTextToConsole);
                 ReternedState = State.Access;
                 Close();
-                return ">ACESS";
+                return;
             }
 
             _lives--;
 
             if (_lives > 0 && ConfigManager.Config.DifficultyInfo)
-                return ">" + HowManyCorrectSymbols(text) + " из " + _rightWord.Length + " верно!\n>Осталось " + _lives + " из " + _startLives + " попыток!\n>DENIED";
+            {
+                res =  ">" + HowManyCorrectSymbols(text) + " из " + _rightWord.Length + " верно!\n>Осталось " + _lives + " из " + _startLives + " попыток!\n>DENIED";
+                res.Split('\n').ForEach(AddTextToConsole);
+                return;
+            }
 
+            res = ">DENIED";
+            res.Split('\n').ForEach(AddTextToConsole);
             var alert = new AlertWindow("Уведомление", "Влом провален.", "Закрыть", _theme);
 
             if (alert.ShowDialog() == false)
             {
-
                 ReternedState = State.Fail;
                 Close();
-                return ">DENIED";
             }
-            return default;
         }
 
         // Get Textblock
