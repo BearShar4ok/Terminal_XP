@@ -63,8 +63,8 @@
     <Compile Include="Windows\AlertWindow.xaml.cs">
       <DependentUpon>AlertWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\HuckWindow.xaml.cs">
-      <DependentUpon>HuckWindow.xaml</DependentUpon>
+    <Compile Include="Windows\HackWindow.xaml.cs">
+      <DependentUpon>HackWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
@@ -116,7 +116,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\HuckWindow.xaml">
+    <Page Include="Windows\HackWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
