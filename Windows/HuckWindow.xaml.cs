@@ -20,10 +20,10 @@ using static System.Net.WebRequestMethods;
 namespace Terminal_XP.Windows
 {
     /// <summary>
-    /// Логика взаимодействия для HuckWindow.xaml
+    /// Логика взаимодействия для HackWindow.xaml
     /// </summary>
 
-    public partial class HuckWindow : Window
+    public partial class HackWindow : Window
     {
         private const string Symbols = "~!@#$%^&*()_-=+{}|?/\"\';:<>";
 
@@ -44,7 +44,7 @@ namespace Terminal_XP.Windows
         private int _lineNumber;
         private List<List<Span>> _spans = new List<List<Span>>();
         public State ReternedState { get; private set; } = State.None;
-        public HuckWindow(string theme, string rightWord, int attempts)
+        public HackWindow(string theme, string rightWord, int attempts)
         {
             InitializeComponent();
 

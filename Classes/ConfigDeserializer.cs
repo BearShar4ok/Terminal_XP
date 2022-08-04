@@ -7,8 +7,8 @@ namespace Terminal_XP.Classes
 {
     internal class ConfigDeserializer
     {
-        public int HuckAttempts { get; set; } = 10;
-        public bool CanBeHucked { get; set; } = true;
+        public int HackAttempts { get; set; } = 10;
+        public bool CanBeHacked { get; set; } = true;
         public bool CanBeChanged { get; set; } = false;
         public bool CanBeCopied { get; set; } = false;
         public bool CanBeDeleted { get; set; } = false;

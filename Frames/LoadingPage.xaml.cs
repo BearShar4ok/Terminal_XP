@@ -352,11 +352,11 @@ namespace Terminal_XP.Frames
                                     GoToFilePage(directory);
                             }
 
-                            if (lw.ReternedState == State.Huck)
+                            if (lw.ReternedState == State.Hack)
                             {
-                                if (content.CanBeHucked)
+                                if (content.CanBeHacked)
                                 {
-                                    var hw = new HuckWindow(_theme, lw.Password, content.HuckAttempts);
+                                    var hw = new HackWindow(_theme, lw.Password, content.HackAttempts);
                                     if (hw.ShowDialog() == false)
                                     {
                                         if (hw.ReternedState == State.Access)
@@ -366,7 +366,7 @@ namespace Terminal_XP.Frames
                                             else
                                                 GoToFilePage(directory);
                                         }
-                                        content.CanBeHucked = false;
+                                        content.CanBeHacked = false;
                                         File.WriteAllText(directory + ".config", JsonConvert.SerializeObject(content));
 
                                     }

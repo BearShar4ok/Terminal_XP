@@ -276,7 +276,7 @@ namespace Terminal_XP.Windows
         {
             if (CheckLogin())
             {
-                ReternedState = State.Huck;
+                ReternedState = State.Hack;
                 Password = GetPassword();
                 Close();
             }

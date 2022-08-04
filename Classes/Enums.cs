@@ -6,5 +6,5 @@ using System.Text;
 namespace Terminal_XP.Classes
 {
     public enum Direction { Left, Right, Up, Down, JustNext }
-    public enum State { Access, Fail, Cancel, None, Huck }
+    public enum State { Access, Fail, Cancel, None, Hack }
 }

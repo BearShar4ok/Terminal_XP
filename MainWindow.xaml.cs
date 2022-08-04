@@ -54,7 +54,7 @@ namespace Terminal_XP
             Closing += (obj, e) => DevicesManager.StopListening();
 
              Addition.NavigationService?.Navigate(new TechnicalViewPage(_theme, new LoadingPage(_theme)));
-            //var hw = new HuckWindow(_theme, "pas");
+            //var hw = new HackWindow(_theme, "pas");
             //hw.Show();
         }
 
