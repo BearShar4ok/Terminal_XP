@@ -302,7 +302,10 @@ namespace Terminal_XP.Frames
                     lstB_MouseDoubleClick(null, null);
                     break;
                 case Key.Escape:
-                    App.Current.MainWindow.Close();
+                    if (Addition.IsDebugMod)
+                    {
+                        App.Current.MainWindow.Close();
+                    }
                     break;
             }
 

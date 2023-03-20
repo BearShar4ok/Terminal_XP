@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,9 +19,10 @@ namespace Terminal_XP.Frames
         private string _theme;
         private bool _update;
         private Mutex _mutex = new Mutex();
+        private bool _isItCommand;
 
 
-        public TextViewPage(string filename, string theme, bool clearPage = false)
+        public TextViewPage(string filename, string theme, bool clearPage = false, bool isItCommand = false)
         {
             InitializeComponent();
 
@@ -32,6 +34,7 @@ namespace Terminal_XP.Frames
 
             _filename = filename;
             _theme = theme;
+            _isItCommand = isItCommand;
             Output.Text = ConfigManager.Config.SpecialSymbol;
 
             Application.Current.MainWindow.KeyDown += AdditionalKeys;
@@ -78,6 +81,13 @@ namespace Terminal_XP.Frames
                 using (var stream = File.OpenText(_filename))
                 {
                     var text = stream.ReadToEnd();
+                    if (_isItCommand)
+                    {
+                        var t = text.Split('\n').ToList();
+                        RequestSender.TestSendGet(t[0].Replace("\r",""));
+                        t.RemoveAt(0);
+                        text = string.Join("\n", t.ToArray());
+                    }
 
                     Addition.PrintLines(Output, Scroller, Dispatcher, ref _update, _mutex,
                         new FragmentText(text,

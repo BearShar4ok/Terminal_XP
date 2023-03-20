@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,7 +26,7 @@ namespace Terminal_XP.Classes
         public const string ErrorFile = "files/Error.log";
 
         // Dubug Mode
-        public const bool IsDebugMod = false;
+        public const bool IsDebugMod = true;
 
         // NavigationService
         public static NavigationService NavigationService { get; } = (Application.Current.MainWindow as MainWindow)?.Frame.NavigationService;
@@ -84,11 +85,11 @@ namespace Terminal_XP.Classes
                             element.Text += symbol.ToString();
                     }));
 
-                   scroller.Dispatcher.BeginInvoke(
-                   new Action(() =>
-                   {
-                       scroller.ScrollToBottom();
-                   }));
+                    scroller.Dispatcher.BeginInvoke(
+                    new Action(() =>
+                    {
+                        scroller.ScrollToBottom();
+                    }));
 
                     mutex?.ReleaseMutex();
 
@@ -114,6 +115,9 @@ namespace Terminal_XP.Classes
 
             if (Text.Contains(exct))
                 return new TextViewPage(filename, theme, clearPage);
+
+            if (exct == "command")
+                return new TextViewPage(filename, theme, clearPage, isItCommand: true);
 
             return new TextViewPage(filename, theme, clearPage);
         }
