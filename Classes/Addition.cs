@@ -115,7 +115,7 @@ namespace Terminal_XP.Classes
             if (Text.Contains(exct))
                 return new TextViewPage(filename, theme, clearPage);
 
-            return default;
+            return new TextViewPage(filename, theme, clearPage);
         }
     }
 }

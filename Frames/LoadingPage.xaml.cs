@@ -107,6 +107,7 @@ namespace Terminal_XP.Frames
                         LblInfo.Content = "";
                         LblInfo.Visibility = Visibility.Hidden;
                         var diskName = Path.GetFileNameWithoutExtension(fullPath);
+                        //var diskName = Path.GetFileNameWithoutExtension(fullPath);
 
                         var lbi = new ListBoxItem()
                         {
@@ -216,6 +217,7 @@ namespace Terminal_XP.Frames
             {
                 var filename = Path.GetFileName(file);
                 var name = Path.GetFileNameWithoutExtension(file);
+
                 var extension = Path.GetExtension(file).Remove(0, 1);
 
                 var lbi = new ListBoxItem()
@@ -286,6 +288,7 @@ namespace Terminal_XP.Frames
 
                 LB.Items.Add(lbi);
             }
+            
         }
 
         // All additional keys, which cant be used in System hotkeys

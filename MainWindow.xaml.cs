@@ -32,7 +32,7 @@ namespace Terminal_XP
 
             if (!Addition.IsDebugMod)
             {
-                Topmost = true;
+                //Topmost = true;
                 Cursor = Cursors.None;
             }
 

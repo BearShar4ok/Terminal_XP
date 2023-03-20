@@ -380,12 +380,10 @@ namespace Terminal_XP.Windows
         private void CheckTheWord()
         {
             var text = ((Run)_spans[_columnSpon][_rowSpon].Inlines.FirstInline).Text;
-            string res;
 
             if (text == _rightWord)
             {
-                res = ">ACESS";
-                res.Split('\n').ForEach(AddTextToConsole);
+                AddTextToConsole(">ACESS");
                 ReternedState = State.Access;
                 Close();
                 return;
@@ -393,15 +391,23 @@ namespace Terminal_XP.Windows
 
             _lives--;
 
-            if (_lives > 0 && ConfigManager.Config.DifficultyInfo)
+            //if (_lives > 0 && ConfigManager.Config.DifficultyInfo)
+            //{
+            //    res =  ">" + HowManyCorrectSymbols(text) + " из " + _rightWord.Length + " верно!\n>Осталось " + _lives + " из " + _startLives + " попыток!\n>DENIED";
+            //    res.Split('\n').ForEach(AddTextToConsole);
+            //    return;
+            //}
+            if (_lives > 0)
             {
-                res =  ">" + HowManyCorrectSymbols(text) + " из " + _rightWord.Length + " верно!\n>Осталось " + _lives + " из " + _startLives + " попыток!\n>DENIED";
-                res.Split('\n').ForEach(AddTextToConsole);
+                if (ConfigManager.Config.DifficultyInfo)
+                    AddTextToConsole(">" + HowManyCorrectSymbols(text) + " из " + _rightWord.Length + " верно!");
+
+                AddTextToConsole("Осталось " + _lives + " из " + _startLives + " попыток!");
+                AddTextToConsole(">DENIED");
                 return;
             }
 
-            res = ">DENIED";
-            res.Split('\n').ForEach(AddTextToConsole);
+            AddTextToConsole(">DENIED");
             var alert = new AlertWindow("Уведомление", "Влом провален.", "Закрыть", _theme);
 
             if (alert.ShowDialog() == false)

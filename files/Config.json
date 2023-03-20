@@ -1,14 +1,1 @@
-{
-  "Theme": "Fallout",
-  "FontSize": 32,
-  "Opacity": 0.8,
-  "TerminalColor": "#09b523",
-  "UsingDelayFastOutput": true,
-  "DelayFastOutput": 1,
-  "DelayUpdateCarriage": 500,
-  "SpecialSymbol": "❚",
-  "RatioSpawnWords": 5,
-  "LengthHackString": 300,
-  "DifficultyInfo": true,
-  "FontName": "Fixedsys Excelsior 3.01"
-}
+{"Theme":"Fallout","FontSize":32,"Opacity":0.8,"TerminalColor":"#FF2F911E","UsingDelayFastOutput":true,"DelayFastOutput":1,"DelayUpdateCarriage":500,"SpecialSymbol":"❚","RatioSpawnWords":5,"LengthHackString":300,"DifficultyInfo":false,"FontName":"Fixedsys Excelsior 3.01"}
