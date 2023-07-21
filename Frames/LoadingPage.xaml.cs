@@ -28,7 +28,7 @@ namespace Terminal_XP.Frames
         private const string PrevDirText = "..";
         private const string SystemFolder = "System Volume Information";
         private const string ExtensionConfig = ".config";
-        private const string _NetDiskovText = "Связь есть...";
+        private const string _NetDiskovText = "Доступных дисков нет...";
         private readonly Dictionary<IconType, string> Icons;
 
         private string _theme;
