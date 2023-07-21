@@ -18,7 +18,7 @@ using LingvoNET;
 
 namespace Terminal_XP.Frames
 {
-    public enum IconType { Default, Folder, Image, Text, Audio, Video }
+    public enum IconType { Default, Folder, Image, Text, Audio, Video, Command }
 
     //  🖹🖻🖺
 
@@ -28,6 +28,7 @@ namespace Terminal_XP.Frames
         private const string PrevDirText = "..";
         private const string SystemFolder = "System Volume Information";
         private const string ExtensionConfig = ".config";
+        private const string _NetDiskovText = "Связь есть...";
         private readonly Dictionary<IconType, string> Icons;
 
         private string _theme;
@@ -35,6 +36,7 @@ namespace Terminal_XP.Frames
         private int _selectedIndex;
         private KeyStates _prevkeyState;
         private string _currDisk;
+        
 
         private Dictionary<string, ListBoxItem> _disks = new Dictionary<string, ListBoxItem>();
         private Dictionary<string, int> _huckAttempts = new Dictionary<string, int>();
@@ -52,7 +54,7 @@ namespace Terminal_XP.Frames
 
             KeepAlive = true;
 
-            LblInfo.Content = "Доступных дисков нет...";
+            LblInfo.Content = _NetDiskovText;
 
             LB.SelectionMode = SelectionMode.Single;
             LB.SelectedIndex = 0;
@@ -68,6 +70,7 @@ namespace Terminal_XP.Frames
                 { IconType.Image, Path.GetFullPath(Addition.Themes + theme +  $@"/{Addition.Icons}/image.png") },
                 { IconType.Text, Path.GetFullPath(Addition.Themes + theme +  $@"/{Addition.Icons}/text.png") },
                 { IconType.Audio, Path.GetFullPath(Addition.Themes + theme +  $@"/{Addition.Icons}/audio.png") },
+                { IconType.Command, Path.GetFullPath(Addition.Themes + theme +  $@"/{Addition.Icons}/command.png") },
                 { IconType.Video, Path.GetFullPath(Addition.Themes + theme +  $@"/{Addition.Icons}/video.png") }
             };
             LoadParams();
@@ -151,7 +154,7 @@ namespace Terminal_XP.Frames
                 }
                 if (LB.Items.Count == 0)
                 {
-                    LblInfo.Content = "Доступных дисков нет...";
+                    LblInfo.Content = _NetDiskovText;
                     LblInfo.Visibility = Visibility.Visible;
                 }
             }));
@@ -239,6 +242,8 @@ namespace Terminal_XP.Frames
                     lbi.DataContext = new BitmapImage(new Uri(Icons[IconType.Audio]));
                 else if (Addition.Video.Contains(extension))
                     lbi.DataContext = new BitmapImage(new Uri(Icons[IconType.Video]));
+                else if (Addition.Command.Contains(extension))
+                    lbi.DataContext = new BitmapImage(new Uri(Icons[IconType.Command]));
                 else
                     lbi.DataContext = new BitmapImage(new Uri(Icons[IconType.Default]));
 
@@ -302,7 +307,7 @@ namespace Terminal_XP.Frames
                     lstB_MouseDoubleClick(null, null);
                     break;
                 case Key.Escape:
-                    if (Addition.IsDebugMod)
+                    if (ConfigManager.Config.IsDebugMode)
                     {
                         App.Current.MainWindow.Close();
                     }
@@ -357,8 +362,12 @@ namespace Terminal_XP.Frames
                                 else
                                     GoToFilePage(directory);
                             }
-
-                            if (lw.ReternedState == State.Hack)
+                            else if (lw.ReternedState == State.Cancel)
+                            {
+                                _deepOfPath--;
+                                return;
+                            }
+                            else if (lw.ReternedState == State.Hack)
                             {
                                 if (content.CanBeHacked)
                                 {

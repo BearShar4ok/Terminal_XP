@@ -10,14 +10,22 @@ namespace Terminal_XP.Classes
 {
     public static class RequestSender
     {
-        public static void TestSendGet(string requestString)
+        public static void SendGet(string requestString)
         {
-            string url = "https://" + requestString;
-
-            using (HttpClient httpClient = new HttpClient())
+            try
             {
-                httpClient.GetAsync(url);
+                string url = "http://" + requestString;
+
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    httpClient.GetAsync(url);
+                }
             }
+            catch (Exception)
+            {
+
+            }
+           
         }
     }
 }

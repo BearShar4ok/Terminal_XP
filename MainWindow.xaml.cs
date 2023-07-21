@@ -30,7 +30,7 @@ namespace Terminal_XP
 
             _theme = ConfigManager.Config.Theme;
 
-            if (!Addition.IsDebugMod)
+            if (!ConfigManager.Config.IsDebugMode)
             {
                 Topmost = true;
                 Cursor = Cursors.None;

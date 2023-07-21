@@ -64,7 +64,7 @@ namespace Terminal_XP.Windows
             KeyDown += KeyPress;
             Initialize();
 
-            if (Addition.IsDebugMod)
+            if (ConfigManager.Config.IsDebugMode)
             {
                 AddTextToConsole(_rightWord);
 
@@ -173,7 +173,12 @@ namespace Terminal_XP.Windows
         // Method to split generated string to list spans
         private void AddToField()
         {
-            var str = GenerateRandomString((int)ConfigManager.Config.LengthHackString);
+            var hacklen = (int)ConfigManager.Config.LengthHackString;
+            if ((int)ConfigManager.Config.LengthHackString > 1400)
+            {
+                hacklen = 1400;
+            }
+            var str = GenerateRandomString(hacklen);
             var word = "";
 
             for (var i = 0; i < str.Length; i++)
@@ -445,7 +450,7 @@ namespace Terminal_XP.Windows
                     Focusable = false
                 };
 
-                if (Addition.IsDebugMod)
+                if (ConfigManager.Config.IsDebugMode)
                     border.BorderBrush = Brushes.Aqua;
 
                 Grid.SetRow(border, _lineNumber);

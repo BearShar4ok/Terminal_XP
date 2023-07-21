@@ -25,9 +25,6 @@ namespace Terminal_XP.Classes
         // Path to directory with error.log file 
         public const string ErrorFile = "files/Error.log";
 
-        // Dubug Mode
-        public const bool IsDebugMod = true;
-
         // NavigationService
         public static NavigationService NavigationService { get; } = (Application.Current.MainWindow as MainWindow)?.Frame.NavigationService;
 
@@ -36,6 +33,7 @@ namespace Terminal_XP.Classes
         public static readonly string[] Image = { "jpeg", "png", "jpg", "tiff", "bmp" };
         public static readonly string[] Video = { "mp4", "gif", "wmv", "avi" };
         public static readonly string[] Text = { "txt" };
+        public static readonly string[] Command = { "command" };
 
         public static void ForEach<T>(this IEnumerable<T> lst, Action<T> action)
         {
@@ -116,7 +114,7 @@ namespace Terminal_XP.Classes
             if (Text.Contains(exct))
                 return new TextViewPage(filename, theme, clearPage);
 
-            if (exct == "command")
+            if (Command.Contains(exct))
                 return new TextViewPage(filename, theme, clearPage, isItCommand: true);
 
             return new TextViewPage(filename, theme, clearPage);

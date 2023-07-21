@@ -13,7 +13,7 @@ using Terminal_XP.Classes;
 
 namespace Terminal_XP.Frames
 {
-    public partial class TechnicalViewPage : Page
+    public partial class TechnicalViewPage 
     {
         private string _theme;
         private bool _update;

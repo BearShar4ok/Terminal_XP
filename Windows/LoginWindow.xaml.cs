@@ -24,7 +24,6 @@ namespace Terminal_XP.Windows
     public partial class LoginWindow : Window
     {
         private const int TbWidth = 400;
-        private const string Caret = "_";
 
         private readonly string _theme;
         private readonly Dictionary<string, string> _database;
@@ -79,7 +78,7 @@ namespace Terminal_XP.Windows
             TBLogin.Focus();
             OpenHackPageCommand.InputGestures.Add(new KeyGesture(Key.R, ModifierKeys.Control));
 
-            if (Addition.IsDebugMod)
+            if (ConfigManager.Config.IsDebugMode)
             {
                 TBLogin.Text = "login";
                 TBPassword.Text = "password";
@@ -143,7 +142,7 @@ namespace Terminal_XP.Windows
             //TBLogin.Width = TbWidth;
             //TBPassword.Width = TbWidth;
 
-            if (Addition.IsDebugMod)
+            if (ConfigManager.Config.IsDebugMode)
             {
                 TBLogin.BorderThickness = new Thickness(1);
                 LblLogin.BorderThickness = new Thickness(1);
@@ -167,7 +166,7 @@ namespace Terminal_XP.Windows
                     Dispatcher.BeginInvoke(DispatcherPriority.Background,
                         new Action(() =>
                         {
-                            if (textBox.Text.Length > 0 && textBox.Text.EndsWith(Caret) && GetHaveCaret(textBox))
+                            if (textBox.Text.Length > 0 && textBox.Text.EndsWith(ConfigManager.Config.SpecialSymbol) && GetHaveCaret(textBox))
                             {
                                 textBox.Text = textBox.Text.Remove(textBox.Text.Length - 1);
                                 textBox.CaretIndex = textBox.Text.Length;
@@ -175,7 +174,7 @@ namespace Terminal_XP.Windows
                             }
                             else
                             {
-                                textBox.Text += Caret;
+                                textBox.Text += ConfigManager.Config.SpecialSymbol;
                                 textBox.CaretIndex = textBox.Text.Length - 1;
                                 SetHaveCaret(textBox, true);
                             }
@@ -188,7 +187,7 @@ namespace Terminal_XP.Windows
                 Dispatcher.BeginInvoke(DispatcherPriority.Background,
                 new Action(() =>
                 {
-                    if (textBox.Text.Length > 0 && textBox.Text.EndsWith(Caret) && GetHaveCaret(textBox))
+                    if (textBox.Text.Length > 0 && textBox.Text.EndsWith(ConfigManager.Config.SpecialSymbol) && GetHaveCaret(textBox))
                     {
                         textBox.Text = textBox.Text.Remove(textBox.Text.Length - 1);
                         textBox.CaretIndex = textBox.Text.Length;
@@ -246,10 +245,10 @@ namespace Terminal_XP.Windows
             var login = TBLogin.Text;
             var password = TBPassword.Text;
 
-            if (login.EndsWith(Caret))
+            if (login.EndsWith(ConfigManager.Config.SpecialSymbol))
                 login = login.Remove(login.Length - 1);
 
-            if (password.EndsWith(Caret))
+            if (password.EndsWith(ConfigManager.Config.SpecialSymbol))
                 password = password.Remove(password.Length - 1);
 
             return _database.ContainsKey(login) && _database[login] == password;
@@ -258,7 +257,7 @@ namespace Terminal_XP.Windows
         {
             var login = TBLogin.Text;
 
-            if (login.EndsWith(Caret))
+            if (login.EndsWith(ConfigManager.Config.SpecialSymbol))
                 login = login.Remove(login.Length - 1);
 
             return _database.ContainsKey(login);
@@ -267,7 +266,7 @@ namespace Terminal_XP.Windows
         {
             var login = TBLogin.Text;
 
-            if (login.EndsWith(Caret))
+            if (login.EndsWith(ConfigManager.Config.SpecialSymbol))
                 login = login.Remove(login.Length - 1);
 
             return _database[login];

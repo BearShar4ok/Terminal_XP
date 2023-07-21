@@ -15,11 +15,11 @@ namespace Terminal_XP.Frames
 {
     public partial class TextViewPage : Page
     {
-        private string _filename;
-        private string _theme;
-        private bool _update;
-        private Mutex _mutex = new Mutex();
-        private bool _isItCommand;
+        protected string _filename;
+        protected string _theme;
+        protected bool _update;
+        protected Mutex _mutex = new Mutex();
+        protected bool _isItCommand;
 
 
         public TextViewPage(string filename, string theme, bool clearPage = false, bool isItCommand = false)
@@ -42,7 +42,7 @@ namespace Terminal_XP.Frames
             LoadText();
         }
 
-        private void RemoveLast(object obj, NavigationEventArgs e)
+        protected void RemoveLast(object obj, NavigationEventArgs e)
         {
             Addition.NavigationService?.RemoveBackEntry();
         }
@@ -69,7 +69,7 @@ namespace Terminal_XP.Frames
             LoadText();
         }
 
-        private void LoadText()
+        protected void LoadText()
         {
             if (!File.Exists(_filename))
                 return;
@@ -84,7 +84,7 @@ namespace Terminal_XP.Frames
                     if (_isItCommand)
                     {
                         var t = text.Split('\n').ToList();
-                        RequestSender.TestSendGet(t[0].Replace("\r",""));
+                        RequestSender.SendGet(t[0].Replace("\r",""));
                         t.RemoveAt(0);
                         text = string.Join("\n", t.ToArray());
                     }
@@ -97,19 +97,19 @@ namespace Terminal_XP.Frames
             }).Start();
         }
 
-        private void LoadTheme(string theme)
+        protected void LoadTheme(string theme)
         {
             Output.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), Addition.Themes + theme + "/#" + ConfigManager.Config.FontName);
         }
 
-        private void LoadParams()
+        protected void LoadParams()
         {
             Output.FontSize = ConfigManager.Config.FontSize;
             Output.Opacity = ConfigManager.Config.Opacity;
             Output.Foreground = (Brush)new BrushConverter().ConvertFromString(ConfigManager.Config.TerminalColor);
         }
 
-        private void UpdateCarriage()
+        protected void UpdateCarriage()
         {
             new Thread(() =>
             {
@@ -134,7 +134,7 @@ namespace Terminal_XP.Frames
             }).Start();
         }
 
-        private void AdditionalKeys(object sender, KeyEventArgs e)
+        protected void AdditionalKeys(object sender, KeyEventArgs e)
         {
             switch (e.Key)
             {
