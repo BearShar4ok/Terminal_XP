@@ -35,6 +35,10 @@ namespace Terminal_XP
                 Topmost = true;
                 Cursor = Cursors.None;
             }
+            else
+            {
+                Topmost = false;
+            }
 
             LoadTheme(_theme);
             LoadParams();

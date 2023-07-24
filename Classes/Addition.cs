@@ -97,6 +97,45 @@ namespace Terminal_XP.Classes
             }
         }
 
+        // Method to print list string to textblock with delay
+        public static void PrintLines(TextBox element, ScrollViewer scroller, Dispatcher dispatcher, ref bool working, Mutex mutex = default,  params FragmentText[] TextArray)
+        {
+            foreach (var fragmentText in TextArray)
+            {
+                foreach (var symbol in fragmentText.Text)
+                {
+                    if (!working)
+                        return;
+
+                    mutex?.WaitOne();
+
+                    dispatcher.BeginInvoke(DispatcherPriority.Background,
+                    new Action(() =>
+                    {
+                        if (element.Text.Length > 0 && element.Text[element.Text.Length - 1].ToString() == ConfigManager.Config.SpecialSymbol)
+                            element.Text = element.Text.Insert(element.Text.Length - 1, symbol.ToString());
+                        else
+                            element.Text += symbol.ToString();
+                    }));
+                    scroller.Dispatcher.BeginInvoke(
+                    new Action(() =>
+                    {
+                        scroller.ScrollToBottom();
+                    }));
+
+                    mutex?.ReleaseMutex();
+
+                    if (fragmentText.Delay > 0)
+                        Thread.Sleep((int)fragmentText.Delay);
+                }
+            }
+            dispatcher.BeginInvoke(DispatcherPriority.Background,
+                    new Action(() =>
+                    {
+                        element.Focus();
+                    }));
+        }
+
         // Get page file by filename
         public static Page GetPageByFilename(string filename, string theme, bool clearPage = false)
         {
