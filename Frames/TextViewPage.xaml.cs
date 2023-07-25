@@ -214,6 +214,11 @@ namespace Terminal_XP.Frames
                     break;
                 case Key.Left:
                     _caretPos--;
+                    break; 
+                case Key.Enter:
+                    int temppos = Output.CaretIndex;
+                    Output.Text= Output.Text.Insert(Output.CaretIndex,"\r\n");
+                    Output.CaretIndex = temppos+1;
                     break;
                 case Key.Right:
                     _caretPos++;

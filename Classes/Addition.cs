@@ -11,6 +11,7 @@ using System.Windows.Documents;
 using System.Windows.Navigation;
 using System.Windows.Threading;
 using Terminal_XP.Frames;
+using Terminal_XP.Windows;
 
 namespace Terminal_XP.Classes
 {
@@ -34,6 +35,7 @@ namespace Terminal_XP.Classes
         public static readonly string[] Video = { "mp4", "gif", "wmv", "avi" };
         public static readonly string[] Text = { "txt" };
         public static readonly string[] Command = { "command" };
+        public static readonly string[] Execute = { "execute" };
 
         public static void ForEach<T>(this IEnumerable<T> lst, Action<T> action)
         {
@@ -156,7 +158,28 @@ namespace Terminal_XP.Classes
             if (Command.Contains(exct))
                 return new TextViewPage(filename, theme, clearPage, isItCommand: true);
 
+            
+                
+
             return new TextViewPage(filename, theme, clearPage);
+        }
+        public static bool IsItPage(string filename)
+        {
+            var exct = Path.GetExtension(filename).Remove(0, 1);
+            if (Audio.Contains(exct) || Video.Contains(exct) || Image.Contains(exct) || Text.Contains(exct) || Command.Contains(exct))
+            {
+                return true;
+            }
+            return false;
+        }
+        public static Window GetWindowByFilename(string filename, string theme)
+        {
+            var exct = Path.GetExtension(filename).Remove(0, 1);
+            if (Execute.Contains(exct))
+            {
+                return new SputnikGameWindow(theme);
+            }
+            return null;
         }
     }
 }

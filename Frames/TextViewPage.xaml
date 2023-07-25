@@ -20,11 +20,7 @@
             </ScrollViewer.Style>
 
             <Grid>
-                
-                
-                
-                
-                
+
                 <TextBox x:Name="Output" Focusable="True" TextWrapping="Wrap">
                     <TextBox.Style>
                         <Style TargetType="TextBox">

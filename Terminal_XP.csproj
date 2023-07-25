@@ -79,6 +79,9 @@
     <Compile Include="Windows\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\SputnikGameWindow.xaml.cs">
+      <DependentUpon>SputnikGameWindow.xaml</DependentUpon>
+    </Compile>
     <Page Include="Frames\AudioViewPage.xaml" />
     <Page Include="Frames\PictureViewPage.xaml" />
     <Page Include="Frames\TechnicalViewPage.xaml">
@@ -131,6 +134,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\LoginWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\SputnikGameWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

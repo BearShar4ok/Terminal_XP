@@ -18,7 +18,7 @@ using LingvoNET;
 
 namespace Terminal_XP.Frames
 {
-    public enum IconType { Default, Folder, Image, Text, Audio, Video, Command }
+    public enum IconType { Default, Folder, Image, Text, Audio, Video, Command,Execute }
 
     //  🖹🖻🖺
 
@@ -71,7 +71,8 @@ namespace Terminal_XP.Frames
                 { IconType.Text, Path.GetFullPath(Addition.Themes + theme +  $@"/{Addition.Icons}/text.png") },
                 { IconType.Audio, Path.GetFullPath(Addition.Themes + theme +  $@"/{Addition.Icons}/audio.png") },
                 { IconType.Command, Path.GetFullPath(Addition.Themes + theme +  $@"/{Addition.Icons}/command.png") },
-                { IconType.Video, Path.GetFullPath(Addition.Themes + theme +  $@"/{Addition.Icons}/video.png") }
+                { IconType.Video, Path.GetFullPath(Addition.Themes + theme +  $@"/{Addition.Icons}/video.png") },
+                { IconType.Execute, Path.GetFullPath(Addition.Themes + theme +  $@"/{Addition.Icons}/execute.png") }
             };
             LoadParams();
             LoadTheme();
@@ -244,6 +245,8 @@ namespace Terminal_XP.Frames
                     lbi.DataContext = new BitmapImage(new Uri(Icons[IconType.Video]));
                 else if (Addition.Command.Contains(extension))
                     lbi.DataContext = new BitmapImage(new Uri(Icons[IconType.Command]));
+                else if (Addition.Execute.Contains(extension))
+                    lbi.DataContext = new BitmapImage(new Uri(Icons[IconType.Execute]));
                 else
                     lbi.DataContext = new BitmapImage(new Uri(Icons[IconType.Default]));
 
@@ -319,10 +322,20 @@ namespace Terminal_XP.Frames
 
         private void GoToFilePage(string directory)
         {
-            var nextPage = Addition.GetPageByFilename(directory, _theme);
+            if (Addition.IsItPage(directory))
+            {
+                var nextPage = Addition.GetPageByFilename(directory, _theme);
 
-            if (nextPage != default)
-                Addition.NavigationService.Navigate(nextPage);
+                if (nextPage != default)
+                    Addition.NavigationService.Navigate(nextPage);
+            }
+            else
+            {
+                var window = Addition.GetWindowByFilename(directory, _theme);
+                window.ShowDialog();
+            }
+
+            
         }
 
         private void AccessInFolderOpen(string directory)
@@ -381,7 +394,7 @@ namespace Terminal_XP.Frames
                                             else
                                                 GoToFilePage(directory);
                                         }
-                                        content.CanBeHacked = false;
+                                        //content.CanBeHacked = false;
                                         File.WriteAllText(directory + ".config", JsonConvert.SerializeObject(content));
 
                                     }
