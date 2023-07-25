@@ -23,7 +23,7 @@ namespace Terminal_XP.Windows
         private Random random = new Random();
         private uint _timer = 0;
         private uint _nowTime = 0;
-        private uint _totalTime = 30000;
+        private uint _totalTime = 32768;
         private short _dirX = 0;
         private short _dirY = 0;
         private readonly string _theme;
@@ -79,14 +79,13 @@ namespace Terminal_XP.Windows
             timerZone.FontSize = ConfigManager.Config.FontSize;
             timerZone.Foreground = (Brush)new BrushConverter().ConvertFromString(ConfigManager.Config.TerminalColor);
 
-            Thread updateSputnik = new Thread(UpdateSputnik);
-            updateSputnik.Start();
         }
         private void UpdateSputnik()
         {
             Thread.Sleep(1000);
              bool flag = true;
             _timer = 1001;
+            double temp = 0;
             while (_nowTime < _totalTime)
             {
 
@@ -105,6 +104,7 @@ namespace Terminal_XP.Windows
 
                     if (!IsIntersect(sTop, sLeft, aTop, aLeft))
                     {
+                        temp = _nowTime;
                         _nowTime = _totalTime + 5;
                         flag = false;
                     }
@@ -156,11 +156,18 @@ namespace Terminal_XP.Windows
             }
             Dispatcher.BeginInvoke(new Action(() =>
             {
-                AlertWindow al;
+                    
+                    AlertWindow al;
                 if (flag)
+                {
                     al = new AlertWindow("Уведомление", "Данные со спутника отправленны", "Закрыть", _theme);
+                    timerZone.Text = "Передано байт: " + _nowTime.ToString() + "\nОсталось байт: 0";
+                }
                 else
+                {
                     al = new AlertWindow("Уведомление", "Данные со спутника не были отправленны", "Закрыть", _theme);
+                    timerZone.Text = "Передано байт: " + temp.ToString() + "\nОсталось байт: "+ (_totalTime - temp).ToString();
+                }
 
                 if (al.ShowDialog() == false)
                 {
@@ -206,9 +213,9 @@ namespace Terminal_XP.Windows
                 case Key.Up:
                     Canvas.SetTop(area, Canvas.GetTop(area) - sdvig);
                     break;
-
                 case Key.Enter:
-                    //CheckTheWord();
+                    Thread updateSputnik = new Thread(UpdateSputnik);
+                    updateSputnik.Start();
                     break;
             }
         }
