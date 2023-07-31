@@ -25,8 +25,11 @@ namespace Terminal_XP
 
         public MainWindow()
         {
+            
             InitializeComponent();
-            ConfigManager.Load();
+           
+
+            
 
             _theme = ConfigManager.Config.Theme;
 

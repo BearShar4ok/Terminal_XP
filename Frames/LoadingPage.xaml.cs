@@ -122,7 +122,6 @@ namespace Terminal_XP.Frames
                             Foreground = (Brush)new BrushConverter().ConvertFrom(ConfigManager.Config.TerminalColor),
                             FontFamily = LblInfo.FontFamily,
                             FontSize = LblInfo.FontSize,
-
                         };
 
                         if (_deepOfPath == 0)

@@ -1,7 +1,7 @@
 ﻿<Application x:Class="Terminal_XP.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Terminal_XP"
+             xmlns:local="clr-namespace:Terminal_XP" xmlns:System="http://schemas.microsoft.com/xps/2005/06"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <Style x:Key="TextText" TargetType="{x:Type ListBoxItem}">
@@ -86,9 +86,10 @@
                                     <Setter Property="BorderBrush" Value="DarkGreen"/>
                                 </Trigger> -->
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter Property="Background" Value="#3337CD37"/>
+                                <Setter Property="Background" Value="{StaticResource theColorFill}"/>
+                                <!-- #3337CD37  -->
                                 <Setter Property="BorderThickness" Value="1"/>
-                                <Setter Property="BorderBrush" Value="DarkGreen"/>
+                                <Setter Property="BorderBrush" Value="{StaticResource theColorBorder}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
