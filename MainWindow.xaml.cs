@@ -44,6 +44,8 @@ namespace Terminal_XP
             }
 
             LoadTheme(_theme);
+            //ProgressAlertWindow pw = new ProgressAlertWindow();
+            //pw.Show();
             LoadParams();
         }
 
